@@ -39,7 +39,7 @@ Foster discussions on the ethical implications of algorithmic trading, including
 Equip students with the tools and methodologies to evaluate the performance of their trading strategies, considering metrics such as profitability, risk-adjusted returns, and drawdowns.
 
 ### Useful Links
-- [PACT Specifications](https://wbcsd.github.io/data-exchange-protocol/v2/#intro)
+- will update later
 
 
 ### Project Timeline
@@ -90,6 +90,7 @@ Administrative tasks are archived in Google Drive.
 - [Tutorial Agenda](https://drive.google.com/drive/folders/1bwN-RGrGCJVZRjBHEgzITm7OS6frtfNB?usp=drive_link)
 - [Reflection Log](https://drive.google.com/drive/folders/1bwN-RGrGCJVZRjBHEgzITm7OS6frtfNB?usp=drive_link)
 - [Link to Tutorial Agenda](https://drive.google.com/drive/folders/1bwN-RGrGCJVZRjBHEgzITm7OS6frtfNB?usp=drive_link)
+- [Link to Audit 1](will upload before next Monday)
 - [Link to Audit 2](will upload at week 6)
 - [Link to Audit 3](will upload at week 10)
 
