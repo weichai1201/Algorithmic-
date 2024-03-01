@@ -1,7 +1,7 @@
-Financial Markets & Algorithmic Trading (Part II)
+# Financial Markets & Algorithmic Trading (Part II)
 
 
-# Project Overview
+## Project Overview
 ## Our Client
 [Delta Theta Investment PTY LTD](https://redmine.cecs.anu.edu.au/redmine/projects/financial-markets-algorithmic-trading-part-ii) 
 Algorithmic trading is crucial for financial markets.It improves market liquidity (via market making strategies) and reduces the bid-ask spread (via high-frequency trading). In other words, algorithmic trading makes it easy to buy and to sell at a better price. It also enhances market efficiency by quickly exploiting misprising (arbitrage strategies) and reduces the trading costs.Broadly, trading strategies could be categorized into technical and fundamental types of strategies. The most prominent categories, in most general terms, that fall into the class of technical analysis [1,2] are (a) trend following, and momentum, (b) mean reversion and statistical arbitrage, (c) high-frequency trading and market making. The most prominent categories that belong to the class of fundamental analysis [3,4] are (d) value investing usually done by analysing earning reports, (e) macro trading accounts for economic indicators, interest rates, geopolitical events, (f) sentiment-based rely on news and social media sentiment.
