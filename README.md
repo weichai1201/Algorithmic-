@@ -15,29 +15,13 @@ Broadly, trading strategies could be categorized into technical and fundamental 
 </p>
 
 ## Project Objectives
-##### Educational Opportunity: 
-Provide students with a comprehensive understanding of state-of-the-art algorithmic trading strategies in both cryptocurrency and equity markets.
-
-##### Implementation and Testing: 
-Enable students to implement and test various algorithmic trading strategies on real market data, allowing them to gain practical experience in algorithmic trading.
-
-##### Market Analysis Skills: 
-Develop students' abilities to analyze market dynamics, including liquidity, bid-ask spread, market efficiency, and the impact of algorithmic trading on these factors.
-
-##### Strategy Categorization: 
-Familiarize students with the broad categories of trading strategies, including technical analysis (such as trend following, mean reversion, and high-frequency trading) and fundamental analysis (such as value investing, macro trading, and sentiment-based strategies).
-
-##### Cross-Market Comparison: 
-Encourage students to compare and contrast the effectiveness of different trading strategies across cryptocurrency and equity markets, highlighting the unique characteristics and challenges of each market.
-
-##### Risk Management: 
-Teach students the importance of risk management in algorithmic trading, including strategies to mitigate risks associated with market volatility, unexpected events, and algorithmic errors.
-
-##### Ethical Considerations: 
-Foster discussions on the ethical implications of algorithmic trading, including concerns related to market manipulation, information asymmetry, and fairness in market access.
-
-##### Performance Evaluation: 
-Equip students with the tools and methodologies to evaluate the performance of their trading strategies, considering metrics such as profitability, risk-adjusted returns, and drawdowns.
+Our project's primary objective is to develop an algorithmic trading strategy and aims to achieve the following key outcomes:
+# Strategy Development and Optimization
+Develop and refine algorithmic trading strategies tailored to the unique characteristics of cryptocurrency and equity markets. Optimise strategies through rigorous backtesting, considering various market conditions, to enhance performance, profitability, and risk management.
+# Documentation and Knowledge Transfer
+Create comprehensive documentation detailing the research, development, testing, and optimization phases of the project. Facilitate knowledge transfer by providing Delta Theta Investment PTY LTD with insights into the implemented strategies, enabling informed decision-making.
+# Continuous Improvement
+Establish a foundation for ongoing improvement and innovation in algorithmic trading strategies by fostering a culture of curiosity and exploration.
 
 ### Useful Links
 - will update later
