@@ -16,11 +16,11 @@ Broadly, trading strategies could be categorized into technical and fundamental 
 
 ## Project Objectives
 Our project's primary objective is to develop an algorithmic trading strategy and aims to achieve the following key outcomes:
-# Strategy Development and Optimization
+#### Strategy Development and Optimization
 Develop and refine algorithmic trading strategies tailored to the unique characteristics of cryptocurrency and equity markets. Optimise strategies through rigorous backtesting, considering various market conditions, to enhance performance, profitability, and risk management.
-# Documentation and Knowledge Transfer
+#### Documentation and Knowledge Transfer
 Create comprehensive documentation detailing the research, development, testing, and optimization phases of the project. Facilitate knowledge transfer by providing Delta Theta Investment PTY LTD with insights into the implemented strategies, enabling informed decision-making.
-# Continuous Improvement
+#### Continuous Improvement
 Establish a foundation for ongoing improvement and innovation in algorithmic trading strategies by fostering a culture of curiosity and exploration.
 
 ### Useful Links
