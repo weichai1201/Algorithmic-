@@ -47,9 +47,6 @@ Semester 1, 2024 (2024. 2 - 2024. 7)
 | Saturday 17:00 - 19:00| Team Meeting | Will be determine later 
 
 # Project Planning
-### Project Client Map
- will be uploaded in the future
-
 ### Stakeholder Analysis 
 <p align="center">
 <img width="800" alt="Screenshot 2023-08-10 at 2 16 54 PM" src="https://github.com/XiaotongSophia/Evalue8/assets/53648623/a5e43db0-4476-4fb8-a81e-433e517dc7f9">
