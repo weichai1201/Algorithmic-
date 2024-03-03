@@ -49,12 +49,12 @@ Semester 1, 2024 (2024. 2 - 2024. 7)
 ## Team Members
 | Name | University ID | Role |
 |------|-------------- |-------|
-| Yifan(Alice) Xiao | u7630965 |Spokesperson, ———————— developer|
-| Liangyu Zuo | u6089294 | —————————— developer|
-| Huanjie(Jay) Zhang	| u7633338 |Spokesperson-------- developer|
-| Han(Susan) Xu	| u7590767 |------- developer|
-| Ping Zhang	| u7349032 |------- developer|
-| Weichai Zhang | u7574256 |------- developer|
+| Yifan(Alice) Xiao | u7630965 |Spokesperson and Matlab developer|
+| Liangyu Zuo | u6089294 | Team Leader|
+| Huanjie(Jay) Zhang	| u7633338 |Spokesperson and Full-Stack developer|
+| Han(Susan) Xu	| u7590767 | Python developer|
+| Ping Zhang	| u7349032 | Python developer|
+| Weichai Zhang | u7574256 | Matlab developer|
 
 ## Weekly Meeting Time
 | Date | Meeting |
@@ -82,6 +82,7 @@ will be provide a link in the future
 
 # Project Governance
 Administrative tasks are archived in Google Drive.
+
 - [Team Charter](https://drive.google.com/drive/folders/1bwN-RGrGCJVZRjBHEgzITm7OS6frtfNB?usp=drive_link)
 - [Decision Log](https://drive.google.com/drive/folders/1bwN-RGrGCJVZRjBHEgzITm7OS6frtfNB?usp=drive_link)
 - [Risk Management](https://drive.google.com/drive/folders/1bwN-RGrGCJVZRjBHEgzITm7OS6frtfNB?usp=drive_link)
