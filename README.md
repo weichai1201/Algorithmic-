@@ -1,4 +1,5 @@
 # Financial Markets & Algorithmic Trading (Part II)
+<img width="958" alt="Invitation page" src="https://github.com/weichai1201/Algorithmic-/assets/135306395/2cb065f8-ac45-4cf5-9769-6fd0e901f67a">
 
 
 ## Project Overview
