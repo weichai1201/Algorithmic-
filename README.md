@@ -1,11 +1,6 @@
 # Financial Markets & Algorithmic Trading (Part II)
 <img width="1021" alt="Invitation page" src="https://github.com/weichai1201/Algorithmic-/assets/135306395/a2f7313f-0962-40e1-854e-edf3638e4095">
 
-[Statement of work](https://docs.google.com/document/d/1-YeQT6O0Qd5ibNtW0XZa-Oh4NWhVdid4Jf-ST30qKt4/edit)
-[Team charter](https://docs.google.com/document/d/1M8R9ej6o6NXrscRAk4MI_kNqx-1rB2KH/edit)
-[Decision log](https://docs.google.com/spreadsheets/d/1ILBs2i597DDvZW670nSivCNw3ODxUMXG/edit#gid=1408635962)
-[Reflection log](https://docs.google.com/spreadsheets/d/1ES8hdEHggvCPbo7VUo7_QCKDnVgPKqKP/edit#gid=471308671)
-
 ## Project Overview
 ## Our Client
 [Delta Theta Investment PTY LTD](https://redmine.cecs.anu.edu.au/redmine/projects/financial-markets-algorithmic-trading-part-ii) 
