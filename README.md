@@ -77,10 +77,6 @@ Semester 1, 2024 (2024. 2 - 2024. 7)
 
 will be provide a link in the future
 
-
-
-
-
 # Project Governance
 Administrative tasks are archived in Google Drive.
 
@@ -92,18 +88,13 @@ Administrative tasks are archived in Google Drive.
 - [Tutorial Agenda](https://drive.google.com/drive/folders/1bwN-RGrGCJVZRjBHEgzITm7OS6frtfNB?usp=drive_link)
 - [Reflection Log](https://drive.google.com/drive/folders/1bwN-RGrGCJVZRjBHEgzITm7OS6frtfNB?usp=drive_link)
 - [Link to Tutorial Agenda](https://drive.google.com/drive/folders/1bwN-RGrGCJVZRjBHEgzITm7OS6frtfNB?usp=drive_link)
-- [Link to Audit 1](will upload before next Monday)
-- [Link to Audit 2](will upload at week 6)
-- [Link to Audit 3](will upload at week 10)
 
 # Task Tracking Tool
 - version: [Slack](https://app.slack.com/client/T06M2EXS3K6/C06LTCCPAPQ) 
 
-
 # Documentation
 - Link to Code (Private)
 - [Statement of Work](https://drive.google.com/drive/folders/1Da-R7BeQcE7UW6mm0t8g83BNgJ0khVrg)
-
 
 # Showcase
 - [Link to Showcase Video](will update in the future)
