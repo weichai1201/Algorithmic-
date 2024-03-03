@@ -1,7 +1,6 @@
 # Financial Markets & Algorithmic Trading (Part II)
 <img width="958" alt="Invitation page" src="https://github.com/weichai1201/Algorithmic-/assets/135306395/2cb065f8-ac45-4cf5-9769-6fd0e901f67a">
 
-
 ## Project Overview
 ## Our Client
 [Delta Theta Investment PTY LTD](https://redmine.cecs.anu.edu.au/redmine/projects/financial-markets-algorithmic-trading-part-ii) 
@@ -25,7 +24,6 @@ Establish a foundation for ongoing improvement and innovation in algorithmic tra
 
 ### Useful Links
 - will update later
-
 
 ### Project Timeline
 Semester 1, 2024 (2024. 2 - 2024. 7)
