@@ -62,9 +62,9 @@ Administrative tasks are archived in Google Drive.
 - [Team Charter](https://drive.google.com/drive/folders/1-dneBt_eR0Y8kzDOA506BEmkmW1bErBl)
 - [Decision Log](https://drive.google.com/drive/folders/1-dneBt_eR0Y8kzDOA506BEmkmW1bErBl)
 - [Risk Management](https://drive.google.com/drive/folders/1-dneBt_eR0Y8kzDOA506BEmkmW1bErBl)
-- [Meeting Agendas and Minutes](https://drive.google.com/drive/folders/1bwN-RGrGCJVZRjBHEgzITm7OS6frtfNB?usp=drive_link)
+- [Meeting Agendas and Minutes](https://drive.google.com/drive/folders/10OmCpyK7a0rQOQH5SW7NCuMHumqjqTfE)
 - [Project Gantt Chart](https://drive.google.com/drive/folders/1-dneBt_eR0Y8kzDOA506BEmkmW1bErBl)
-- [Tutorial Agenda](https://drive.google.com/drive/folders/1bwN-RGrGCJVZRjBHEgzITm7OS6frtfNB?usp=drive_link)
+- [Tutorial Agenda](https://drive.google.com/drive/folders/10OmCpyK7a0rQOQH5SW7NCuMHumqjqTfE)
 - [Reflection Log](https://drive.google.com/drive/folders/1-dneBt_eR0Y8kzDOA506BEmkmW1bErBl)
 
 # Task Tracking Tool
