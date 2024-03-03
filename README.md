@@ -23,7 +23,15 @@ Create comprehensive documentation detailing the research, development, testing,
 Establish a foundation for ongoing improvement and innovation in algorithmic trading strategies by fostering a culture of curiosity and exploration.
 
 ### Useful Links
-- [Trading infrastructure](https://anu365-my.sharepoint.com/:p:/r/personal/u7574256_anu_edu_au/_layouts/15/Doc.aspx?sourcedoc=%7B3473786B-FE6F-43D7-A2CA-C88851A3C010%7D&file=TL_02_03_2024%20(JA).pptx&action=edit&mobileredirect=true)
+- [MATLAB Quant Finance](https://github.com/mathworks/Awesome-MATLAB-Quant-Finance-)
+- [Machine Learning for Statistical Arbitrage I: Data Management and Visualization
+](https://au.mathworks.com/help/finance/machine-learning-for-statistical-arbitrage-data-management-and-visualization.html)
+- [Backtest Deep Learning Model for Algorithmic Trading of Limit Order Book Data](https://au.mathworks.com/help/finance/backtest-deep-learning-model-for-algorithmic-trading-of-limit-order-book-data.html)
+- [Reinforcement learning financial_trading](https://github.com/matlab-deep-learning/reinforcement_learning_financial_trading)
+- [Backtest Investment Strategies Using Financial Toolbox
+](https://au.mathworks.com/help/finance/backtest-investment-strategies.html)
+- [Backtest Investment Strategies with Trading Signals
+](https://au.mathworks.com/help/finance/backtest-investment-strategies-with-trading-signals.html)
 
 ### Project Timeline
 Semester 1, 2024 (2024. 2 - 2024. 7)
