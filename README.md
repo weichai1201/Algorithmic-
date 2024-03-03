@@ -67,7 +67,7 @@ will be provide a link in the future
 # Project Governance
 Administrative tasks are archived in Google Drive.
 
-- [Team Charter](https://drive.google.com/drive/folders/1-dneBt_eR0Y8kzDOA506BEmkmW1bErBl)
+- [Team Charter](https://docs.google.com/document/d/1E-uCllv_7F1nQyuTsUuVqHjqCR729XCC/edit)
 - [Decision Log](https://drive.google.com/drive/folders/1-dneBt_eR0Y8kzDOA506BEmkmW1bErBl)
 - [Risk Management](https://drive.google.com/drive/folders/1-dneBt_eR0Y8kzDOA506BEmkmW1bErBl)
 - [Meeting Agendas and Minutes](https://drive.google.com/drive/folders/10OmCpyK7a0rQOQH5SW7NCuMHumqjqTfE)
