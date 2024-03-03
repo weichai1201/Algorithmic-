@@ -59,14 +59,13 @@ will be provide a link in the future
 # Project Governance
 Administrative tasks are archived in Google Drive.
 
-- [Team Charter](https://drive.google.com/drive/folders/1bwN-RGrGCJVZRjBHEgzITm7OS6frtfNB?usp=drive_link)
-- [Decision Log](https://drive.google.com/drive/folders/1bwN-RGrGCJVZRjBHEgzITm7OS6frtfNB?usp=drive_link)
-- [Risk Management](https://drive.google.com/drive/folders/1bwN-RGrGCJVZRjBHEgzITm7OS6frtfNB?usp=drive_link)
+- [Team Charter](https://drive.google.com/drive/folders/1-dneBt_eR0Y8kzDOA506BEmkmW1bErBl)
+- [Decision Log](https://drive.google.com/drive/folders/1-dneBt_eR0Y8kzDOA506BEmkmW1bErBl)
+- [Risk Management](https://drive.google.com/drive/folders/1-dneBt_eR0Y8kzDOA506BEmkmW1bErBl)
 - [Meeting Agendas and Minutes](https://drive.google.com/drive/folders/1bwN-RGrGCJVZRjBHEgzITm7OS6frtfNB?usp=drive_link)
-- [Project Gantt Chart](https://drive.google.com/drive/folders/1bwN-RGrGCJVZRjBHEgzITm7OS6frtfNB?usp=drive_link)
+- [Project Gantt Chart](https://drive.google.com/drive/folders/1-dneBt_eR0Y8kzDOA506BEmkmW1bErBl)
 - [Tutorial Agenda](https://drive.google.com/drive/folders/1bwN-RGrGCJVZRjBHEgzITm7OS6frtfNB?usp=drive_link)
-- [Reflection Log](https://drive.google.com/drive/folders/1bwN-RGrGCJVZRjBHEgzITm7OS6frtfNB?usp=drive_link)
-- [Link to Tutorial Agenda](https://drive.google.com/drive/folders/1bwN-RGrGCJVZRjBHEgzITm7OS6frtfNB?usp=drive_link)
+- [Reflection Log](https://drive.google.com/drive/folders/1-dneBt_eR0Y8kzDOA506BEmkmW1bErBl)
 
 # Task Tracking Tool
 - version: [Slack](https://app.slack.com/client/T06M2EXS3K6/C06LTCCPAPQ) 
