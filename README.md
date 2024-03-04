@@ -81,7 +81,8 @@ Administrative tasks are archived in Google Drive.
 - [Reflection Log](https://drive.google.com/drive/folders/1-dneBt_eR0Y8kzDOA506BEmkmW1bErBl)
 
 # Task Tracking Tool
-- version: [Slack](https://app.slack.com/client/T06M2EXS3K6/C06LTCCPAPQ) 
+- communication tool: [Slack](https://app.slack.com/client/T06M2EXS3K6/C06LTCCPAPQ) 
+- version: [Github](https://github.com/users/weichai1201/projects/2) 
 
 # Documentation
 - Link to Code (Private)
