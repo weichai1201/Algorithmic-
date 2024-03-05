@@ -51,7 +51,7 @@ Semester 1, 2024 (2024. 2 - 2024. 7)
 | Date | Meeting |
 |------|-------------- |
 | Wednesday 17:00 - 19:00 | Tutorial Workshop |
-| Saturday 14:00 - 16:00| Client Meeting |
+| Saturday 13:30 - 15:00| Client Meeting |
 | Saturday 17:00 - 19:00| Team Meeting | Will be determine later 
 
 # Project Planning
