@@ -21,6 +21,9 @@ Develop and refine algorithmic trading strategies tailored to the unique charact
 Create comprehensive documentation detailing the research, development, testing, and optimization phases of the project. Facilitate knowledge transfer by providing Delta Theta Investment PTY LTD with insights into the implemented strategies, enabling informed decision-making.
 #### Continuous Improvement
 Establish a foundation for ongoing improvement and innovation in algorithmic trading strategies by fostering a culture of curiosity and exploration.
+#### Final Goal
+By collaborating with another team and dividing tasks accordingly, we aim to ultimately implement our strategy into practical application within the trading core.
+
 
 ### Useful Links
 - [MATLAB Quant Finance](https://github.com/mathworks/Awesome-MATLAB-Quant-Finance-)
