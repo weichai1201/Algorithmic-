@@ -69,9 +69,8 @@ Semester 1, 2024 (2024. 2 - 2024. 7)
 </p>
 
 # Project Output
-
-will be provide a link in the future
-
+- [Output](https://drive.google.com/drive/folders/1Da-R7BeQcE7UW6mm0t8g83BNgJ0khVrg)
+  
 # Project Governance
 Administrative tasks are archived in Google Drive.
 
