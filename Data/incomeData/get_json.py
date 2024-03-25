@@ -16,11 +16,13 @@ def load_file(path):
 if __name__ == '__main__':
     data = json.loads(load_file("C:/Users/Terry/PycharmProjects/new_test/Data/incomeData/From AOS to AEE"))
     # print(type(data))
-    
+
     # 全部信息输出
     # pprint.pprint(data)
 
     # 只针对年报 全部公司
     for keys, values in data.items():
-        print()
-        pprint.pprint(values['annualReports'])
+        # print()
+        for i in values['annualReports']:
+            pprint.pprint(i['totalRevenue'])
+        # pprint.pprint(values['annualReports'][0]['totalRevenue'])
