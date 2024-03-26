@@ -1,6 +1,9 @@
+from optionStrategy.holding import Holding
+
+
 class RiskManagement:
-    def __init__(self, option_price):
-        self.option_price = option_price
+    def __init__(self, holdings: [Holding]):
+        self.holdings = holdings
 
     def calculate_var(self):
         # Implement Value at Risk calculation

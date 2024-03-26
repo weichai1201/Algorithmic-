@@ -1,6 +1,8 @@
-from expiration_management import ExpirationManagement
 
 class OptionStrategy:
+    def __init__(self):
+        self.options_positions = {}
+
     def execute_strategy(self):
         # Execute strategy
         pass
