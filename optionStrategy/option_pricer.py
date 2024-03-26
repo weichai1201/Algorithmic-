@@ -2,6 +2,10 @@ import math
 from scipy.stats import norm
 
 class OptionPricer:
+    """
+    volatility: daily
+    risk free rate: continuous
+    """
     def __init__(self, stock_price, risk_free_rate, volatility):
         self.stock_price = stock_price
         self.risk_free_rate = risk_free_rate
