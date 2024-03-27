@@ -1,5 +1,5 @@
 # Financial Markets & Algorithmic Trading (Part II)
-<img width="1021" alt="Invitation page" src="https://github.com/weichai1201/Algorithmic-/assets/135306395/a2f7313f-0962-40e1-854e-edf3638e4095">
+<img alt="Invitation page" src="https://github.com/weichai1201/Algorithmic-/assets/135306395/a2f7313f-0962-40e1-854e-edf3638e4095" width=80% height=80%>
 
 ## Project Overview
 ## Our Client
@@ -10,7 +10,8 @@ Algorithmic trading is crucial for financial markets. This transformation is anc
 Broadly, trading strategies could be categorized into technical and fundamental types of strategies. Technical strategies, including trend following and momentum, mean reversion and statistical arbitrage, along with high-frequency trading and market making, rely on historical price data and mathematical models to forecast market movements. Conversely, fundamental strategies focus on intrinsic value assessments through the analysis of financial statements, economic indicators, geopolitical events, and market sentiment derived from news and social media. These approaches offer diverse pathways for exploiting market opportunities, each with its unique advantages and challenges. 
 
 <p align="center">
-  <img src="https://github.com/weichai1201/Image/blob/main/Trading%20alogrithm%20part%20ii%20logic%20flow.jpg" />
+
+  <img src="https://github.com/weichai1201/Algorithmic-/assets/135306395/ec224676-46ac-4eee-b3fa-0d70266b1dc4" width=80% height=80%/>
 </p>
 
 ## Project Objectives
