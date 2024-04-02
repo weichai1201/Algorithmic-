@@ -1,11 +1,10 @@
-from src.trading_strategies.optionStrategy.option_strategy import OptionStrategy
+from src.trading_strategies.option_strategy.option_strategy import OptionStrategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
 
 
 class NakedPut(OptionStrategy):
     def __init__(self, id: StrategyId):
         super().__init__(id)
-
 
     def update(self):
         pass
