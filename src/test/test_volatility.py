@@ -1,8 +1,8 @@
 import unittest
 import datetime
-from optionStrategy.price import Price
-from optionStrategy.stock_symbol import StockSymbol
-from optionStrategy.stock import Stock
+from src.optionStrategy.financial_asset.price import Price
+from src.optionStrategy.financial_asset.symbol import StockSymbol
+from src.optionStrategy.financial_asset.stock import Stock
 
 
 class TestVolatility(unittest.TestCase):

@@ -2,9 +2,9 @@ import datetime
 from scipy.stats import norm
 import math
 
-from optionStrategy.option import Option
-from optionStrategy.stock import Stock
-import optionStrategy.util as util
+from src.optionStrategy.financial_asset.option import Option
+from src.optionStrategy.financial_asset.stock import Stock
+import src.optionStrategy.util.util as util
 
 """
 volatility: annum
@@ -35,14 +35,15 @@ def calculate_call_price(stock_price, strike_price, volatility, time_to_maturity
 def calculate_put_price(stock_price, strike_price, volatility, time_to_maturity, risk_free_rate):
     d1 = calculate_d1(stock_price, volatility, strike_price, time_to_maturity, risk_free_rate)
     d2 = calculate_d2(d1, volatility, time_to_maturity)
-    put_price = strike_price * math.exp(-risk_free_rate * time_to_maturity) * norm.cdf(-d2) - stock_price * norm.cdf(-d1)
+    put_price = strike_price * math.exp(-risk_free_rate * time_to_maturity) * norm.cdf(-d2) - stock_price * norm.cdf(
+        -d1)
     return put_price
 
 
 def calculate_d1(stock_price, volatility, strike_price, time_to_maturity, risk_free_rate):
     return (math.log(stock_price / strike_price) + (
-                risk_free_rate + 0.5 * volatility ** 2) * time_to_maturity) / (
-                     volatility * math.sqrt(time_to_maturity))
+            risk_free_rate + 0.5 * volatility ** 2) * time_to_maturity) / (
+            volatility * math.sqrt(time_to_maturity))
 
 
 def calculate_d2(d1, volatility, time_to_maturity):
