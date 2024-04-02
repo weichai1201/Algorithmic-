@@ -20,8 +20,8 @@ class TestOptionPricing(unittest.TestCase):
         self.stock = Stock(self.symbol, self.current_price, self.historical_prices)
 
         self.expiration_date = self.current_time + datetime.timedelta(days=180)
-        self.call_option = CallOption(self.symbol, Price(110.0, self.current_time), self.expiration_date)
-        self.put_option = PutOption(self.symbol, Price(110.0, self.current_time), self.expiration_date)
+        self.call_option = CallOption(self.symbol, Price(110.0, self.current_time), self.expiration_date, 0)
+        self.put_option = PutOption(self.symbol, Price(110.0, self.current_time), self.expiration_date, 0)
         self.risk_free_rate = 0.05
 
     def test_call_option_pricing(self):

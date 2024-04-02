@@ -1,5 +1,7 @@
+import datetime
 import numpy as np
 
+from optionStrategy.option import Option
 from optionStrategy.stock import Stock
 
 
@@ -17,14 +19,25 @@ def simulate_stock_price(stock: Stock, risk_free_rate, time_to_maturity, num_pat
                 (risk_free_rate - 0.5 * stock.volatility ** 2) * dt + stock.volatility * np.sqrt(dt) * z)
     return stock_price_paths
 
-def calculate_var(self):
-    # Implement Value at Risk calculation
-    pass
+def calculate_var(stock: Stock, option: Option, risk_free_rate, confidence_level, num_paths, num_steps):
+    time_to_maturity = (option.expiration_date - stock.current_price.timeStamp) / datetime.timedelta(days=365)
+    stock_price_paths = simulate_stock_price(stock, risk_free_rate, time_to_maturity, num_paths, num_steps)
+    option_payoff = option.option_payoff(stock_price_paths[:, -1], option.strike_price.price)
 
-def stress_testing(self):
+    # Calculate option P&L
+    option_pl = option_payoff - option.premium
+    option_pl_sorted = np.sort(option_pl)
+
+    # Calculate VaR
+    var_index = int(num_paths * (1 - confidence_level))
+    option_var = -option_pl_sorted[var_index]
+
+    return option_var
+
+def stress_testing():
     # Implement stress testing analysis
     pass
 
-def sensitivity_analysis(self):
+def sensitivity_analysis():
     # Implement sensitivity analysis
     pass

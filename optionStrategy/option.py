@@ -7,15 +7,16 @@ from optionStrategy.price import Price
 
 
 class Option:
-    def __init__(self, stock_symbol: StockSymbol, strike_price: Price, expiration_date: datetime):
+    def __init__(self, stock_symbol: StockSymbol, strike_price: Price, expiration_date: datetime, premium: Price):
         self.stock_symbol = stock_symbol
         self.strike_price = strike_price
         self.expiration_date = expiration_date
+        self.premium = premium
 
 
 class CallOption(Option):
-    def __init__(self, stock_symbol: StockSymbol, strike_price: Price, expiration_date: datetime):
-        super().__init__(stock_symbol, strike_price, expiration_date)
+    def __init__(self, stock_symbol: StockSymbol, strike_price: Price, expiration_date: datetime, premium: Price):
+        super().__init__(stock_symbol, strike_price, expiration_date, premium)
         self.option_type = "Call"
 
     def option_payoff(self, stock: Stock):
@@ -23,8 +24,8 @@ class CallOption(Option):
 
 
 class PutOption(Option):
-    def __init__(self, stock_symbol: StockSymbol, strike_price: Price, expiration_date: datetime):
-        super().__init__(stock_symbol, strike_price, expiration_date)
+    def __init__(self, stock_symbol: StockSymbol, strike_price: Price, expiration_date: datetime, premium: Price):
+        super().__init__(stock_symbol, strike_price, expiration_date, premium)
         self.option_type = "Put"
 
     def option_payoff(self, stock: Stock):
