@@ -1,8 +1,8 @@
 import datetime
 import numpy as np
 
-from src.optionStrategy.option import Option
-from src.optionStrategy.stock import Stock
+from src.optionStrategy.financial_asset.option import Option
+from src.optionStrategy.financial_asset.stock import Stock
 
 
 """

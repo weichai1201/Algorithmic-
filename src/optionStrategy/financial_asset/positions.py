@@ -1,4 +1,4 @@
-from src.optionStrategy.position import Position
+from src.optionStrategy.financial_asset.position import Position
 
 
 class Positions:
