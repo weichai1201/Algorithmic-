@@ -1,11 +1,11 @@
 import numpy as np
 import statistics
-from src.optionStrategy.financial_asset.price import Price
-from src.optionStrategy.financial_asset.symbol import StockSymbol
+from src.trading_strategies.financial_asset.price import Price
+from src.trading_strategies.financial_asset.symbol import Symbol
 
 
 class Stock:
-    def __init__(self, stock_symbol: StockSymbol, current_price: Price,
+    def __init__(self, stock_symbol: Symbol, current_price: Price,
                  historical_price: [Price]):
         self.stock_symbol = stock_symbol
         self.current_price = current_price

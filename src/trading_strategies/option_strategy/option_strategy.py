@@ -1,10 +1,14 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
+
+from src.trading_strategies.strategy.strategy_id import StrategyId
 
 
 class OptionStrategy:
     @abstractmethod
-    def __init__(self, ):
-        self.options_positions = {}
+    def __init__(self, id: StrategyId):
+        self.id = id
+        self.__dict = {}
+        self.__transactions = []
 
     @abstractmethod
     def update(self):
