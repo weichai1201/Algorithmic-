@@ -1,14 +1,31 @@
+from abc import ABC, abstractmethod
+
 
 class OptionStrategy:
-    def __init__(self):
+    @abstractmethod
+    def __init__(self, ):
         self.options_positions = {}
 
+    @abstractmethod
+    def update(self):
+        pass
+
+    @abstractmethod
     def execute_strategy(self):
         # Execute strategy
         pass
 
+    @abstractmethod
     def expiration_actions(self):
         # Define actions to take at expiration based on option status
+        pass
+
+    @abstractmethod
+    def margin_actions(self):
+        pass
+
+    @abstractmethod
+    def get_id(self):
         pass
 
 
