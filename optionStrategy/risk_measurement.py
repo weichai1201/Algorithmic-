@@ -7,6 +7,8 @@ from optionStrategy.stock import Stock
 
 """
 Simulate stock price using Geometric Brownian Motion
+num_paths: number of simulation paths
+num_steps: divide the time interval
 """
 def simulate_stock_price(stock: Stock, risk_free_rate, time_to_maturity, num_paths, num_steps):
     dt = time_to_maturity / num_steps
