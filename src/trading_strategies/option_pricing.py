@@ -2,7 +2,7 @@ import datetime
 from scipy.stats import norm
 import math
 
-from src.trading_strategies.financial_asset.option import Option
+from src.trading_strategies.financial_asset.option import Option, CallOption, PutOption
 from src.trading_strategies.financial_asset.stock import Stock
 import src.util.util as util
 
@@ -15,10 +15,10 @@ import src.util.util as util
 def bsm_pricing(stock: Stock, option: Option, risk_free_rate):
     time_to_maturity = (option.expiration_date - stock.current_price.timeStamp) / datetime.timedelta(days=365)
     volatility = util.daily_vol_to_annual(stock.volatility)
-    if option.option_type == "Call":
+    if isinstance(option, CallOption):
         return calculate_call_price(stock.current_price.price, option.strike_price.price,
                                     volatility, time_to_maturity, risk_free_rate)
-    elif option.option_type == "Put":
+    elif isinstance(option, PutOption):
         return calculate_put_price(stock.current_price.price, option.strike_price.price,
                                    volatility, time_to_maturity, risk_free_rate)
     else:
