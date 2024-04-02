@@ -1,4 +1,4 @@
-from optionStrategy.position import Position
+from src.optionStrategy.position import Position
 
 
 class Positions:

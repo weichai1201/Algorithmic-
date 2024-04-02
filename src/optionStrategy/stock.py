@@ -1,7 +1,7 @@
 import numpy as np
 import statistics
-from optionStrategy.price import Price
-from optionStrategy.stock_symbol import StockSymbol
+from src.optionStrategy.price import Price
+from src.optionStrategy.stock_symbol import StockSymbol
 
 
 class Stock:

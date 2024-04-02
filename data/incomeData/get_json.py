@@ -14,7 +14,7 @@ def load_file(path):
 
 
 if __name__ == '__main__':
-    data = json.loads(load_file("C:/Users/Terry/PycharmProjects/new_test/Data/incomeData/From AOS to AEE"))
+    data = json.loads(load_file("C:/Users/Terry/PycharmProjects/new_test/data/incomeData/From AOS to AEE"))
     # print(type(data))
 
     # 全部信息输出

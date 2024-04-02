@@ -2,9 +2,9 @@ import datetime
 from scipy.stats import norm
 import math
 
-from optionStrategy.option import Option
-from optionStrategy.stock import Stock
-import optionStrategy.util as util
+from src.optionStrategy.option import Option
+from src.optionStrategy.stock import Stock
+import src.optionStrategy.util as util
 
 """
 volatility: annum
