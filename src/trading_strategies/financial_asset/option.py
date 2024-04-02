@@ -1,21 +1,21 @@
 from datetime import datetime
 import numpy as np
 
-from src.optionStrategy.financial_asset.symbol import StockSymbol
-from src.optionStrategy.financial_asset.stock import Stock
-from src.optionStrategy.financial_asset.price import Price
+from src.trading_strategies.financial_asset.symbol import Symbol
+from src.trading_strategies.financial_asset.stock import Stock
+from src.trading_strategies.financial_asset.price import Price
 
 
 class Option:
-    def __init__(self, stock_symbol: StockSymbol, strike_price: Price, expiration_date: datetime, premium: Price):
-        self.stock_symbol = stock_symbol
+    def __init__(self, symbol: Symbol, strike_price: Price, expiration_date: datetime, premium: Price):
+        self.symbol = symbol
         self.strike_price = strike_price
         self.expiration_date = expiration_date
         self.premium = premium
 
 
 class CallOption(Option):
-    def __init__(self, stock_symbol: StockSymbol, strike_price: Price, expiration_date: datetime, premium: Price):
+    def __init__(self, stock_symbol: Symbol, strike_price: Price, expiration_date: datetime, premium: Price):
         super().__init__(stock_symbol, strike_price, expiration_date, premium)
         self.option_type = "Call"
 
@@ -24,7 +24,7 @@ class CallOption(Option):
 
 
 class PutOption(Option):
-    def __init__(self, stock_symbol: StockSymbol, strike_price: Price, expiration_date: datetime, premium: Price):
+    def __init__(self, stock_symbol: Symbol, strike_price: Price, expiration_date: datetime, premium: Price):
         super().__init__(stock_symbol, strike_price, expiration_date, premium)
         self.option_type = "Put"
 

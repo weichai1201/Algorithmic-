@@ -1,5 +1,5 @@
-from src.optionStrategy.strategy.optionStrategy.option_strategy import OptionStrategy
-from src.optionStrategy.financial_asset.price import Price
+from src.trading_strategies.optionStrategy.option_strategy import OptionStrategy
+from src.trading_strategies.financial_asset.price import Price
 
 
 class ExpirationHandler:

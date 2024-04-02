@@ -1,14 +1,35 @@
+from abc import abstractmethod
+
+from src.trading_strategies.strategy.strategy_id import StrategyId
+
 
 class OptionStrategy:
-    def __init__(self):
-        self.options_positions = {}
+    @abstractmethod
+    def __init__(self, id: StrategyId):
+        self.id = id
+        self.__dict = {}
+        self.__transactions = []
 
+    @abstractmethod
+    def update(self):
+        pass
+
+    @abstractmethod
     def execute_strategy(self):
         # Execute strategy
         pass
 
+    @abstractmethod
     def expiration_actions(self):
         # Define actions to take at expiration based on option status
+        pass
+
+    @abstractmethod
+    def margin_actions(self):
+        pass
+
+    @abstractmethod
+    def get_id(self):
         pass
 
 

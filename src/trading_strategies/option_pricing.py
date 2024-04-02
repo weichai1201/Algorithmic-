@@ -2,13 +2,13 @@ import datetime
 from scipy.stats import norm
 import math
 
-from src.optionStrategy.financial_asset.option import Option
-from src.optionStrategy.financial_asset.stock import Stock
-import src.optionStrategy.util.util as util
+from src.trading_strategies.financial_asset.option import Option
+from src.trading_strategies.financial_asset.stock import Stock
+import src.util.util as util
 
 """
-volatility: annum
-risk free rate: continuous
+@:param volatility: annual
+@:param risk free rate: continuous
 """
 
 

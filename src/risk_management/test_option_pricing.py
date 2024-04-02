@@ -1,10 +1,10 @@
 import unittest
 import datetime
-from src.optionStrategy.financial_asset.option import CallOption, PutOption
-from src.optionStrategy.financial_asset.stock import Stock
-from src.optionStrategy.financial_asset.price import Price
-from src.optionStrategy.financial_asset.symbol import StockSymbol
-from src.optionStrategy.util.option_pricing import bsm_pricing
+from src.trading_strategies.financial_asset.option import CallOption, PutOption
+from src.trading_strategies.financial_asset.stock import Stock
+from src.trading_strategies.financial_asset.price import Price
+from src.trading_strategies.financial_asset.symbol import StockSymbol
+from src.trading_strategies.option_pricing import bsm_pricing
 
 
 class TestOptionPricing(unittest.TestCase):
