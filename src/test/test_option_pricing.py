@@ -3,13 +3,13 @@ import datetime
 from src.trading_strategies.financial_asset.option import CallOption, PutOption
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.price import Price
-from src.trading_strategies.financial_asset.symbol import StockSymbol
+from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.option_pricing import bsm_pricing
 
 
 class TestOptionPricing(unittest.TestCase):
     def setUp(self):
-        self.symbol = StockSymbol("AAPL")
+        self.symbol = Symbol("AAPL")
         self.current_time = datetime.datetime.now()
         self.current_price = Price(100.0, self.current_time)
         self.historical_prices = [
