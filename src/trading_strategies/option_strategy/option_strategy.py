@@ -1,5 +1,6 @@
 from abc import abstractmethod
 
+from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.strategy_id import StrategyId
 
 
@@ -14,10 +15,10 @@ class OptionStrategy:
     def update(self):
         pass
 
-    @abstractmethod
-    def execute_strategy(self):
+    #@abstractmethod
+    #def execute_strategy(self, option, scale):
         # Execute strategy
-        pass
+    #    pass
 
     @abstractmethod
     def expiration_actions(self):
