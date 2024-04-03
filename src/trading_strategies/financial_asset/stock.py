@@ -13,9 +13,15 @@ class Stock:
         self.volatility = self.calculate_volatility()
 
     def calculate_volatility(self):
-        if not self.historical_price:
-            return 0.0
-        prices = [price.price for price in self.historical_price]
-        returns = np.diff(prices) / prices[:-1]
+        returns = self.get_returns()
         volatility = statistics.stdev(returns)
         return volatility
+
+    def calculate_expected_return(self):
+        returns = self.get_returns()
+        return sum(returns) / len(returns)
+
+    def get_returns(self):
+        prices = [price.price for price in self.historical_price]
+        returns = np.diff(prices) / prices[:-1]
+        return returns
