@@ -19,3 +19,7 @@ class Stock:
         returns = np.diff(prices) / prices[:-1]
         volatility = statistics.stdev(returns)
         return volatility
+
+    def calculate_expected_return(self):
+        prices = [price.price for price in self.historical_price]
+        return sum(prices) / len(prices)
