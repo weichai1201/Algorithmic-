@@ -1,3 +1,4 @@
 # Default ignored files
-/src/.idea/misc.xml
-/src/.idea/new_test.iml
+*/misc.xml
+*/new_test.iml
+*.iml
