@@ -1,13 +1,15 @@
 from abc import abstractmethod
 
-from src.trading_strategies.financial_asset.symbol import Symbol
+from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
+from src.trading_strategies.option_strategy.spec import Spec
 from src.trading_strategies.strategy.strategy_id import StrategyId
 
 
 class OptionStrategy:
     @abstractmethod
-    def __init__(self, id: StrategyId):
-        self.id = id
+    def __init__(self, id: StrategyId, specs:{FinancialAsset, Spec}):
+        self.__id = id
+        self.__specs = specs
         self.__dict = {}
         self.__transactions = []
 
@@ -29,9 +31,8 @@ class OptionStrategy:
     def margin_actions(self):
         pass
 
-    @abstractmethod
     def get_id(self):
-        pass
+        return self.__id
 
 
 class NakedPut(OptionStrategy):
