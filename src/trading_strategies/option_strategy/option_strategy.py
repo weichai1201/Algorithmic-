@@ -1,7 +1,8 @@
+import datetime
 from abc import abstractmethod
 
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
-from src.trading_strategies.financial_asset.option import Option
+from src.trading_strategies.financial_asset.option import Option, PutOption
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.option_strategy.spec import Spec
 from src.trading_strategies.strategy.strategy_id import StrategyId
@@ -18,9 +19,8 @@ class OptionStrategy:
         self.__scale = scale
         self.__transactions = []
 
-
     @abstractmethod
-    def update(self):
+    def update(self, new_data):
         pass
 
     # @abstractmethod
@@ -47,15 +47,15 @@ class OptionStrategy:
 
 
 class NakedPut(OptionStrategy):
-    def __init__(self, id: StrategyId, specs: {Option, Spec}):
-        super().__init__(id, specs)
+    def __init__(self, strategy_id: StrategyId, options: [PutOption], specs: [Spec], scale=1):
+        super().__init__(strategy_id, options, specs, scale)
 
     def __short_put(self):
-        transaction = Transaction(ShortPositions(self.__scale))
-        self.__transactions.append()
+        transaction = Transaction(ShortPositions(self.__scale), self.__options[0], datetime.datetime.now())
+        # may require setting timezone as trading in the u.s. while user in au
+        self.__transactions.append(transaction)
         pass
 
-    def update(self):
         pass
 
     def add_transaction(self, transaction: Transaction):
