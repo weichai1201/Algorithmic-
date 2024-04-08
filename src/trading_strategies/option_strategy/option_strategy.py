@@ -13,11 +13,12 @@ from src.trading_strategies.transactions.transaction import Transaction
 class OptionStrategy:
     @abstractmethod
     def __init__(self, id: StrategyId, options: [Option], specs: [Spec], scale=1):
-        self.__id = id
-        self.__options = options
-        self.__specs = specs
-        self.__scale = scale
-        self.__transactions = []
+        self._id = id
+        self._options = options
+        self._specs = specs
+        self._scale = scale
+        self._transactions = []
+        self._current_profit = 0
 
     @abstractmethod
     def update(self, new_data):
@@ -38,12 +39,12 @@ class OptionStrategy:
         pass
 
     def get_id(self) -> StrategyId:
-        return self.__id
+        return self._id
 
     def get_symbol(self) -> Symbol:
-        if len(self.__options) == 0:
+        if len(self._options) == 0:
             return Symbol("")
-        return self.__options[0].get_symbol()
+        return self._options[0].get_symbol()
 
 
 class NakedPut(OptionStrategy):
@@ -51,11 +52,12 @@ class NakedPut(OptionStrategy):
         super().__init__(strategy_id, options, specs, scale)
 
     def __short_put(self):
-        transaction = Transaction(ShortPositions(self.__scale), self.__options[0], datetime.datetime.now())
+        transaction = Transaction(ShortPositions(self._scale), self._options[0], datetime.datetime.now())
         # may require setting timezone as trading in the u.s. while user in au
-        self.__transactions.append(transaction)
+        self._transactions.append(transaction)
         pass
 
+    def update(self, new_option: Option):
         pass
 
     def add_transaction(self, transaction: Transaction):
