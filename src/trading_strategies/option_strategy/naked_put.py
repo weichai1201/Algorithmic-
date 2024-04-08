@@ -10,9 +10,6 @@ class NakedPut(OptionStrategy):
     def __init__(self, id: StrategyId, specs: {Option, Spec}):
         super().__init__(id, specs)
 
-    def get_symbol(self):
-        self.__specs
-        return
 
     def update(self):
         pass
@@ -28,6 +25,3 @@ class NakedPut(OptionStrategy):
 
     def margin_actions(self):
         pass
-
-    def get_id(self):
-        return self.__i
