@@ -5,15 +5,19 @@ from src.trading_strategies.financial_asset.option import Option
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.option_strategy.spec import Spec
 from src.trading_strategies.strategy.strategy_id import StrategyId
+from src.trading_strategies.transactions.positions import ShortPositions
+from src.trading_strategies.transactions.transaction import Transaction
 
 
 class OptionStrategy:
     @abstractmethod
-    def __init__(self, id: StrategyId, specs: {Option, Spec}, scale=1):
+    def __init__(self, id: StrategyId, options: [Option], specs: [Spec], scale=1):
         self.__id = id
+        self.__options = options
         self.__specs = specs
         self.__scale = scale
         self.__transactions = []
+
 
     @abstractmethod
     def update(self):
@@ -37,10 +41,34 @@ class OptionStrategy:
         return self.__id
 
     def get_symbol(self) -> Symbol:
-        for option, spec in self.__specs:
-            if option is not None:
-                return option.get_symbol()
-        return Symbol("")
+        if len(self.__options) == 0:
+            return Symbol("")
+        return self.__options[0].get_symbol()
+
+
+class NakedPut(OptionStrategy):
+    def __init__(self, id: StrategyId, specs: {Option, Spec}):
+        super().__init__(id, specs)
+
+    def __short_put(self):
+        transaction = Transaction(ShortPositions(self.__scale))
+        self.__transactions.append()
+        pass
+
+    def update(self):
+        pass
+
+    def add_transaction(self, transaction: Transaction):
+        pass
+
+    def execute_strategy(self):
+        pass
+
+    def expiration_actions(self):
+        pass
+
+    def margin_actions(self):
+        pass
 
 
 class NakedStraddle(OptionStrategy):
