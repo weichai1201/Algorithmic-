@@ -1,5 +1,6 @@
 import datetime
 from abc import abstractmethod
+from typing import List
 
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
 from src.trading_strategies.financial_asset.option import Option, PutOption
@@ -8,30 +9,25 @@ from src.trading_strategies.option_strategy.spec import Spec
 from src.trading_strategies.strategy.strategy_id import StrategyId
 from src.trading_strategies.transactions.positions import ShortPositions
 from src.trading_strategies.transactions.transaction import Transaction
-from src.util import exception
+from src.util.exception import ExceptionHandler
 
 
 class OptionStrategy:
 
     @abstractmethod
-    def __init__(self, id: StrategyId, options: [Option], specs: [Spec], scale=1):
-        self._id = id
+    def __init__(self, strategy_id: StrategyId, options: List[Option], specs: [Spec], scale=1):
+        self._id = strategy_id
         self._options = options
         self._specs = specs
         self._scale = scale
-        self._transactions = []
-        self._profits = []  # realised profits for each transactions
+        self._transactions = list[Transaction]()
+        self._profits = []  # realised profits for each transaction
         self._current_profit = 0  # reset when option expired and renewed, updated with stock price
         self._cumulative_profit = 0  # updated after positions closed (or option expired)
 
     @abstractmethod
     def update(self, new_data):
         pass
-
-    # @abstractmethod
-    # def execute_strategy(self, option, scale):
-    # Execute strategy
-    #    pass
 
     @abstractmethod
     def expiration_actions(self):
@@ -56,23 +52,27 @@ class OptionStrategy:
         """
         index = len(self._transactions) - 1
         if index < 0:
-            exception.ExceptionHandler.raise_index_out_of_range("transactions", index)
+            ExceptionHandler.raise_index_out_of_range("transactions", index)
         return self._transactions[index]
 
     @staticmethod
-    def _calculate_profit(premium: float, stock_price: float, strike_price: float, quantity) -> float:
-        payoff = max(0.0, strike_price - stock_price)
-        profit = (premium + payoff * 100) * quantity  # each option respond to 100 shares
-        return profit
+    def _calculate_put_payoff(stock_price: float, strike_price: float):
+        # assume long position.
+        return max(0.0, strike_price - stock_price)
+
+    @staticmethod
+    def _calculate_call_payoff(stock_price: float, strike_price: float):
+        # assume long position.
+        return max(0.0, stock_price - strike_price)
 
 
 class NakedPut(OptionStrategy):
-    def __init__(self, strategy_id: StrategyId, options: [PutOption], specs: [Spec], scale=1):
+    def __init__(self, strategy_id: StrategyId, options: List[PutOption], specs: [Spec], scale=1):
         super().__init__(strategy_id, options, specs, scale)
 
     def __short_put(self):
         """
-        assume it is rolling again
+        assume it is rolling again. Short sell a new put.
         """
         option = self._options[0]
         quantity = self._scale
@@ -81,17 +81,24 @@ class NakedPut(OptionStrategy):
         self._transactions.append(transaction)
         self._current_profit = option.get_premium() * quantity
 
+    def request_option(self, option) -> bool:
+        self.get_id()
+        # assume always able to trade the wanted option at backtesting.
+        # observer interface to senf stock symbol and strike price.
+        return True
+
+    def __terminate_put(self):
+        profit = self._current_profit
+        self._profits.append(profit)
+        self._cumulative_profit += profit
+        self._current_profit = 0
+
     def update(self, new_option: FinancialAsset):
         pass
 
-    def add_transaction(self, transaction: Transaction):
-        pass
-
-    def execute_strategy(self):
-        pass
-
     def expiration_actions(self):
-        pass
+        self.__terminate_put()
+        self.__short_put()
 
     def margin_actions(self):
         pass
