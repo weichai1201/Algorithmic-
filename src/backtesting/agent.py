@@ -1,7 +1,9 @@
 import datetime
+from typing import Set
 
 from src.backtesting.simulated_market import SimulatedMarket
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
+from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.strategy import Strategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
 from src.trading_strategies.transactions.position import Position
@@ -20,6 +22,12 @@ class Agent:
         self._transactions = dict[StrategyId, Transactions]
         pass
 
+    def get_symbols(self):
+        result = Set[Symbol]
+        for strategy in self._strategies.values():
+            result().add(strategy.symbol)
+        return result
+
     def update(self, asset: FinancialAsset):
         symbol = asset.symbol()
         for strategy_id, strategy in self._strategies.items():
@@ -34,5 +42,3 @@ class Agent:
                         positions = Positions(Position.LONG, order.quantity)
                     transaction = Transaction(positions, order.asset, datetime.datetime.now())
                     self._transactions().get(strategy_id).add_transaction(transaction)
-
-
