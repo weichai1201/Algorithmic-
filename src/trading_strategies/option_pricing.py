@@ -13,7 +13,7 @@ import src.util.util as util
 
 
 def bsm_pricing(stock: Stock, option: Option, risk_free_rate):
-    time_to_maturity = (option.get_expire() - stock.current_price.timeStamp) / datetime.timedelta(days=365)
+    time_to_maturity = (option.get_expire() - stock.current_price.get_time()) / datetime.timedelta(days=365)
     volatility = util.daily_vol_to_annual(stock.volatility)
     if isinstance(option, CallOption):
         return calculate_call_price(stock.current_price.price, option.get_strike().price,
