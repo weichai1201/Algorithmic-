@@ -10,6 +10,6 @@ class FinancialAsset:
         pass
 
     @abstractmethod
-    def symbol(self):
+    def symbol(self) -> Symbol:
         pass
 

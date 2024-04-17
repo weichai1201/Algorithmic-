@@ -13,3 +13,6 @@ class Transactions:
 
     def same_id(self, strategy_id: StrategyId):
         return self._id == strategy_id
+
+    def add_transaction(self, transaction: Transaction):
+        pass

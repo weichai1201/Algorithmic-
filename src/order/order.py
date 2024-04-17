@@ -4,8 +4,9 @@ from src.trading_strategies.financial_asset.financial_asset import FinancialAsse
 
 class Order:
 
-    def __init__(self, asset: FinancialAsset, ask=0.0, bid=0.0):
+    def __init__(self, asset: FinancialAsset, quantity=1.0, ask=0.0, bid=0.0):
         self.asset = asset
+        self.quantity = quantity
         self.ask = ask
         self.bid = bid
         if self.ask > 0:
