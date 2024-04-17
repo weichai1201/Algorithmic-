@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Set
 
 from src.backtesting.agent import Agent
+from src.data_access.data_access import request_historical_price
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.strategy_id import StrategyId
 
@@ -19,11 +20,11 @@ class Backtester:
         self._cagr = 0.0
 
         #register stock symbols for both agents
-        self._symbols = Set[Symbol]
-        self._symbols().add(self_agent.get_symbols())
+        self._symbols = Set[Symbol]()
+        self._symbols.add(self_agent.get_symbols())
         if (agents is not None) & len(agents) != 0:
             for agent in agents:
-                self._symbols().add(agent.get_symbols())
+                self._symbols.add(agent.get_symbols())
 
 
 
@@ -63,8 +64,19 @@ class Backtester:
 
 
 class DailyMarketReplay (Backtester):
+    def _update_by_symbol(self, agent: Agent, date: datetime):
+        for symbol in self._self_agent.get_symbols():
+            da_result = request_historical_price(symbol, date)
+            if da_result.is_successful:
+                self._self_agent.update(da_result.data)
+
     def run_back_testing(self):
-        pass
+        date = self._start_date
+        while date < self._end_date:
+            self._update_by_symbol(self._self_agent, date)
+            for agent in self._agents:
+                self._update_by_symbol(agent, date)
+            date += 1
 
 
 class MultiAgent (Backtester):
