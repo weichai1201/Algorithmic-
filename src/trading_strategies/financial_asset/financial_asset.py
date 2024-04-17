@@ -4,5 +4,6 @@ from src.trading_strategies.financial_asset.symbol import Symbol
 
 class FinancialAsset:
     def __init__(self):
+        # TODO: fix financial constructor; define more clearly and simply role of child classes.
         pass
 
