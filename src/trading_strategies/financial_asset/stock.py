@@ -21,7 +21,7 @@ class Stock:
         return sum(returns) / len(returns)
 
     def get_returns(self):
-        prices = [price.price for price in self.historical_price]
+        prices = [price.get_price() for price in self.historical_price]
         returns = np.diff(prices) / prices[:-1]
         return returns
 
