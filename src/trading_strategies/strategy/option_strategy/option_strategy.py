@@ -5,7 +5,7 @@ from typing import List
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
 from src.trading_strategies.financial_asset.option import Option, PutOption
 from src.trading_strategies.financial_asset.symbol import Symbol
-from src.trading_strategies.option_strategy.spec import Spec
+from src.trading_strategies.strategy.option_strategy.strike_spec import StrikeSpec
 from src.trading_strategies.strategy.strategy_id import StrategyId
 from src.trading_strategies.transactions.positions import ShortPositions
 from src.trading_strategies.transactions.transaction import Transaction
@@ -15,7 +15,7 @@ from src.util.exception import ExceptionHandler
 class OptionStrategy:
 
     @abstractmethod
-    def __init__(self, strategy_id: StrategyId, options: List[Option], specs: [Spec], scale=1):
+    def __init__(self, strategy_id: StrategyId, options: List[Option], specs: [StrikeSpec], scale=1):
         self._id = strategy_id
         self._options = options
         self._specs = specs
@@ -67,7 +67,7 @@ class OptionStrategy:
 
 
 class NakedPut(OptionStrategy):
-    def __init__(self, strategy_id: StrategyId, options: List[PutOption], specs: [Spec], scale=1):
+    def __init__(self, strategy_id: StrategyId, options: List[PutOption], specs: [StrikeSpec], scale=1):
         super().__init__(strategy_id, options, specs, scale)
 
     def __short_put(self):

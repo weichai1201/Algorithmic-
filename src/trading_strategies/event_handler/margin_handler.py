@@ -1,4 +1,4 @@
-from src.trading_strategies.option_strategy.option_strategy import OptionStrategy
+from src.trading_strategies.strategy.option_strategy.option_strategy import OptionStrategy
 
 
 class MarginHandler:
