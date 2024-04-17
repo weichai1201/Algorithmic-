@@ -1,11 +1,14 @@
 import numpy as np
 import statistics
+
+from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.symbol import Symbol
 
 
-class Stock:
+class Stock (FinancialAsset):
     def __init__(self, symbol: Symbol, current_price: Price, historical_price=list[Price]):
+        super().__init__()
         self._symbol = symbol
         self.current_price = current_price
         self.historical_price = historical_price

@@ -9,7 +9,7 @@ from src.trading_strategies.strategy.strategy_id import StrategyId
 
 
 class Backtester:
-    def __init__(self, start_date: datetime, end_date: datetime, self_agent:Agent, agents:list[Agent]):
+    def __init__(self, start_date: datetime, end_date: datetime, self_agent: Agent, agents: list[Agent]):
         self._start_date = start_date
         self._end_date = end_date
         self._self_agent = self_agent
@@ -19,14 +19,12 @@ class Backtester:
         self._drawdowns = dict[StrategyId, float]
         self._cagr = 0.0
 
-        #register stock symbols for both agents
+        # register stock symbols for both agents
         self._symbols = Set[Symbol]()
         self._symbols.add(self_agent.get_symbols())
         if (agents is not None) & len(agents) != 0:
             for agent in agents:
                 self._symbols.add(agent.get_symbols())
-
-
 
     @abstractmethod
     def run_back_testing(self):
@@ -63,7 +61,7 @@ class Backtester:
         pass
 
 
-class DailyMarketReplay (Backtester):
+class DailyMarketReplay(Backtester):
     def _update_by_symbol(self, agent: Agent, date: datetime):
         for symbol in self._self_agent.get_symbols():
             da_result = request_historical_price(symbol, date)
@@ -79,6 +77,5 @@ class DailyMarketReplay (Backtester):
             date += 1
 
 
-class MultiAgent (Backtester):
+class MultiAgent(Backtester):
     pass
-
