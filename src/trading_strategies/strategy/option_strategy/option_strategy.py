@@ -44,7 +44,7 @@ class OptionStrategy:
     def get_symbol(self) -> Symbol:
         if len(self._options) == 0:
             return Symbol("")
-        return self._options[0].get_symbol()
+        return self._options[0].symbol()
 
     def _peek_transaction(self):
         """

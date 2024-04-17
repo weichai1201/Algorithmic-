@@ -15,7 +15,8 @@ class Option(FinancialAsset):
         self.__expiration_date = expiration_date
         self.__premium = premium
 
-    def get_symbol(self):
+    @property
+    def symbol(self):
         return self.__symbol
 
     def get_strike(self):
@@ -31,11 +32,11 @@ class Option(FinancialAsset):
 class CallOption(Option):
 
     def option_payoff(self, stock: Stock):
-        return np.maximum(stock.current_price.price - self.get_strike().price, 0)
+        return np.maximum(stock.current_price.price() - self.get_strike().price(), 0)
 
 
 class PutOption(Option):
 
     def option_payoff(self, stock: Stock):
-        payoff = np.maximum(self.get_strike().price - stock.current_price.price, 0)
+        payoff = np.maximum(self.get_strike().price() - stock.current_price.price(), 0)
         return payoff
