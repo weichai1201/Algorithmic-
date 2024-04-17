@@ -3,7 +3,7 @@ import sys
 from src.trading_strategies.financial_asset.price import Price
 
 
-class Spec:
+class StrikeSpec:
     """
     Determine the next strike price given a list of available strike prices.
     Find the closest one in market if user set a target.
