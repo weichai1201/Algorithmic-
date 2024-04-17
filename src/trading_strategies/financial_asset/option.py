@@ -27,6 +27,9 @@ class Option(FinancialAsset):
     def get_premium(self):
         return self.__premium
 
+    def set_premium(self, premium):
+        self.__premium = premium
+
 
 class CallOption(Option):
 
