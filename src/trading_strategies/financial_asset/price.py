@@ -6,8 +6,8 @@ class Price:
         self._price = price
         self._timeStamp = timeStamp
 
-    def get_price(self):
+    def price(self):
         return self._price
 
-    def get_time(self):
+    def time(self):
         return self._timeStamp

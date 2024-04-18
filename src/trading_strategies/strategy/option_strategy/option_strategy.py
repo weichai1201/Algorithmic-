@@ -2,20 +2,24 @@ import datetime
 from abc import abstractmethod
 from typing import List
 
+from src.order.order import Order
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
 from src.trading_strategies.financial_asset.option import Option, PutOption
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.strike_spec import StrikeSpec
+from src.trading_strategies.strategy.strategy import Strategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
 from src.trading_strategies.transactions.positions import ShortPositions
 from src.trading_strategies.transactions.transaction import Transaction
 from src.util.exception import ExceptionHandler
 
 
-class OptionStrategy:
+class OptionStrategy (Strategy):
 
     @abstractmethod
-    def __init__(self, strategy_id: StrategyId, options: List[Option], specs: [StrikeSpec], scale=1):
+    def __init__(self, strategy_id: StrategyId, options: List[Option], specs: [StrikeSpec], id: StrategyId,
+                 symbol: Symbol, scale=1):
+        super().__init__(id, symbol)
         self._id = strategy_id
         self._options = options
         self._specs = specs
@@ -41,10 +45,10 @@ class OptionStrategy:
     def get_id(self) -> StrategyId:
         return self._id
 
-    def get_symbol(self) -> Symbol:
+    def symbol(self) -> Symbol:
         if len(self._options) == 0:
             return Symbol("")
-        return self._options[0].get_symbol()
+        return self._options[0].symbol
 
     def _peek_transaction(self):
         """
@@ -93,7 +97,7 @@ class NakedPut(OptionStrategy):
         self._cumulative_profit += profit
         self._current_profit = 0
 
-    def update(self, new_option: FinancialAsset):
+    def update(self, new_option: FinancialAsset) -> Order:
         pass
 
     def expiration_actions(self):
