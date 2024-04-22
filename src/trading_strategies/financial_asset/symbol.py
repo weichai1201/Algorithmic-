@@ -5,7 +5,7 @@ class Symbol:
         self._symbol = symbol
 
     @property
-    def _symbol(self) -> str:
+    def symbol(self) -> str:
         return self._symbol
 
     def __eq__(self, other):
@@ -13,6 +13,6 @@ class Symbol:
             return False
         return self._symbol.__eq__(other._symbol)
 
-    @_symbol.setter
-    def _symbol(self, value):
+    @symbol.setter
+    def symbol(self, value):
         self._symbol = value
