@@ -6,6 +6,7 @@ import math
 from scipy.optimize import newton
 
 from src.trading_strategies.financial_asset.option import Option, CallOption, PutOption
+from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.stock import Stock
 import src.util.util as util
 
@@ -15,14 +16,15 @@ import src.util.util as util
 """
 
 
-def bsm_pricing(stock: Stock, option: Option, risk_free_rate):
+def bsm_pricing(stock: Stock, option: Option, dividends: list[Price], risk_free_rate):
     time_to_maturity = (option.get_expire() - stock.current_price.time()) / datetime.timedelta(days=365)
     volatility = stock.garch_long_run
+    stock_price = adjust_dividends(stock, dividends, risk_free_rate)
     if isinstance(option, CallOption):
-        return calculate_call_price(stock.current_price.price(), option.get_strike().price(),
+        return calculate_call_price(stock_price, option.get_strike().price(),
                                     volatility, time_to_maturity, risk_free_rate)
     elif isinstance(option, PutOption):
-        return calculate_put_price(stock.current_price.price(), option.get_strike().price(),
+        return calculate_put_price(stock_price, option.get_strike().price(),
                                    volatility, time_to_maturity, risk_free_rate)
     else:
         raise ValueError("Invalid option type")
@@ -51,6 +53,14 @@ def calculate_d1(stock_price, volatility, strike_price, time_to_maturity, risk_f
 
 def calculate_d2(d1, volatility, time_to_maturity):
     return d1 - volatility * np.sqrt(time_to_maturity)
+
+
+def adjust_dividends(stock, dividends, risk_free):
+    stock_price = stock.current_price.price()
+    for dividend in dividends:
+        stock_price -= dividend.price() * math.exp( (stock.current_price.time() - dividend.time()) / datetime.timedelta(days=365) * risk_free)
+
+    return stock_price
 
 
 def implied_t_put(stock_price, strike_price, risk_free_rate, premium, volatility):
