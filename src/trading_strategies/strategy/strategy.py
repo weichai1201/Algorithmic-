@@ -17,6 +17,9 @@ class Strategy:
     def symbol(self) -> Symbol:
         return self._symbol
 
+    def is_same_symbol(self, other: Symbol) -> bool:
+        return self._symbol == other
+
     @abstractmethod
     def update(self, new_data) -> Order:
         pass

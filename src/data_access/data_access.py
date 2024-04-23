@@ -28,6 +28,8 @@ def retrieve_from_csv(symbol: Symbol, date: datetime, filename: str = "src/data/
     date_format = "%Y-%m-%d %H:%M:%S"
     date_str = date.strftime(date_format)
     data = read_file(filename)
-    if symbol._symbol not in data.columns:
+    if symbol.symbol not in data.columns:
         return -1
-    return data[symbol._symbol][data[column_date] == date_str]
+    return data[symbol.symbol][data[column_date] == date_str]
+
+
