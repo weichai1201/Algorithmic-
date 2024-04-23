@@ -20,7 +20,7 @@ def next_month_expiry(date: datetime, weekday, ref_week_num=3):
 
     return next_expire_date
 
-def next_date_us(date, weekday, week_month, au_us):
+def next_date(date, weekday, week_month, au_us):
     calendar = nyse_calendar if au_us else asx_calendar
 
     if week_month:
@@ -33,7 +33,7 @@ def next_date_us(date, weekday, week_month, au_us):
     else:
         next_trading_day = calendar.valid_days(start_date=next_us_date, end_date=next_us_date + pd.Timedelta(days=10))[0]
 
-    return next_trading_day.strftime('%Y-%m-%d')
+    return next_trading_day.replace(tzinfo=None)
 
 
 

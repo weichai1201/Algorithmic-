@@ -13,13 +13,13 @@ import src.util.util as util
 
 
 def bsm_pricing(stock: Stock, option: Option, risk_free_rate):
-    time_to_maturity = (option.get_expire() - stock.current_price.get_time()) / datetime.timedelta(days=365)
-    volatility = util.daily_vol_to_annual(stock.volatility)
+    time_to_maturity = (option.get_expire() - stock.current_price.time()) / datetime.timedelta(days=252)
+    volatility = stock.get_garch()
     if isinstance(option, CallOption):
-        return calculate_call_price(stock.current_price.get_price(), option.get_strike().get_price(),
+        return calculate_call_price(stock.current_price.price(), option.get_strike().price(),
                                     volatility, time_to_maturity, risk_free_rate)
     elif isinstance(option, PutOption):
-        return calculate_put_price(stock.current_price.get_price(), option.get_strike().get_price(),
+        return calculate_put_price(stock.current_price.price(), option.get_strike().price(),
                                    volatility, time_to_maturity, risk_free_rate)
     else:
         raise ValueError("Invalid option type")
@@ -43,8 +43,8 @@ def calculate_put_price(stock_price, strike_price, volatility, time_to_maturity,
 def calculate_d1(stock_price, volatility, strike_price, time_to_maturity, risk_free_rate):
     return (math.log(stock_price / strike_price) + (
             risk_free_rate + 0.5 * volatility ** 2) * time_to_maturity) / (
-            volatility * math.sqrt(time_to_maturity))
+            volatility)
 
 
 def calculate_d2(d1, volatility, time_to_maturity):
-    return d1 - volatility * math.sqrt(time_to_maturity)
+    return d1 - volatility

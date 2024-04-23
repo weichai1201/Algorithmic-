@@ -41,7 +41,7 @@ class Stock (FinancialAsset):
         returns = self.get_returns()
         model = arch_model(returns, vol='GARCH', p=1, q=1)
         fit = model.fit()
-        vol = np.sqrt(fit.forecast(horizon=1000).variance).mean(axis=1)
+        vol = np.sqrt(fit.forecast(horizon=1000).variance).mean(axis=1).iloc[-1]
         return vol * np.sqrt(252)
 
 

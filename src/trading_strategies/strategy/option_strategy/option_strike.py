@@ -13,15 +13,22 @@ def get_strike_gap(stock_price):
     for price, gap in strike_gaps:
         if stock_price >= price:
             strike_gap = gap
-        else:
-            return strike_gap
+
+    return strike_gap
 
 
-def calculate_strike(stock_price, itm_otm, num_strikes):
+def calculate_strike(stock_price, itm_otm, num_strikes, put_call):
     strike_gap = get_strike_gap(stock_price)
-    if itm_otm:
-        strike = (int(stock_price / strike_gap) + 1 - num_strikes) * strike_gap # otm
+
+    if put_call: # put
+        if itm_otm: # itm
+            strike = (int(stock_price / strike_gap) + num_strikes) * strike_gap
+        else:
+            strike = (int(stock_price / strike_gap) + 1 - num_strikes) * strike_gap
     else:
-        strike = (int(stock_price / strike_gap) + num_strikes) * strike_gap
+        if itm_otm:
+            strike = (int(stock_price / strike_gap) + 1 - num_strikes) * strike_gap
+        else:
+            strike = (int(stock_price / strike_gap) + num_strikes) * strike_gap
 
     return strike
