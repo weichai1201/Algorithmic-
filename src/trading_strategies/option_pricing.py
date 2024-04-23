@@ -17,7 +17,7 @@ import src.util.util as util
 
 
 def bsm_pricing(stock: Stock, option: Option, dividends: list[Price], risk_free_rate):
-    time_to_maturity = (option.get_expire() - stock.current_price.time()) / datetime.timedelta(days=365)
+    time_to_maturity = (option.get_expiry() - stock.current_price.time()) / datetime.timedelta(days=365)
     volatility = stock.garch_long_run
     stock_price = adjust_dividends(stock, dividends, risk_free_rate)
     if isinstance(option, CallOption):

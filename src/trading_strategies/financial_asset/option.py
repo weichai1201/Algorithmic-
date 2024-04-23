@@ -31,7 +31,7 @@ class Option(FinancialAsset):
     def get_strike(self):
         return self._strike_price
 
-    def get_expire(self):
+    def get_expiry(self):
         return self._expiration_date
 
     def get_premium(self):
@@ -45,6 +45,8 @@ class Option(FinancialAsset):
 
 
 class CallOption(Option):
+    def __init__(self, symbol: Symbol, strike_price: Price, expiration_date: datetime, premium: Price):
+        super().__init__(symbol, strike_price, expiration_date, premium)
 
     def in_the_money(self, stock_price: float) -> bool:
         return self.get_strike().price() < stock_price
@@ -57,6 +59,8 @@ class CallOption(Option):
 
 
 class PutOption(Option):
+    def __init__(self, symbol: Symbol, strike_price: Price, expiration_date: datetime, premium: Price):
+        super().__init__(symbol, strike_price, expiration_date, premium)
 
     def in_the_money(self, stock_price: float) -> bool:
         return self.get_strike().price() > stock_price

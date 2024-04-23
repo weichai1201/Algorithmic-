@@ -48,7 +48,7 @@ class OptionStrategy(Strategy):
         return self._id
 
     def get_expiry(self) -> [datetime]:
-        return [option.get_expire() for option in self._options]
+        return [option.get_expiry() for option in self._options]
 
     def get_payoffs(self, stock_price: float | Price) -> [float]:
         if isinstance(stock_price, Price):
