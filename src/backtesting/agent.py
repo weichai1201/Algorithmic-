@@ -25,13 +25,13 @@ class Agent:
     def get_symbols(self):
         result = Set[Symbol]
         for strategy in self._strategies.values():
-            result().add(strategy.symbol)
+            result().add(strategy.symbol())
         return result
 
     def update(self, asset: FinancialAsset):
         symbol = asset.symbol()
         for strategy_id, strategy in self._strategies.items():
-            if symbol == strategy.symbol:
+            if symbol == strategy.symbol():
                 order = strategy.update()
                 SimulatedMarket.submit_order(order)
                 if order.is_successful():
