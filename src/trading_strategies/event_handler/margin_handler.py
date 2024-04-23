@@ -44,7 +44,7 @@ class MarginHandler:
 
 
 class EquityMarginHandler(MarginHandler):
-    def __init__(selfy):
+    def __init__(self):
         super().__init__(margin_para1=0.2, margin_para2=0.1)
 
 

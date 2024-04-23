@@ -18,7 +18,7 @@ class Stock (FinancialAsset):
         self.current_price = current_price
         # self.historical_price = historical_price
         self.volatility = self.calculate_volatility()
-        self.garch_long_run = self.get_garch()
+        self.garch_long_run = self.calculate_garch()
 
     def calculate_volatility(self):
         returns = self.get_returns()
@@ -37,7 +37,7 @@ class Stock (FinancialAsset):
     def get_prices(self):
         return get_historical_values(self.symbol, file_path, '2004-01-01', '2024-03-31').iloc[:, 1]
 
-    def get_garch(self):
+    def calculate_garch(self):
         returns = self.get_returns()
         model = arch_model(returns, vol='GARCH', p=1, q=1)
         fit = model.fit()

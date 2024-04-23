@@ -3,6 +3,7 @@ import datetime
 import numpy as np
 from scipy.stats import norm
 import math
+from scipy.optimize import newton
 
 from src.trading_strategies.financial_asset.option import Option, CallOption, PutOption
 from src.trading_strategies.financial_asset.stock import Stock
@@ -15,8 +16,8 @@ import src.util.util as util
 
 
 def bsm_pricing(stock: Stock, option: Option, risk_free_rate):
-    time_to_maturity = (option.get_expire() - stock.current_price.time()) / datetime.timedelta(days=252)
-    volatility = stock.get_garch()
+    time_to_maturity = (option.get_expire() - stock.current_price.time()) / datetime.timedelta(days=365)
+    volatility = stock.garch_long_run
     if isinstance(option, CallOption):
         return calculate_call_price(stock.current_price.price(), option.get_strike().price(),
                                     volatility, time_to_maturity, risk_free_rate)
@@ -50,3 +51,15 @@ def calculate_d1(stock_price, volatility, strike_price, time_to_maturity, risk_f
 
 def calculate_d2(d1, volatility, time_to_maturity):
     return d1 - volatility * np.sqrt(time_to_maturity)
+
+
+def implied_t_put(stock_price, strike_price, risk_free_rate, premium, volatility):
+    error_function = lambda t: calculate_put_price(stock_price, strike_price, volatility, t, risk_free_rate) - premium
+    implied_t = newton(error_function, x0=0.5)
+    return implied_t
+
+
+def implied_t_call(stock_price, strike_price, risk_free_rate, premium, volatility):
+    error_function = lambda t: calculate_call_price(stock_price, strike_price, volatility, t, risk_free_rate) - premium
+    implied_t = newton(error_function, x0=0.5)
+    return implied_t
