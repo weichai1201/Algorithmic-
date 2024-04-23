@@ -1,4 +1,6 @@
 import datetime
+
+import numpy as np
 from scipy.stats import norm
 import math
 
@@ -43,8 +45,8 @@ def calculate_put_price(stock_price, strike_price, volatility, time_to_maturity,
 def calculate_d1(stock_price, volatility, strike_price, time_to_maturity, risk_free_rate):
     return (math.log(stock_price / strike_price) + (
             risk_free_rate + 0.5 * volatility ** 2) * time_to_maturity) / (
-            volatility)
+            volatility * np.sqrt(time_to_maturity))
 
 
 def calculate_d2(d1, volatility, time_to_maturity):
-    return d1 - volatility
+    return d1 - volatility * np.sqrt(time_to_maturity)
