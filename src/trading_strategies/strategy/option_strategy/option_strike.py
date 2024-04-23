@@ -20,8 +20,8 @@ def get_strike_gap(stock_price):
 def calculate_strike(stock_price, itm_otm, num_strikes):
     strike_gap = get_strike_gap(stock_price)
     if itm_otm:
-        strike = (stock_price / strike_gap + 1 - num_strikes) * strike_gap # otm
+        strike = (int(stock_price / strike_gap) + 1 - num_strikes) * strike_gap # otm
     else:
-        strike = (stock_price / strike_gap + num_strikes) * strike_gap
+        strike = (int(stock_price / strike_gap) + num_strikes) * strike_gap
 
     return strike
