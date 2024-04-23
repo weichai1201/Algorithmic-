@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from datetime import datetime
 import numpy as np
 
@@ -10,35 +11,58 @@ from src.trading_strategies.financial_asset.price import Price
 class Option(FinancialAsset):
     def __init__(self, symbol: Symbol, strike_price: Price, expiration_date: datetime, premium: Price):
         super().__init__()
-        self.__symbol = symbol
-        self.__strike_price = strike_price
-        self.__expiration_date = expiration_date
-        self.__premium = premium
+        self._symbol = symbol
+        self._strike_price = strike_price
+        self._expiration_date = expiration_date
+        self._premium = premium
 
     @property
     def symbol(self):
-        return self.__symbol
+        return self._symbol
+
+    @abstractmethod
+    def in_the_money(self, stock_price: float) -> bool:
+        pass
+
+    @abstractmethod
+    def itm_amount(self, stock_price: float) -> float:
+        pass
 
     def get_strike(self):
-        return self.__strike_price
+        return self._strike_price
 
     def get_expire(self):
-        return self.__expiration_date
+        return self._expiration_date
 
     def get_premium(self):
-        return self.__premium
+        return self._premium
 
     def set_premium(self, premium):
-        self.__premium = premium
+        self._premium = premium
+
+    def at_the_money(self, stock_price: float) -> bool:
+        return self._strike_price.price() == stock_price
 
 
 class CallOption(Option):
+
+    def in_the_money(self, stock_price: float) -> bool:
+        return self.get_strike().price() < stock_price
+
+    def itm_amount(self, stock_price: float) -> float:
+        return max(0, stock_price - self.get_strike().price())
 
     def option_payoff(self, stock: Stock):
         return np.maximum(stock.current_price.price() - self.get_strike().price(), 0)
 
 
 class PutOption(Option):
+
+    def in_the_money(self, stock_price: float) -> bool:
+        return self.get_strike().price() > stock_price
+
+    def itm_amount(self, stock_price: float) -> float:
+        return max(0,  self.get_strike().price() - stock_price)
 
     def option_payoff(self, stock: Stock):
         payoff = np.maximum(self.get_strike().price() - stock.current_price.price(), 0)
