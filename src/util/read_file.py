@@ -32,4 +32,4 @@ def get_file_type(file_path):
 def get_historical_values(symbol: Symbol, file_path, start_date='2004-01-01', end_date='2024-01-01'):
     data = read_file(file_path)
     filtered_data = data[(data['Date'] <= end_date) & (data['Date'] >= start_date)]
-    return filtered_data[symbol.symbol]
+    return filtered_data[['Date', symbol.symbol]]

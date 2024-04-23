@@ -35,7 +35,7 @@ class Stock (FinancialAsset):
         return returns
 
     def get_prices(self):
-        return get_historical_values(self.symbol, file_path, '2004-01-01', '2024-03-31')
+        return get_historical_values(self.symbol, file_path, '2004-01-01', '2024-03-31').iloc[:, 1]
 
     def get_garch(self):
         returns = self.get_returns()
