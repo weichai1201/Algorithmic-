@@ -14,20 +14,16 @@ from src.trading_strategies.transactions.transaction import Transaction
 from src.util.exception import ExceptionHandler
 
 
-class OptionStrategy (Strategy):
+class OptionStrategy(Strategy):
 
     @abstractmethod
-    def __init__(self, strategy_id: StrategyId, options: List[Option], specs: [StrikeSpec], id: StrategyId,
-                 symbol: Symbol, scale=1):
+    def __init__(self, strategy_id: StrategyId, symbol: Symbol, options: List[Option], specs: [StrikeSpec],
+                 scale=1):
         super().__init__(id, symbol)
         self._id = strategy_id
         self._options = options
         self._specs = specs
         self._scale = scale
-        self._transactions = list[Transaction]()
-        self._profits = []  # realised profits for each transaction
-        self._current_profit = 0  # reset when option expired and renewed, updated with stock price
-        self._cumulative_profit = 0  # updated after positions closed (or option expired)
 
     @abstractmethod
     def update(self, new_data):
@@ -49,15 +45,6 @@ class OptionStrategy (Strategy):
         if len(self._options) == 0:
             return Symbol("")
         return self._options[0].symbol
-
-    def _peek_transaction(self):
-        """
-        :return: Last transaction if any. Catch index-out-of-bound but do nothing.
-        """
-        index = len(self._transactions) - 1
-        if index < 0:
-            ExceptionHandler.raise_index_out_of_range("transactions", index)
-        return self._transactions[index]
 
     @staticmethod
     def _calculate_put_payoff(stock_price: float, strike_price: float):
