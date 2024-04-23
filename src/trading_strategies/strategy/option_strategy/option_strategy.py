@@ -24,11 +24,11 @@ class OptionStrategy(Strategy):
         self._scale = scale
 
     @abstractmethod
-    def in_the_money(self) -> bool:
+    def in_the_money(self, stock_price: float) -> bool:
         pass
 
     @abstractmethod
-    def out_the_money(self) -> bool:
+    def itm_amount(self, stock_price: float) -> [float]:
         pass
 
     @abstractmethod
