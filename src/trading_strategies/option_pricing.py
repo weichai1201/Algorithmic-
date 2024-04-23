@@ -5,7 +5,6 @@ from scipy.stats import norm
 import math
 from scipy.optimize import newton
 
-from src.trading_strategies.financial_asset.option import Option, CallOption, PutOption
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.stock import Stock
 import src.util.util as util
@@ -16,18 +15,14 @@ import src.util.util as util
 """
 
 
-def bsm_pricing(stock: Stock, option: Option, dividends: list[Price], risk_free_rate):
-    time_to_maturity = (option.get_expiry() - stock.current_price.time()) / datetime.timedelta(days=365)
+def bsm_pricing(stock: Stock, option_price, expiration_date, dividends: list[Price], risk_free_rate, is_call):
+    time_to_maturity = (expiration_date - stock.current_price.time()) / datetime.timedelta(days=365)
     volatility = stock.garch_long_run
     stock_price = adjust_dividends(stock, dividends, risk_free_rate)
-    if isinstance(option, CallOption):
-        return calculate_call_price(stock_price, option.get_strike().price(),
-                                    volatility, time_to_maturity, risk_free_rate)
-    elif isinstance(option, PutOption):
-        return calculate_put_price(stock_price, option.get_strike().price(),
-                                   volatility, time_to_maturity, risk_free_rate)
+    if is_call:
+        return calculate_call_price(stock_price, option_price, volatility, time_to_maturity, risk_free_rate)
     else:
-        raise ValueError("Invalid option type")
+        return calculate_put_price(stock_price, option_price, volatility, time_to_maturity, risk_free_rate)
 
 
 def calculate_call_price(stock_price, strike_price, volatility, time_to_maturity, risk_free_rate):
@@ -58,8 +53,7 @@ def calculate_d2(d1, volatility, time_to_maturity):
 def adjust_dividends(stock, dividends, risk_free):
     stock_price = stock.current_price.price()
     for dividend in dividends:
-        stock_price -= dividend.price() * math.exp(
-            (stock.current_price.time() - dividend.time()) / datetime.timedelta(days=365) * risk_free)
+        stock_price -= dividend.price() * math.exp( (stock.current_price.time() - dividend.time()) / datetime.timedelta(days=365) * risk_free)
 
     return stock_price
 
