@@ -2,25 +2,22 @@ import datetime
 from abc import abstractmethod
 from typing import List
 
-from src.order.order import Order
-from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
 from src.trading_strategies.financial_asset.option import Option, PutOption, CallOption
 from src.trading_strategies.financial_asset.price import Price
-from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.strike_spec import StrikeSpec
 from src.trading_strategies.strategy.strategy import Strategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
-from src.trading_strategies.transactions.positions import ShortPositions
-from src.trading_strategies.transactions.transaction import Transaction
 from src.util.exception import ExceptionHandler
 
 
 class OptionStrategy(Strategy):
 
     @abstractmethod
-    def __init__(self, strategy_id: StrategyId, symbol: Symbol, options: List[Option], specs: [StrikeSpec],
-                 scale=1):
-        super().__init__(id, symbol)
+    def __init__(self, strategy_id: StrategyId, options: List[Option], specs: [StrikeSpec], scale=1):
+        if len(options) == 0:
+            raise ExceptionHandler.raise_illegal_arguments("Number of options cannot be 0.")
+        symbol = options[0].symbol
+        super().__init__(strategy_id, symbol)
         self._id = strategy_id
         self._options = options
         self._specs = specs
@@ -49,11 +46,6 @@ class OptionStrategy(Strategy):
 
     def get_id(self) -> StrategyId:
         return self._id
-
-    def symbol(self) -> Symbol:
-        if len(self._options) == 0:
-            return Symbol("")
-        return self._options[0].symbol
 
     def get_expiry(self) -> [datetime]:
         return [option.get_expire() for option in self._options]
@@ -115,23 +107,23 @@ class OptionStrategy(Strategy):
 #
 #     def margin_actions(self):
 #         pass
-
-
-class NakedStraddle(OptionStrategy):
-    def execute_strategy(self):
-        # Execute strategy for naked straddle
-        pass
-
-    def expiration_actions(self):
-        # Define actions to take at expiration for naked straddle
-        pass
-
-
-class DiagonalSpreads(OptionStrategy):
-    def execute_strategy(self):
-        # Execute strategy for diagonal spreads
-        pass
-
-    def expiration_actions(self):
-        # Define actions to take at expiration for diagonal spreads
-        pass
+#
+#
+# class NakedStraddle(OptionStrategy):
+#     def execute_strategy(self):
+#         # Execute strategy for naked straddle
+#         pass
+#
+#     def expiration_actions(self):
+#         # Define actions to take at expiration for naked straddle
+#         pass
+#
+#
+# class DiagonalSpreads(OptionStrategy):
+#     def execute_strategy(self):
+#         # Execute strategy for diagonal spreads
+#         pass
+#
+#     def expiration_actions(self):
+#         # Define actions to take at expiration for diagonal spreads
+#         pass

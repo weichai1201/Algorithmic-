@@ -8,14 +8,16 @@ from src.trading_strategies.strategy.strategy_id import StrategyId
 class Strategy:
 
     def __init__(self, id: StrategyId, symbol: Symbol):
-        self.id = id
-        self.symbol = symbol
+        self._id = id
+        self._symbol = symbol
 
-    @abstractmethod
+    def id(self):
+        return self._id
+
     def symbol(self) -> Symbol:
-        pass
+        return self._symbol
 
     @abstractmethod
-    def update(self) -> Order:
+    def update(self, new_data) -> Order:
         pass
 
