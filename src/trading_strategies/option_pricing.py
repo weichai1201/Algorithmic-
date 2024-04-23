@@ -58,7 +58,8 @@ def calculate_d2(d1, volatility, time_to_maturity):
 def adjust_dividends(stock, dividends, risk_free):
     stock_price = stock.current_price.price()
     for dividend in dividends:
-        stock_price -= dividend.price() * math.exp( (stock.current_price.time() - dividend.time()) / datetime.timedelta(days=365) * risk_free)
+        stock_price -= dividend.price() * math.exp(
+            (stock.current_price.time() - dividend.time()) / datetime.timedelta(days=365) * risk_free)
 
     return stock_price
 
