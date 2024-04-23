@@ -1,6 +1,6 @@
 import datetime
 from abc import abstractmethod
-from typing import List
+from typing import List, Dict
 
 from src.trading_strategies.financial_asset.option import Option, PutOption, CallOption
 from src.trading_strategies.financial_asset.price import Price
@@ -8,6 +8,8 @@ from src.trading_strategies.strategy.option_strategy.strike_spec import StrikeSp
 from src.trading_strategies.strategy.strategy import Strategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
 from src.util.exception import ExceptionHandler
+
+NewData: (float, Dict[float, float])
 
 
 class OptionStrategy(Strategy):
@@ -35,15 +37,6 @@ class OptionStrategy(Strategy):
     def update(self, new_data):
         pass
 
-    @abstractmethod
-    def expiration_actions(self):
-        # Define actions to take at expiration based on option status
-        pass
-
-    @abstractmethod
-    def margin_actions(self):
-        pass
-
     def get_id(self) -> StrategyId:
         return self._id
 
@@ -69,7 +62,6 @@ class OptionStrategy(Strategy):
     def _calculate_call_payoff(stock_price: float, strike_price: float):
         # assume long position.
         return max(0.0, stock_price - strike_price)
-
 
 # class NakedPut(OptionStrategy):
 #     def __init__(self, strategy_id: StrategyId, options: List[PutOption], specs: [StrikeSpec], scale=1):

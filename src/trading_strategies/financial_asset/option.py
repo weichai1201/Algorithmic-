@@ -43,6 +43,9 @@ class Option(FinancialAsset):
     def at_the_money(self, stock_price: float) -> bool:
         return self._strike_price.price() == stock_price
 
+    def is_expired(self, time: datetime) -> bool:
+        return time > self._expiration_date
+
 
 class CallOption(Option):
     def __init__(self, symbol: Symbol, strike_price: Price, expiration_date: datetime, premium: Price):
@@ -66,7 +69,7 @@ class PutOption(Option):
         return self.get_strike().price() > stock_price
 
     def itm_amount(self, stock_price: float) -> float:
-        return max(0,  self.get_strike().price() - stock_price)
+        return max(0, self.get_strike().price() - stock_price)
 
     def option_payoff(self, stock: Stock):
         payoff = np.maximum(self.get_strike().price() - stock.current_price.price(), 0)

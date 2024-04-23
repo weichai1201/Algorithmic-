@@ -36,3 +36,17 @@ def calculate_strike(stock_price: float, is_itm: bool, num_strikes: int, is_put:
         strike = (int(stock_price / strike_gap) + 1 - num_strikes) * strike_gap
 
     return strike
+
+
+def roll_down_strike(stock_price: float, current_strike: float, num_strikes: int) -> float:
+    """
+    Using the strike gap guide to calculate the rolled down strike price.
+    :param current_strike:
+    :param stock_price: Used to determine the strike gap
+    :param num_strikes: number of strike gaps to be rolled
+    :return: new strike price.
+
+    @author: Huanjie Zhang
+    """
+    strike_gap = get_strike_gap(stock_price)
+    return current_strike - num_strikes * strike_gap
