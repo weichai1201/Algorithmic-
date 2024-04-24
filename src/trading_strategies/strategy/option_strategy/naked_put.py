@@ -30,38 +30,40 @@ class NakedPut(OptionStrategy):
     def itm_amount(self, stock_price: float) -> [float]:
         return [option.itm_amount(stock_price) for option in self._options]
 
-    def _roll_over(self, price: float, itm_or_otm: bool, premium: Price):
+    def _roll_over(self, stock_price: float, premiums: Dict[float, float], itm_side=True):
         """
         Initialisation and expiry with OTM.
-        :param price: stock price.
-        :param itm_or_otm: set the strike price relatively greater or less than stock price.
+        :param stock_price: stock price.
+        :param itm_side: set the strike price relatively greater or less than stock price.
         :param premium: the price of the option
         :return: `Transaction` order to `Agent`.
 
         @author: Huanjie Zhang
         """
 
-        current_option = self._options[0]
-        strike = calculate_strike(price, itm_or_otm, self._num_of_strikes, True)
+        # roll over price
+        target_strike = calculate_strike(stock_price, itm_side, self._num_of_strikes, True)
+        strike, premium = match_strike(target_strike, premiums)
 
         # construct the new option transaction
         positions = Positions(Position.SHORT, self._scale)
-        next_expiry = next_expiry_date(current_option.get_expiry(), self._weekday, self._is_weekly)
+        next_expiry = next_expiry_date(self._options[0].get_expiry(), self._weekday, self._is_weekly)
         option = PutOption(self.symbol(), strike, next_expiry, premium)
 
-        return Transaction(positions, option, current_option.get_expiry())  # timezone maybe a problem
+        return Transaction(positions, option, self._options[0].get_expiry())  # timezone maybe a problem
 
-    def _roll_down(self, strike: Price, implied_time: datetime, premium: Price):
+    def _roll_down(self, stock_price: float, premiums: Dict[float, float]):
         """
         When the option is itm, roll down the next strike price based on current one
-        :param num_strikes:
-        :param premium:
-        :param stock_price:
-        :param implied_time:
         :return: `Transaction` order to `Agent`.
 
         @author: Huanjie Zhang
         """
+
+        option = self._options[0]
+        target_strike = roll_down_strike(stock_price, option.get_strike().price(), self._num_of_strikes)
+        strike, premium = match_strike(target_strike, premiums)
+        implied_time = implied_t_put(stock_price, target_strike, 0.03, premium, 0.04)
         # request the following
         positions = Positions(Position.SHORT, self._scale)
         option = PutOption(self.symbol(), strike, implied_time, premium)
@@ -69,21 +71,6 @@ class NakedPut(OptionStrategy):
 
     def _roll_up(self):
         return
-
-    @staticmethod
-    def _get_roll_down_strike(
-            stock_price: float, current_strike: float, num_strikes: int, implied_time: datetime) -> Price:
-        price = roll_down_strike(stock_price, current_strike, num_strikes)
-        return Price(price, implied_time)
-
-    def _itm_action(self, stock_price, premiums: Dict[float, float]) -> :
-        self._consecutive_itm += 1
-        option = self._options[0]
-        implied_time = datetime.now()
-        target_strike = roll_down_strike(stock_price, option.get_strike().price(), self._num_of_strikes)
-        strike, premium = match_strike(target_strike, premiums)
-        return self._roll_down(strike, implied_time, premium)
-
 
     def update(self, new_data: NewData) -> Optional[Transaction]:
         """
@@ -99,8 +86,9 @@ class NakedPut(OptionStrategy):
             return None
 
         if option.in_the_money(stock_price):
-            return self._itm_action(stock_price, premiums)
+            self._consecutive_itm += 1
+            return self._roll_down(stock_price, premiums)
         else:
             # reset the count of itm
             self._consecutive_itm = 0
-            return self.roll_over(stock_price, )
+            return self._roll_over(stock_price, premiums, True)
