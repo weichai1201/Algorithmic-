@@ -23,7 +23,7 @@ class DataAccessResult:
 
 
 def request_historical_price(symbol: Symbol, date: datetime, is_stock: bool = True) -> DataAccessResult:
-    value = retrieve_from_csv(symbol, date)
+    value = _retrieve_from_csv(symbol, date)
     if value < 0:
         return DataAccessResult(None)
     # is_stock might be redundant
@@ -31,7 +31,7 @@ def request_historical_price(symbol: Symbol, date: datetime, is_stock: bool = Tr
 
 
 def retrieve_stock(symbol: Symbol, date) -> DataAccessResult:
-    data = retrieve_by_date(stock_filename, stock_date_column_name, date, stock_date_format)
+    data = _retrieve_by_date(stock_filename, stock_date_column_name, date, stock_date_format)
     if symbol.symbol not in data.columns:
         return DataAccessResult(None)
     price = date[symbol.symbol]
@@ -40,11 +40,11 @@ def retrieve_stock(symbol: Symbol, date) -> DataAccessResult:
 
 
 def retrieve_rf(date):
-    data = retrieve_by_date(stock_filename, stock_date_column_name, date, stock_date_format)
+    data = _retrieve_by_date(stock_filename, stock_date_column_name, date, stock_date_format)
     return DataAccessResult(data["DTB3"], True)
 
 
-def retrieve_from_csv(symbol: Symbol, date: datetime, filename: str = "src/data/sp500_adj_close_prices.csv"):
+def _retrieve_from_csv(symbol: Symbol, date: datetime, filename: str = "src/data/sp500_adj_close_prices.csv"):
     column_date = "Date"
     date_format = "%Y-%m-%d %H:%M:%S"
     date_str = date.strftime(date_format)
@@ -54,7 +54,7 @@ def retrieve_from_csv(symbol: Symbol, date: datetime, filename: str = "src/data/
     return data[symbol.symbol][data[column_date] == date_str]
 
 
-def retrieve_by_date(filename: str, col_name: str, date: datetime, date_format=""):
+def _retrieve_by_date(filename: str, col_name: str, date: datetime, date_format=""):
     data = read_file(filename)
     date_str = date.strftime(date_format)
     return data[data[col_name] == date_str]
