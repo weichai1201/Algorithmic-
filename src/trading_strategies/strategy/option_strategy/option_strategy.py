@@ -34,7 +34,7 @@ class OptionStrategy(Strategy):
         pass
 
     @abstractmethod
-    def update(self, new_data):
+    def update(self, new_data, date: datetime):
         pass
 
     def get_id(self) -> StrategyId:

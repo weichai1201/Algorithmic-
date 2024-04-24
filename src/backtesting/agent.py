@@ -22,6 +22,7 @@ class Agent:
         self._transactions = dict[StrategyId, Transactions]
         pass
 
+
     def get_symbols(self):
         result = Set[Symbol]
         for strategy in self._strategies.values():

@@ -6,6 +6,8 @@ from src.backtesting.agent import Agent
 from src.data_access.data_access import request_historical_price
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.strategy_id import StrategyId
+from src.trading_strategies.transactions.transaction import Transaction
+from src.trading_strategies.transactions.transactions import Transactions
 
 
 class Backtester:
@@ -13,6 +15,7 @@ class Backtester:
         self._start_date = start_date
         self._end_date = end_date
         self._self_agent = self_agent
+        self._transactions = list[Transaction]()
         self._agents = agents
         self._has_tested = False
         self._profits = dict[StrategyId, float]
@@ -29,6 +32,9 @@ class Backtester:
     @abstractmethod
     def run_back_testing(self):
         pass
+
+    def transactions(self):
+        return self._transactions
 
     def get_profits(self):
         if not self._has_tested:
@@ -66,7 +72,8 @@ class DailyMarketReplay(Backtester):
         for symbol in self._self_agent.get_symbols():
             da_result = request_historical_price(symbol, date)
             if da_result.is_successful:
-                self._self_agent.update(da_result.data)
+                transaction = self._self_agent.update(da_result.data)
+                self._transactions.append(transaction)
 
     def run_back_testing(self):
         date = self._start_date

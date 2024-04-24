@@ -30,7 +30,7 @@ def request_historical_price(symbol: Symbol, date: datetime, is_stock: bool = Tr
     return DataAccessResult(Stock(symbol, Price(value, date)), True)
 
 
-def retrieve_stock(symbol: Symbol, date) -> DataAccessResult:
+def retrieve_stock(symbol: Symbol, date: datetime) -> DataAccessResult:
     data = _retrieve_by_date(stock_filename, stock_date_column_name, date, stock_date_format)
     if symbol.symbol not in data.columns:
         return DataAccessResult(None)
@@ -39,7 +39,7 @@ def retrieve_stock(symbol: Symbol, date) -> DataAccessResult:
     return DataAccessResult(stock, True)
 
 
-def retrieve_rf(date):
+def retrieve_rf(date: datetime):
     data = _retrieve_by_date(stock_filename, stock_date_column_name, date, stock_date_format)
     return DataAccessResult(data["DTB3"], True)
 

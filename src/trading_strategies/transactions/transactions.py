@@ -6,7 +6,7 @@ class Transactions:
 
     def __init__(self, strategy_id: StrategyId):
         self._id = strategy_id
-        self._transactions = list[Transaction]
+        self._transactions = list[Transaction]()
 
     def get_id(self):
         return self._id
@@ -15,4 +15,4 @@ class Transactions:
         return self._id == strategy_id
 
     def add_transaction(self, transaction: Transaction):
-        pass
+        self._transactions.append(transaction)

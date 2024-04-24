@@ -7,11 +7,11 @@ from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.util.read_file import get_historical_values
 
-
 # file_path = '../src/data/sp500_adj_close_prices.csv'
 file_path = '/Users/yifanxiao/Desktop/csl.csv'
 
-class Stock (FinancialAsset):
+
+class Stock(FinancialAsset):
     def __init__(self, symbol: Symbol, current_price: Price):
         super().__init__()
         self._symbol = symbol
@@ -43,7 +43,6 @@ class Stock (FinancialAsset):
         fit = model.fit()
         vol = np.sqrt(fit.forecast(horizon=1000).variance).mean(axis=1).iloc[-1]
         return vol * np.sqrt(252)
-
 
     @property
     def symbol(self):

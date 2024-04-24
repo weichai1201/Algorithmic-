@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List, Dict, Optional
 
+from src.data_access.data_access import retrieve_rf
 from src.trading_strategies.financial_asset.option import Option, PutOption
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.option_pricing import implied_t_put
@@ -63,7 +64,8 @@ class NakedPut(OptionStrategy):
         option = self._options[0]
         target_strike = roll_down_strike(stock_price, option.get_strike().price(), self._num_of_strikes)
         strike, premium = match_strike(target_strike, premiums)
-        implied_time = implied_t_put(stock_price, target_strike, 0.03, premium, 0.04)
+        rf = retrieve_rf(option.get_expiry().date())
+        implied_time = implied_t_put(stock_price, target_strike, rf, premium, 0.04)
         # request the following
         positions = Positions(Position.SHORT, self._scale)
         option = PutOption(self.symbol(), strike, implied_time, premium)
@@ -72,7 +74,7 @@ class NakedPut(OptionStrategy):
     def _roll_up(self):
         return
 
-    def update(self, new_data: NewData) -> Optional[Transaction]:
+    def update(self, new_data: NewData, time: datetime) -> Optional[Transaction]:
         """
         :param new_data: a tuple of prices (stock_price, dict(strike -> premium)).
         First entry is stock price. Second entry is a dictionary, strike price mapped to premium.
@@ -80,7 +82,10 @@ class NakedPut(OptionStrategy):
         """
         stock_price, premiums = new_data
 
-        current_time = stock_price.price
+        if len(self._options) == 0:
+            return self._roll_over(stock_price, premiums, True)
+
+        current_time = stock_price
         option = self._options[0]
         if not option.is_expired(current_time):
             return None
