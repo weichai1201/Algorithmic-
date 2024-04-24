@@ -8,6 +8,13 @@ from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.util.read_file import read_file
 
+stock_filename = "src/data/sp500_adj_close_prices.csv"
+stock_date_format = "%Y-%m-%d %H:%M:%S"  # 2004-01-02 00:00:00
+stock_date_column_name = "Date"
+tbills_filename = "src/data/T-Bills.csv"
+tbills_date_format = "%d/%m/%Y"  # 16/01/2004
+tbills_date_column_name = "DATE"
+
 
 class DataAccessResult:
     def __init__(self, data: FinancialAsset | None, is_successful: bool = False):
@@ -23,6 +30,20 @@ def request_historical_price(symbol: Symbol, date: datetime, is_stock: bool = Tr
     return DataAccessResult(Stock(symbol, Price(value, date)), True)
 
 
+def retrieve_stock(symbol: Symbol, date) -> DataAccessResult:
+    data = retrieve_by_date(stock_filename, stock_date_column_name, date, stock_date_format)
+    if symbol.symbol not in data.columns:
+        return DataAccessResult(None)
+    price = date[symbol.symbol]
+    stock = Stock(symbol, Price(price, date))
+    return DataAccessResult(stock, True)
+
+
+def retrieve_rf(date):
+    data = retrieve_by_date(stock_filename, stock_date_column_name, date, stock_date_format)
+    return DataAccessResult(data["DTB3"], True)
+
+
 def retrieve_from_csv(symbol: Symbol, date: datetime, filename: str = "src/data/sp500_adj_close_prices.csv"):
     column_date = "Date"
     date_format = "%Y-%m-%d %H:%M:%S"
@@ -33,3 +54,7 @@ def retrieve_from_csv(symbol: Symbol, date: datetime, filename: str = "src/data/
     return data[symbol.symbol][data[column_date] == date_str]
 
 
+def retrieve_by_date(filename: str, col_name: str, date: datetime, date_format=""):
+    data = read_file(filename)
+    date_str = date.strftime(date_format)
+    return data[data[col_name] == date_str]
