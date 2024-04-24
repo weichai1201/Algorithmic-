@@ -4,25 +4,24 @@ from typing import List, Dict
 
 from src.trading_strategies.financial_asset.option import Option, PutOption, CallOption
 from src.trading_strategies.financial_asset.price import Price
+from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.strategy.option_strategy.strike_spec import StrikeSpec
 from src.trading_strategies.strategy.strategy import Strategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
 from src.util.exception import ExceptionHandler
 
-NewData: (float, Dict[float, float])
 
 
 class OptionStrategy(Strategy):
 
     @abstractmethod
-    def __init__(self, strategy_id: StrategyId, options: List[Option], specs: [StrikeSpec], scale=1):
+    def __init__(self, strategy_id: StrategyId, options: List[Option], scale=1):
         if len(options) == 0:
             raise ExceptionHandler.raise_illegal_arguments("Number of options cannot be 0.")
         symbol = options[0].symbol
         super().__init__(strategy_id, symbol)
         self._id = strategy_id
         self._options = options
-        self._specs = specs
         self._scale = scale
 
     @abstractmethod

@@ -48,3 +48,6 @@ class Stock (FinancialAsset):
     @property
     def symbol(self):
         return self._symbol
+
+    def set_current_price(self, price):
+        self.current_price = price

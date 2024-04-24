@@ -36,15 +36,18 @@ def next_expiry_date(date: datetime, weekday: str, is_weekly: bool, is_us=True) 
     calendar = nyse_calendar if is_us else asx_calendar
 
     if is_weekly:
-        next_us_date = next_week_expiry(date, weekday)
+        next_date = next_week_expiry(date, weekday)
     else:
-        next_us_date = next_month_expiry(date, weekday)
+        next_date = next_month_expiry(date, weekday)
 
-    if calendar.valid_days(start_date=next_us_date, end_date=next_us_date).size > 0:
-        next_trading_day = next_us_date
+    return closest_expiration_date(next_date, calendar)
+
+
+def closest_expiration_date(date: datetime, calendar):
+    if calendar.valid_days(start_date=date, end_date=date).size > 0:
+        next_trading_day = date
     else:
-        next_trading_day = calendar.valid_days(start_date=next_us_date, end_date=next_us_date + pd.Timedelta(days=10))[
-            0]
+        next_trading_day = calendar.valid_days(start_date=date, end_date=date + pd.Timedelta(days=10))[0]
 
     return next_trading_day.replace(tzinfo=None)
 

@@ -14,5 +14,14 @@ class Transaction:
     def get_time(self):
         return self.__time
 
-    def calculate_profit(self, other: "Transaction"):
+    def get_asset(self):
+        return self.__asset
+
+    def calculate_profit(self):
         pass
+
+    def calculate_premium(self):
+        return self.__asset.get_premium()
+
+    def calculate_payoff(self, stock_price):
+        return self.__asset.option_payoff(stock_price)
