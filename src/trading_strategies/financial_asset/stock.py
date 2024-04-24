@@ -8,7 +8,7 @@ from src.trading_strategies.financial_asset.symbol import Symbol
 from src.util.read_file import get_historical_values
 
 # file_path = '../src/data/sp500_adj_close_prices.csv'
-file_path = '/Users/yifanxiao/Desktop/csl.csv'
+file_path = 'data/sp500_adj_close_prices.csv'
 
 
 class Stock(FinancialAsset):
@@ -19,6 +19,7 @@ class Stock(FinancialAsset):
         # self.historical_price = historical_price
         self.volatility = self.calculate_volatility()
         self.garch_long_run = self.calculate_garch()
+
 
     def calculate_volatility(self):
         returns = self.get_returns()

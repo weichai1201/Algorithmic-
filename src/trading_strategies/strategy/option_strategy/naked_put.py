@@ -4,8 +4,9 @@ from typing import List, Dict, Optional
 from src.data_access.data_access import retrieve_rf
 from src.trading_strategies.financial_asset.option import Option, PutOption
 from src.trading_strategies.financial_asset.price import Price
+from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.option_pricing import implied_t_put
-from src.trading_strategies.strategy.option_strategy.option_strategy import OptionStrategy, NewData
+from src.trading_strategies.strategy.option_strategy.option_strategy import OptionStrategy
 from src.trading_strategies.strategy.option_strategy.option_strike import calculate_strike, roll_down_strike
 from src.trading_strategies.strategy.option_strategy.strike_spec import StrikeSpec
 from src.trading_strategies.strategy.strategy_id import StrategyId
@@ -15,11 +16,12 @@ from src.trading_strategies.transactions.transaction import Transaction
 from src.util.expiry_date import next_expiry_date
 from src.util.util import match_strike
 
+NewData: (float, Dict[float, float])
 
 class NakedPut(OptionStrategy):
-    def __init__(self, strategy_id: StrategyId, options: List[Option], specs: [StrikeSpec],
-                 is_weekly: bool, weekday="THU", num_of_strikes=1, scale=1):
-        super().__init__(strategy_id, options, specs, scale)
+    def __init__(self, strategy_id: StrategyId, symbol: Symbol, specs: [StrikeSpec], is_weekly: bool, weekday="THU",
+                 num_of_strikes=1, scale=1):
+        super().__init__(strategy_id, symbol, specs, scale)
         self._consecutive_itm = 0
         self._num_of_strikes = num_of_strikes
         self._is_weekly = is_weekly
@@ -74,10 +76,11 @@ class NakedPut(OptionStrategy):
     def _roll_up(self):
         return
 
-    def update(self, new_data: NewData, time: datetime) -> Optional[Transaction]:
+    def update(self, new_data, time: datetime) -> Optional[Transaction]:
         """
         :param new_data: a tuple of prices (stock_price, dict(strike -> premium)).
         First entry is stock price. Second entry is a dictionary, strike price mapped to premium.
+        :param time:
         :return:
         """
         stock_price, premiums = new_data

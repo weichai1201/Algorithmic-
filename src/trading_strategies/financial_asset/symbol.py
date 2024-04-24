@@ -13,3 +13,6 @@ class Symbol:
             return False
         return self._symbol.__eq__(other._symbol)
 
+    def __hash__(self):
+        return self.symbol.__hash__()
+

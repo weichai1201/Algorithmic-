@@ -22,18 +22,16 @@ class Agent:
         self._transactions = dict[StrategyId, Transactions]
         pass
 
-
     def get_symbols(self):
-        result = Set[Symbol]
+        result = set[Symbol]()
         for strategy in self._strategies.values():
-            result().add(strategy.symbol())
+            result.add(strategy.symbol())
         return result
 
-    def update(self, asset: FinancialAsset):
-        symbol = asset.symbol()
+    def update(self, symbol: Symbol, new_data, time:datetime):
         for strategy_id, strategy in self._strategies.items():
             if symbol == strategy.symbol():
-                order = strategy.update()
+                order = strategy.update(new_data, time)
                 SimulatedMarket.submit_order(order)
                 if order.is_successful():
                     positions: Positions
