@@ -18,4 +18,8 @@ class Transactions:
         self._transactions.append(transaction)
 
     def __str__(self):
-        return self._transactions.__str__()
+        s = ""
+        for t in self._transactions:
+            s += t.__str__()
+            s += "\n"
+        return s

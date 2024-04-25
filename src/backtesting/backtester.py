@@ -80,13 +80,13 @@ class DailyMarketReplay(Backtester):
                 new_data = (stock.current_price.price(), self._simulate_premiums(stock, date))
                 self._self_agent.update(symbol, new_data, date)
 
-
     @staticmethod
     def _simulate_premiums(stock: Stock, date: datetime, is_call=False):
         strikes = simulate_strikes(stock.current_price.price())
         result = dict[float, float]()
         for strike in strikes:
-            result[strike] = bsm_pricing(stock, strike, date + timedelta(days=30), [], 0.05, is_call)
+            premium = bsm_pricing(stock, strike, date + timedelta(days=30), [], 0.05, is_call)
+            result[strike] = round(premium, 2)
         return result
 
     def run_back_testing(self):
