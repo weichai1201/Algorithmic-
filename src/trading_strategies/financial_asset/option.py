@@ -46,6 +46,12 @@ class Option(FinancialAsset):
     def is_expired(self, time: datetime) -> bool:
         return time > self._expiration_date
 
+    def __str__(self):
+        return (f"Option: {self._symbol}, "
+                f"Strike Price: {self._strike_price},"
+                f" Expiration Date: {self._expiration_date},"
+                f" Premium: {self._premium}")
+
 
 class CallOption(Option):
     def __init__(self, symbol: Symbol, strike_price: Price, expiration_date: datetime, premium: Price):

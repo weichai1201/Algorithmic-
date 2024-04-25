@@ -19,7 +19,6 @@ class Backtester:
         self._start_date = start_date
         self._end_date = end_date
         self._self_agent = self_agent
-        self._transactions = list[Transaction]()
         self._agents = agents
         self._has_tested = False
         self._profits = dict[StrategyId, float]
@@ -37,8 +36,8 @@ class Backtester:
     def run_back_testing(self):
         pass
 
-    def transactions(self):
-        return self._transactions
+    def transactions(self, strategy_id: StrategyId):
+        return self._self_agent.transactions()[strategy_id]
 
     def get_profits(self):
         if not self._has_tested:
@@ -79,8 +78,8 @@ class DailyMarketReplay(Backtester):
                 stock: Stock
                 stock = da_result.data
                 new_data = (stock.current_price.price(), self._simulate_premiums(stock, date))
-                transaction = self._self_agent.update(symbol, new_data, date)
-                self._transactions.append(transaction)
+                self._self_agent.update(symbol, new_data, date)
+
 
     @staticmethod
     def _simulate_premiums(stock: Stock, date: datetime, is_call=False):

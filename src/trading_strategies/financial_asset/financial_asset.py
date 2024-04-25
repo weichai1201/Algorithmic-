@@ -13,3 +13,7 @@ class FinancialAsset:
     def symbol(self) -> Symbol:
         pass
 
+    @abstractmethod
+    def __str__(self):
+        pass
+

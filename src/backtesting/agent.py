@@ -30,7 +30,7 @@ class Agent:
             result.add(strategy.symbol())
         return result
 
-    def update(self, symbol: Symbol, new_data, time:datetime):
+    def update(self, symbol: Symbol, new_data, time: datetime):
         for strategy_id, strategy in self._strategies.items():
             if symbol == strategy.symbol():
                 transaction = strategy.update(new_data, time)
@@ -43,3 +43,6 @@ class Agent:
                 #         positions = Positions(Position.LONG, order.quantity)
                 #     transaction = Transaction(positions, order.asset, datetime.datetime.now())
                 self._transactions.get(strategy_id).add_transaction(transaction)
+
+    def transactions(self):
+        return self._transactions

@@ -16,3 +16,6 @@ class Transactions:
 
     def add_transaction(self, transaction: Transaction):
         self._transactions.append(transaction)
+
+    def __str__(self):
+        return self._transactions.__str__()
