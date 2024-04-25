@@ -33,7 +33,7 @@ class NakedPut(OptionStrategy):
     def itm_amount(self, stock_price: float) -> [float]:
         return [option.itm_amount(stock_price) for option in self._options]
 
-    def _roll_over(self, stock_price: float, premiums: Dict[float, float], itm_side=True):
+    def _roll_over(self, stock_price: float, premiums: Dict[float, float], date: datetime, itm_side=True):
         """
         Initialisation and expiry with OTM.
         :param stock_price: stock price.
@@ -47,13 +47,12 @@ class NakedPut(OptionStrategy):
         # roll over price
         target_strike = calculate_strike(stock_price, itm_side, self._num_of_strikes, True)
         strike, premium = match_strike(target_strike, premiums)
-
         # construct the new option transaction
         positions = Positions(Position.SHORT, self._scale)
-        next_expiry = next_expiry_date(self._options[0].get_expiry(), self._weekday, self._is_weekly)
+        next_expiry = next_expiry_date(date, self._weekday, self._is_weekly)
         option = PutOption(self.symbol(), strike, next_expiry, premium)
 
-        return Transaction(positions, option, self._options[0].get_expiry())  # timezone maybe a problem
+        return Transaction(positions, option, date)  # timezone maybe a problem
 
     def _roll_down(self, stock_price: float, premiums: Dict[float, float]):
         """
@@ -86,7 +85,7 @@ class NakedPut(OptionStrategy):
         stock_price, premiums = new_data
 
         if len(self._options) == 0:
-            return self._roll_over(stock_price, premiums, True)
+            return self._roll_over(stock_price, premiums, time, True)
 
         current_time = stock_price
         option = self._options[0]

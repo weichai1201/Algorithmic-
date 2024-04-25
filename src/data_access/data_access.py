@@ -34,7 +34,7 @@ def retrieve_stock(symbol: Symbol, date: datetime) -> DataAccessResult:
     data = _retrieve_by_date(stock_filename, stock_date_column_name, date, stock_date_format)
     if len(data) == 0 or symbol.symbol not in data.columns:
         return DataAccessResult(None)
-    price = data[symbol.symbol]
+    price = data[symbol.symbol].values[0]
     stock = Stock(symbol, Price(price, date))
     return DataAccessResult(stock, True)
 

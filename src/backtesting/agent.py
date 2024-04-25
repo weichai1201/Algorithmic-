@@ -31,13 +31,13 @@ class Agent:
     def update(self, symbol: Symbol, new_data, time:datetime):
         for strategy_id, strategy in self._strategies.items():
             if symbol == strategy.symbol():
-                order = strategy.update(new_data, time)
-                SimulatedMarket.submit_order(order)
-                if order.is_successful():
-                    positions: Positions
-                    if order.is_ask:
-                        positions = Positions(Position.SHORT, order.quantity)
-                    else:
-                        positions = Positions(Position.LONG, order.quantity)
-                    transaction = Transaction(positions, order.asset, datetime.datetime.now())
-                    self._transactions().get(strategy_id).add_transaction(transaction)
+                transaction = strategy.update(new_data, time)
+                # SimulatedMarket.submit_order(order)
+                # if order.is_successful():
+                #     positions: Positions
+                #     if order.is_ask:
+                #         positions = Positions(Position.SHORT, order.quantity)
+                #     else:
+                #         positions = Positions(Position.LONG, order.quantity)
+                #     transaction = Transaction(positions, order.asset, datetime.datetime.now())
+                self._transactions().get(strategy_id).add_transaction(transaction)
