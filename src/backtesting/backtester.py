@@ -8,6 +8,7 @@ from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.option_pricing import calculate_put_price, bsm_pricing
+from src.trading_strategies.strategy.option_strategy.option_strike import simulate_strikes
 from src.trading_strategies.strategy.strategy_id import StrategyId
 from src.trading_strategies.transactions.transaction import Transaction
 from src.trading_strategies.transactions.transactions import Transactions
@@ -83,7 +84,7 @@ class DailyMarketReplay(Backtester):
 
     @staticmethod
     def _simulate_premiums(stock: Stock, date: datetime, is_call=False):
-        strikes = []
+        strikes = simulate_strikes(stock.current_price.price())
         result = dict[float, float]()
         for strike in strikes:
             result[strike] = bsm_pricing(stock, strike, date + timedelta(days=30), [], 0.05, is_call)

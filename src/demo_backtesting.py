@@ -8,7 +8,7 @@ from src.trading_strategies.strategy.strategy_id import StrategyId
 
 
 def main():
-    start_date = datetime(2014, 1, 1)
+    start_date = datetime(2023, 1, 1)
     end_date = datetime(2024, 1, 1)
     strategy_id = StrategyId("NAKED_PUT_AAPL")
     naked_put = NakedPut(strategy_id, Symbol("AAPL"), None, False)

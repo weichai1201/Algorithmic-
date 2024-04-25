@@ -17,6 +17,21 @@ def get_strike_gap(stock_price: float):
     return strike_gap
 
 
+def simulate_strikes(stock_price: float, num=5) -> list[float]:
+    strike_gap = get_strike_gap(stock_price)
+    stock_price = round(stock_price, 0)
+    result = []
+    for i in range(num):
+        strike = stock_price - (num - i) * strike_gap
+        if strike > 0:
+            result.append(strike)
+    result.append(stock_price)    # at-the-money strike
+    for i in range(num):
+        strike = stock_price + (i + 1) * strike_gap
+        result.append(strike)
+    return result
+
+
 def calculate_strike(stock_price: float, is_itm: bool, num_strikes: int, is_put: bool):
     """
     :param stock_price: current stock price.

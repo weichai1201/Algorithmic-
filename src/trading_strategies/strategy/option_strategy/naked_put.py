@@ -18,6 +18,7 @@ from src.util.util import match_strike
 
 NewData: (float, Dict[float, float])
 
+
 class NakedPut(OptionStrategy):
     def __init__(self, strategy_id: StrategyId, symbol: Symbol, specs: [StrikeSpec], is_weekly: bool, weekday="THU",
                  num_of_strikes=1, scale=1):

@@ -47,7 +47,7 @@ def match_strike(target_strike: float, premiums: dict[float, float], larger=True
 
     @author: Huanjie Zhang
     """
-    strike = find_target(target_strike, premiums.keys(), larger)
+    strike = find_target(target_strike, [x for x in premiums.keys()], larger)
     if strike == 0.0:
         return .0, .0
     return strike, premiums[strike]
