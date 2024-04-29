@@ -58,7 +58,8 @@ class NakedPut(OptionStrategy):
         else:
             self._options[0] = option
 
-        return Transaction(positions, option, date)  # timezone maybe a problem
+        return Transaction(positions, option, date, f"Roll over at stock price: {stock_price}")
+        # timezone maybe a problem
 
     def _roll_down(self, stock_price: float, premiums: Dict[float, float], date: datetime):
         """
@@ -79,7 +80,8 @@ class NakedPut(OptionStrategy):
         # request the following
         positions = Positions(Position.SHORT, self._scale)
         option = PutOption(self.symbol(), Price(strike, date), date + timedelta(days=implied_days), premium)
-        return Transaction(positions, option, self._options[0].get_expiry())
+        return Transaction(positions, option, self._options[0].get_expiry(),
+                           f"Roll down at stock price: {stock_price}")
 
     def _roll_up(self):
         return

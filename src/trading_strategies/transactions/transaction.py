@@ -6,10 +6,11 @@ from src.trading_strategies.transactions.positions import Positions
 
 class Transaction:
 
-    def __init__(self, positions: Positions, asset: FinancialAsset, time: datetime):
+    def __init__(self, positions: Positions, asset: FinancialAsset, time: datetime, msg=""):
         self.__positions = positions
         self.__asset = asset
         self.__time = time
+        self.__msg = msg
 
     def get_time(self):
         return self.__time
@@ -21,6 +22,10 @@ class Transaction:
         return self.__asset
 
     def __str__(self):
-        return (f"Portfolio Entry: Positions: {self.__positions.__str__()}：\n"
-                f"  Asset: {self.__asset}\n"
-                f"  Time: {self.__time}\n")
+        s = (f"Portfolio Entry:\n"
+             f"  Positions: {self.__positions.__str__()}\n"
+             f"  Asset: {self.__asset}\n"
+             f"  Time: {self.__time}\n")
+        if self.__msg != "":
+            s += f"  Note: {self.__msg}\n"
+        return s
