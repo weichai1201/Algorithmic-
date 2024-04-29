@@ -8,12 +8,12 @@ from src.trading_strategies.strategy.strategy_id import StrategyId
 
 
 def main():
-    start_date = datetime(2023, 12, 20)
+    start_date = datetime(2023, 7, 25)
     end_date = datetime(2024, 1, 1)
     strategy_id = StrategyId("NAKED_PUT_AAPL")
     naked_put = NakedPut(strategy_id, Symbol("AAPL"), None, False)
     agent = Agent({strategy_id: naked_put})
-    backtester = DailyMarketReplay(start_date, end_date, agent,[])
+    backtester = DailyMarketReplay(start_date, end_date, agent, [])
     backtester.run_back_testing()
 
     print(backtester.transactions(strategy_id))

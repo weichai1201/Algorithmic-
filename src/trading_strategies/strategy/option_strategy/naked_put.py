@@ -51,7 +51,7 @@ class NakedPut(OptionStrategy):
         # construct the new option transaction
         positions = Positions(Position.SHORT, self._scale)
         next_expiry = next_expiry_date(date, self._weekday, self._is_weekly)
-        option = PutOption(self.symbol(), strike, next_expiry, premium)
+        option = PutOption(self.symbol(), Price(strike, date), next_expiry, premium)
         if len(self._options) == 0:
             self._options.append(option)
         else:
@@ -70,7 +70,7 @@ class NakedPut(OptionStrategy):
         option = self._options[0]
         target_strike = roll_down_strike(stock_price, option.get_strike().price(), self._num_of_strikes)
         strike, premium = match_strike(target_strike, premiums)
-        rf = retrieve_rf(option.get_expiry().date())
+        rf = retrieve_rf(option.get_expiry().date()).data
         implied_time = implied_t_put(stock_price, target_strike, rf, premium, 0.04)
         # request the following
         positions = Positions(Position.SHORT, self._scale)
@@ -102,4 +102,4 @@ class NakedPut(OptionStrategy):
         else:
             # reset the count of itm
             self._consecutive_itm = 0
-            return self._roll_over(stock_price, premiums, True)
+            return self._roll_over(stock_price, premiums, time, True)

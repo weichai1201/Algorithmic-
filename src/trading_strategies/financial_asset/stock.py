@@ -46,13 +46,13 @@ class Stock(FinancialAsset):
     def get_prices(self):
         return get_historical_values(self.symbol, file_path, '2004-01-01', '2024-03-31').iloc[:, 1]
 
-    def calculate_garch(self):
+    def calculate_garch(self, forecast_horizon=10):
         with warnings.catch_warnings(action="ignore"):
             sys.stdout = open(os.devnull, 'w')
             returns = self.get_returns()
             model = arch_model(returns, vol='GARCH', p=1, q=1)
             fit = model.fit(show_warning=False)
-            vol = np.sqrt(fit.forecast(horizon=10).variance).mean(axis=1).iloc[-1]
+            vol = np.sqrt(fit.forecast(horizon=forecast_horizon).variance).mean(axis=1).iloc[-1]
             sys.stdout = sys.__stdout__
             print("Run GARCH for {symbol} on the date {date}".
                   format(symbol=self.symbol, date=self.current_price.time()))

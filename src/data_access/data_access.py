@@ -17,7 +17,7 @@ tbills_date_column_name = "DATE"
 
 
 class DataAccessResult:
-    def __init__(self, data: Stock | FinancialAsset | None, is_successful: bool = False):
+    def __init__(self, data: float | Stock | FinancialAsset | None, is_successful: bool = False):
         self.data = data
         self.is_successful = is_successful
 
@@ -40,10 +40,11 @@ def retrieve_stock(symbol: Symbol, date: datetime) -> DataAccessResult:
 
 
 def retrieve_rf(date: datetime):
-    result = _retrieve_by_date(stock_filename, stock_date_column_name, date, stock_date_format)["DTB3"]
+    result = _retrieve_by_date(tbills_filename, tbills_date_column_name, date, tbills_date_format)
     if len(result) == 0:
         return DataAccessResult(None)
-    return DataAccessResult(result, True)
+    return DataAccessResult(float(result["DTB3"].values[0]) / 100, True)
+
 
 def _retrieve_from_csv(symbol: Symbol, date: datetime, filename: str = "src/data/sp500_adj_close_prices.csv"):
     column_date = "Date"
