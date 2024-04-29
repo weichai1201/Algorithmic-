@@ -50,7 +50,10 @@ def retrieve_rf(date: datetime):
         i += 1
     if len(result) == 0:
         return DataAccessResult(None)
-    return DataAccessResult(float(result["DTB3"].values[0]) / 100, True)
+    result = result["DTB3"].values[0]
+    if result == ".":
+        return retrieve_rf(date - timedelta(days=1))
+    return DataAccessResult(float(result) / 100, True)
 
 
 def _retrieve_from_csv(symbol: Symbol, date: datetime, filename: str = "src/data/sp500_adj_close_prices.csv"):

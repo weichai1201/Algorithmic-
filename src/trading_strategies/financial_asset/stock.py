@@ -46,7 +46,7 @@ class Stock(FinancialAsset):
     def get_prices(self):
         return get_historical_values(self.symbol, file_path, '2004-01-01', '2024-03-31').iloc[:, 1]
 
-    def calculate_garch(self, forecast_horizon=10):
+    def calculate_garch(self, forecast_horizon=1000):
         with warnings.catch_warnings(action="ignore"):
             sys.stdout = open(os.devnull, 'w')
             returns = self.get_returns()

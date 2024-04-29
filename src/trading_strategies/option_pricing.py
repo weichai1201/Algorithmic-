@@ -53,18 +53,24 @@ def calculate_d2(d1, volatility, time_to_maturity):
 def adjust_dividends(stock, dividends, risk_free):
     stock_price = stock.current_price.price()
     for dividend in dividends:
-        stock_price -= dividend.price() * math.exp( (stock.current_price.time() - dividend.time()) / datetime.timedelta(days=365) * risk_free)
+        stock_price -= dividend.price() * math.exp(
+            (stock.current_price.time() - dividend.time()) / datetime.timedelta(days=365) * risk_free)
 
     return stock_price
 
 
-def implied_t_put(stock_price, strike_price, risk_free_rate, premium, volatility):
+def implied_t_put(stock_price, strike_price, risk_free_rate, premium, volatility, default_time: float = 30 / 365):
     error_function = lambda t: calculate_put_price(stock_price, strike_price, volatility, t, risk_free_rate) - premium
-    implied_t = newton(error_function, x0=0.25)
-    return implied_t
+    try:
+        implied_t = newton(error_function, x0=0.15, maxiter=1000)
+        return implied_t
+    except RuntimeError:
+        print(f"Fail to converge with stock: {stock_price}, strike: {strike_price},"
+              f" rf: {risk_free_rate}, premium: {premium}, volatility: {volatility}")
+        return default_time
 
 
 def implied_t_call(stock_price, strike_price, risk_free_rate, premium, volatility):
     error_function = lambda t: calculate_call_price(stock_price, strike_price, volatility, t, risk_free_rate) - premium
-    implied_t = newton(error_function, x0=0.25)
+    implied_t = newton(error_function, x0=0.15)
     return implied_t
