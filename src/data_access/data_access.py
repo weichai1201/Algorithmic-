@@ -8,16 +8,16 @@ from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.util.read_file import read_file
 
-stock_filename = "src/data/sp500_adj_close_prices.csv"
+stock_filename = "data/sp500_adj_close_prices.csv"
 stock_date_format = "%Y-%m-%d %H:%M:%S"  # 2004-01-02 00:00:00
 stock_date_column_name = "Date"
-tbills_filename = "src/data/T-Bills.csv"
+tbills_filename = "data/T-Bills.csv"
 tbills_date_format = "%d/%m/%Y"  # 16/01/2004
 tbills_date_column_name = "DATE"
 
 
 class DataAccessResult:
-    def __init__(self, data: FinancialAsset | None, is_successful: bool = False):
+    def __init__(self, data: Stock | FinancialAsset | None, is_successful: bool = False):
         self.data = data
         self.is_successful = is_successful
 
@@ -30,19 +30,20 @@ def request_historical_price(symbol: Symbol, date: datetime, is_stock: bool = Tr
     return DataAccessResult(Stock(symbol, Price(value, date)), True)
 
 
-def retrieve_stock(symbol: Symbol, date) -> DataAccessResult:
+def retrieve_stock(symbol: Symbol, date: datetime) -> DataAccessResult:
     data = _retrieve_by_date(stock_filename, stock_date_column_name, date, stock_date_format)
-    if symbol.symbol not in data.columns:
+    if len(data) == 0 or symbol.symbol not in data.columns:
         return DataAccessResult(None)
-    price = date[symbol.symbol]
+    price = data[symbol.symbol].values[0]
     stock = Stock(symbol, Price(price, date))
     return DataAccessResult(stock, True)
 
 
-def retrieve_rf(date):
-    data = _retrieve_by_date(stock_filename, stock_date_column_name, date, stock_date_format)
-    return DataAccessResult(data["DTB3"], True)
-
+def retrieve_rf(date: datetime):
+    result = _retrieve_by_date(stock_filename, stock_date_column_name, date, stock_date_format)["DTB3"]
+    if len(result) == 0:
+        return DataAccessResult(None)
+    return DataAccessResult(result, True)
 
 def _retrieve_from_csv(symbol: Symbol, date: datetime, filename: str = "src/data/sp500_adj_close_prices.csv"):
     column_date = "Date"
@@ -57,4 +58,5 @@ def _retrieve_from_csv(symbol: Symbol, date: datetime, filename: str = "src/data
 def _retrieve_by_date(filename: str, col_name: str, date: datetime, date_format=""):
     data = read_file(filename)
     date_str = date.strftime(date_format)
+    result = data[data[col_name] == date_str]
     return data[data[col_name] == date_str]

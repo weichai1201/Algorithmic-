@@ -16,3 +16,8 @@ class Transaction:
 
     def calculate_profit(self, other: "Transaction"):
         pass
+
+    def __str__(self):
+        return (f"Portfolio Entry: Positions: {self.__positions.__str__()}：\n"
+                f"  Asset: {self.__asset}\n"
+                f"  Time: {self.__time}\n")

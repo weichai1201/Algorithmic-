@@ -15,14 +15,14 @@ import src.util.util as util
 """
 
 
-def bsm_pricing(stock: Stock, option_price, expiration_date, dividends: list[Price], risk_free_rate, is_call):
+def bsm_pricing(stock: Stock, strike: float, expiration_date, dividends: list[Price], risk_free_rate, is_call):
     time_to_maturity = (expiration_date - stock.current_price.time()) / datetime.timedelta(days=365)
     volatility = stock.garch_long_run
-    stock_price = adjust_dividends(stock, dividends, risk_free_rate)
+    adjusted_price = adjust_dividends(stock, dividends, risk_free_rate)
     if is_call:
-        return calculate_call_price(stock_price, option_price, volatility, time_to_maturity, risk_free_rate)
+        return calculate_call_price(adjusted_price, strike, volatility, time_to_maturity, risk_free_rate)
     else:
-        return calculate_put_price(stock_price, option_price, volatility, time_to_maturity, risk_free_rate)
+        return calculate_put_price(adjusted_price, strike, volatility, time_to_maturity, risk_free_rate)
 
 
 def calculate_call_price(stock_price, strike_price, volatility, time_to_maturity, risk_free_rate):

@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from datetime import datetime
 
 from src.order.order import Order
 from src.trading_strategies.financial_asset.symbol import Symbol
@@ -21,6 +22,7 @@ class Strategy:
         return self._symbol == other
 
     @abstractmethod
-    def update(self, new_data) -> Order:
+    def update(self, new_data, time: datetime):
         pass
+
 
