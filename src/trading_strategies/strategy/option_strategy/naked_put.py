@@ -1,9 +1,10 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List, Dict, Optional
 
 from src.data_access.data_access import retrieve_rf
 from src.trading_strategies.financial_asset.option import Option, PutOption
 from src.trading_strategies.financial_asset.price import Price
+from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.option_pricing import implied_t_put
 from src.trading_strategies.strategy.option_strategy.option_strategy import OptionStrategy
@@ -59,7 +60,7 @@ class NakedPut(OptionStrategy):
 
         return Transaction(positions, option, date)  # timezone maybe a problem
 
-    def _roll_down(self, stock_price: float, premiums: Dict[float, float]):
+    def _roll_down(self, stock_price: float, premiums: Dict[float, float], date: datetime):
         """
         When the option is itm, roll down the next strike price based on current one
         :return: `Transaction` order to `Agent`.
@@ -71,14 +72,27 @@ class NakedPut(OptionStrategy):
         target_strike = roll_down_strike(stock_price, option.get_strike().price(), self._num_of_strikes)
         strike, premium = match_strike(target_strike, premiums)
         rf = retrieve_rf(option.get_expiry().date()).data
-        implied_time = implied_t_put(stock_price, target_strike, rf, premium, 0.04)
+        stock = Stock(self.symbol(), Price(stock_price, date))
+        implied_time = implied_t_put(stock_price, strike, rf, premium, stock.garch())
+        implied_days = round(implied_time * 365, 0)
+
         # request the following
         positions = Positions(Position.SHORT, self._scale)
-        option = PutOption(self.symbol(), strike, implied_time, premium)
+        option = PutOption(self.symbol(), Price(strike, date), date + timedelta(days=implied_days), premium)
         return Transaction(positions, option, self._options[0].get_expiry())
 
     def _roll_up(self):
         return
+
+    def any_expired(self, time: datetime) -> bool:
+        if len(self._options) == 0:
+            return False
+        return any([option.is_expired(time) for option in self._options])
+
+    def need_update(self, date: datetime):
+        if len(self._options) == 0:
+            return True
+        return self.any_expired(date)
 
     def update(self, new_data, time: datetime) -> Optional[Transaction]:
         """
@@ -88,9 +102,9 @@ class NakedPut(OptionStrategy):
         :return:
         """
         stock_price, premiums = new_data
-
+        result: Transaction
         if len(self._options) == 0:
-            return self._roll_over(stock_price, premiums, time, True)
+            result = self._roll_over(stock_price, premiums, time, True)
 
         option = self._options[0]
         if not option.is_expired(time):
@@ -98,8 +112,16 @@ class NakedPut(OptionStrategy):
 
         if option.in_the_money(stock_price):
             self._consecutive_itm += 1
-            return self._roll_down(stock_price, premiums)
+            result = self._roll_down(stock_price, premiums, time)
         else:
             # reset the count of itm
             self._consecutive_itm = 0
-            return self._roll_over(stock_price, premiums, time, True)
+            result = self._roll_over(stock_price, premiums, time, True)
+
+        # assume result is successfully made in market
+        # update option
+        if len(self._options) == 0:
+            self._options.append(result.get_asset())
+        else:
+            self._options[0] = result.get_asset()
+        return result

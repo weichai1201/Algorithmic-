@@ -11,3 +11,6 @@ class Price:
 
     def time(self):
         return self._time_stamp
+
+    def __str__(self):
+        return str(self._price)

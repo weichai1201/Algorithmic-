@@ -25,4 +25,6 @@ class Strategy:
     def update(self, new_data, time: datetime):
         pass
 
+    def need_update(self, date: datetime):
+        return True
 

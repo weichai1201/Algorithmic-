@@ -72,6 +72,8 @@ class Backtester:
 
 class DailyMarketReplay(Backtester):
     def _update_by_symbol(self, agent: Agent, date: datetime):
+        if not agent.need_update(date):
+            return
         for symbol in self._self_agent.get_symbols():
             da_result = retrieve_stock(symbol, date)
             if da_result.is_successful:

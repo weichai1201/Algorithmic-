@@ -47,3 +47,6 @@ class Agent:
 
     def transactions(self):
         return self._transactions
+
+    def need_update(self, date: datetime) -> bool:
+        return any([strategy.need_update(date) for strategy in self._strategies.values()])

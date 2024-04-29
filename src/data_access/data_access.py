@@ -1,5 +1,5 @@
 import csv
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
 from src.trading_strategies.financial_asset.option import Option
@@ -41,6 +41,13 @@ def retrieve_stock(symbol: Symbol, date: datetime) -> DataAccessResult:
 
 def retrieve_rf(date: datetime):
     result = _retrieve_by_date(tbills_filename, tbills_date_column_name, date, tbills_date_format)
+    traceback_days = 10
+    i = 0
+    # in case risk free is not available on that date, search back a few days before.
+    while len(result) == 0 and i < traceback_days:
+        date = date - timedelta(days=1)
+        result = _retrieve_by_date(tbills_filename, tbills_date_column_name, date, tbills_date_format)
+        i += 1
     if len(result) == 0:
         return DataAccessResult(None)
     return DataAccessResult(float(result["DTB3"].values[0]) / 100, True)
