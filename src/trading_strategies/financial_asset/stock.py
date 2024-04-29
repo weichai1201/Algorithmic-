@@ -17,9 +17,13 @@ class Stock(FinancialAsset):
         self._symbol = symbol
         self.current_price = current_price
         # self.historical_price = historical_price
-        self.volatility = self.calculate_volatility()
-        self.garch_long_run = self.calculate_garch()
+        # self.volatility = self.calculate_volatility()
+        self._garch_long_run = -1
 
+    def garch(self):
+        if self._garch_long_run == -1:
+            self._garch_long_run = self.calculate_garch()
+        return self._garch_long_run
 
     def calculate_volatility(self):
         returns = self.get_returns()

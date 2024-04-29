@@ -17,7 +17,7 @@ import src.util.util as util
 
 def bsm_pricing(stock: Stock, strike: float, expiration_date, dividends: list[Price], risk_free_rate, is_call):
     time_to_maturity = (expiration_date - stock.current_price.time()) / datetime.timedelta(days=365)
-    volatility = stock.garch_long_run
+    volatility = stock.garch()
     adjusted_price = adjust_dividends(stock, dividends, risk_free_rate)
     if is_call:
         return calculate_call_price(adjusted_price, strike, volatility, time_to_maturity, risk_free_rate)
