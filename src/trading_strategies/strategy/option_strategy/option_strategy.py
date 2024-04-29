@@ -19,7 +19,7 @@ class OptionStrategy(Strategy):
     def __init__(self, strategy_id: StrategyId, symbol: Symbol, specs: [StrikeSpec], scale=1):
         super().__init__(strategy_id, symbol)
         self._id = strategy_id
-        self._options = list[Option]()
+        self._options: [Option] = []
         self._specs = specs
         self._scale = scale
 

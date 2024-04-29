@@ -42,7 +42,8 @@ class Agent:
                 #     else:
                 #         positions = Positions(Position.LONG, order.quantity)
                 #     transaction = Transaction(positions, order.asset, datetime.datetime.now())
-                self._transactions.get(strategy_id).add_transaction(transaction)
+                if transaction is not None:
+                    self._transactions.get(strategy_id).add_transaction(transaction)
 
     def transactions(self):
         return self._transactions

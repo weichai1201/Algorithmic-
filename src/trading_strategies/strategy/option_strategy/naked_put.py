@@ -52,6 +52,10 @@ class NakedPut(OptionStrategy):
         positions = Positions(Position.SHORT, self._scale)
         next_expiry = next_expiry_date(date, self._weekday, self._is_weekly)
         option = PutOption(self.symbol(), strike, next_expiry, premium)
+        if len(self._options) == 0:
+            self._options.append(option)
+        else:
+            self._options[0] = option
 
         return Transaction(positions, option, date)  # timezone maybe a problem
 
@@ -88,9 +92,8 @@ class NakedPut(OptionStrategy):
         if len(self._options) == 0:
             return self._roll_over(stock_price, premiums, time, True)
 
-        current_time = stock_price
         option = self._options[0]
-        if not option.is_expired(current_time):
+        if not option.is_expired(time):
             return None
 
         if option.in_the_money(stock_price):
