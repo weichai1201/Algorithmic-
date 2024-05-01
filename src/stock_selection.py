@@ -24,11 +24,11 @@ def main():
         except AttributeError:
             pass
     result = sorted(result)
-    print(result[0], result[1])
+    print(result[0], result[1], result[2])
     print(result[len(result) - 1], result[len(result) - 2])
 
 
-# (0.010615660972065292, 'KO') (0.010711019177999836, 'JNJ')
+# (0.010615660972065292, 'KO') (0.010711019177999836, 'JNJ') (0.010799562059302475, 'MCD')
 # (0.04465957542892037, 'SMCI') (0.04234928634216114, 'ENPH')
 
 
