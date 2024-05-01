@@ -90,7 +90,7 @@ class DailyMarketReplay(Backtester):
             date += timedelta(days=1)
 
     def _update_by_symbol(self, agent: Agent, date: datetime):
-        for symbol in self._self_agent.get_symbols():
+        for symbol in agent.get_symbols():
             if not agent.need_update_for(date, symbol):
                 continue
             da_result = retrieve_stock(symbol, date)

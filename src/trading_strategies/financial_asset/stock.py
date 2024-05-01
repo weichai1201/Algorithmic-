@@ -56,7 +56,7 @@ class Stock(FinancialAsset):
             vol = np.sqrt(fit.forecast(horizon=forecast_horizon).variance).mean(axis=1).iloc[-1]
             sys.stdout = sys.__stdout__
             print("Run GARCH for {symbol} on the date {date}".
-                  format(symbol=self.symbol, date=self.current_price.time()))
+                  format(symbol=self.symbol, date=self.current_price.time().strftime("%Y-%m-%d")))
             return vol * np.sqrt(252)
 
     @property

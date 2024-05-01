@@ -59,7 +59,7 @@ def adjust_dividends(stock, dividends, risk_free):
     return stock_price
 
 
-def implied_t_put(stock_price, strike_price, risk_free_rate, premium, volatility, default_time: float = 30 / 365):
+def implied_t_put(stock_price, strike_price, risk_free_rate, premium, volatility, default_time: float = 60 / 365):
     error_function = lambda t: calculate_put_price(stock_price, strike_price, volatility, t, risk_free_rate) - premium
     try:
         implied_t = newton(error_function, x0=0.15, maxiter=1000)
