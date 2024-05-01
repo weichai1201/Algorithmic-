@@ -72,12 +72,24 @@ class OptionStrategy(Strategy):
             else:
                 new_option = self._update_mod_itm_option(new_stock, option)
         else:
-            new_option = self._update_otm_option(new_stock)
+            new_option = self._update_otm_option(new_stock, option)
 
         return Transaction(self._positions, new_option, current_time)
 
-    def _update_otm_option(self, stock) -> Option:
+    def _update_otm_option(self, stock, option) -> Option:
         expiration_date = next_expiry_date(stock.current_price.time(), self._is_weekly, True, self._weekday)
+        if isinstance(option, CallOption):
+            return self._roll_over_call(stock, expiration_date)
+        else:
+            return self._roll_over_put(stock, expiration_date)
+
+    def _roll_over_call(self, stock, expiration_date):
+        strike_price = calculate_strike(stock.current_price.price(), self._is_itm, self._num_of_strikes, False)
+        premium = bsm_pricing(stock, strike_price, expiration_date, [], risk_free_rate, True)
+        new_option = PutOption(stock.symbol, Price(strike_price, stock.current_price.time()), expiration_date, premium)
+        return new_option
+
+    def _roll_over_put(self, stock, expiration_date):
         strike_price = calculate_strike(stock.current_price.price(), self._is_itm, self._num_of_strikes, True)
         premium = bsm_pricing(stock, strike_price, expiration_date, [], risk_free_rate, False)
         new_option = PutOption(stock.symbol, Price(strike_price, stock.current_price.time()), expiration_date, premium)
@@ -91,7 +103,7 @@ class OptionStrategy(Strategy):
             return self._roll_down(stock, option, premium)
 
     def _update_deep_itm_option(self, new_stock, option) -> Option:
-        return self._update_otm_option(new_stock)
+        return self._update_otm_option(new_stock, option)
 
     def _roll_up(self, stock, option, premium) -> Option:
         strike_price = roll_up_strike(stock.current_price.price(), option.get_strike().price(), self._num_of_strikes)
