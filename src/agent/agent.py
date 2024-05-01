@@ -41,11 +41,18 @@ class Agent:
                 if transaction is not None:
                     self._all_transactions.get(strategy_id).add_transaction(transaction)
 
-    def transactions(self):
+    def get_all_transactions(self) -> dict[StrategyId, Transactions]:
         return self._all_transactions
 
     def need_update(self, date: datetime) -> bool:
         return any([strategy.need_update(date) for strategy in self._strategies.values()])
+
+    def need_update_for(self, date: datetime, symbol: Symbol):
+        for strategy in self._strategies.values():
+            if strategy.is_same_symbol(symbol):
+                if strategy.need_update(date):
+                    return True
+        return False
 
     def evaluate(self):
         dates = dict[StrategyId, list[float]]()
