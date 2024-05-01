@@ -19,30 +19,33 @@ import pandas as pd
 
 def main():
     file_path = '../src/data/sp500_adj_close_prices.csv'
-    aapl_symbol = Symbol('AAPL')
-    date = datetime.datetime(2010, 1, 4, 0, 0)
-    is_itm = False
+    symbol = Symbol('MMM')
+    date = datetime.datetime(2005, 1, 4, 0, 0)
+    end_date = datetime.datetime(2010, 1, 4, 0, 0)
+    is_itm = True
     num_strike = 1
     is_weekly = True
     weekday = "FRI"
 
-    stock_data = get_historical_values(aapl_symbol, file_path, date.strftime('%Y-%m-%d'))
+    stock_data = get_historical_values(symbol, file_path, date.strftime('%Y-%m-%d'))
     stock_data.set_index('Date', inplace=True)
 
     price = Price(stock_data.loc[date.strftime('%Y-%m-%d %H:%M:%S')].iloc[-1], date)
-    aapl_stock = Stock(aapl_symbol, price)
+    aapl_stock = Stock(symbol, price)
 
-    expiry_date = next_expiry_date(date, True, True)
+    expiry_date = next_expiry_date(date, is_weekly, True)
 
-    strike_price = Price(calculate_strike(aapl_stock.current_price.price(), False, 1, True), aapl_stock.current_price.time())
+    strike_price = Price(calculate_strike(aapl_stock.current_price.price(), is_itm, 1, True), aapl_stock.current_price.time())
 
     premium = bsm_pricing(aapl_stock, strike_price.price(), expiry_date, [], 0.03, False)
-    put_option = PutOption(aapl_symbol, strike_price, expiry_date, premium)
+    put_option = PutOption(symbol, strike_price, expiry_date, premium)
 
     position = Position.SHORT
 
-    naked_put = NakedPut(StrategyId("1"), aapl_symbol, is_itm, position, is_weekly, weekday,
+    naked_put = NakedPut(StrategyId("1"), symbol, is_itm, position, is_weekly, weekday,
                          num_strike)
+
+    transaction = naked_put.update(aapl_stock, put_option)
 
 
     # marginHandler = EquityMarginHandler()
@@ -55,15 +58,15 @@ def main():
 
     profit = []
 
-    for i in range(1000):
+    while date < end_date:
         if naked_put.update(aapl_stock, put_option) is not None:
-            transaction = naked_put.update(aapl_stock, put_option)
             if put_option.get_expiry() == date:
-                profit.append((-transaction.calculate_payoff(aapl_stock.current_price), transaction.get_time()))
+                profit.append((-transaction.calculate_payoff(aapl_stock.current_price), date))
+                transaction = naked_put.update(aapl_stock, put_option)
                 put_option = transaction.get_asset()
                 continue
             else:
-                profit.append((transaction.calculate_premium(), transaction.get_time()))
+                profit.append((transaction.calculate_premium(), date))
 
         date = closest_expiration_date(aapl_stock.current_price.time() + datetime.timedelta(days=1))
         aapl_stock.set_current_price(Price(stock_data.loc[date.strftime('%Y-%m-%d %H:%M:%S')].iloc[-1], date))
@@ -74,24 +77,21 @@ def main():
     total = 0
     for data in profit:
         total += data[0]
+        print(data[1], data[0])
         sum.append((data[1], total))
 
 
-    df_sum = pd.DataFrame(sum, columns=['Date', 'Value'])
-    print(df_sum)
-
-    x = [d[0].strftime('%Y-%m-%d') for d in sum]  # Convert datetime to string
-    y = [d[1] for d in sum]
+    df_sum = pd.DataFrame(sum, columns=['Date', 'Profit'])
 
     prices = stock_data.loc[:date.strftime('%Y-%m-%d %H:%M:%S')]
 
     # Plot the data
     plt.figure(figsize=(10, 6))
-    plt.plot(df_sum['Date'], df_sum['Value'], linestyle='-')
-    plt.plot(prices.index, prices['AAPL'], linestyle='-')
-    plt.title('Value over Time')
+    plt.plot(df_sum['Date'], df_sum['Profit'], linestyle='-')
+    plt.plot(prices.index, prices[symbol.symbol], linestyle='-')
+    plt.title(f'{symbol.symbol} Stock price & Strategy Profit over Time')
     plt.xlabel('Date')
-    plt.ylabel('Value')
+    plt.ylabel('US Dollar')
     plt.grid(True)
     plt.show()
 

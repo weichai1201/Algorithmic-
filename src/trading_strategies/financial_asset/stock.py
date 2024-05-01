@@ -35,13 +35,13 @@ class Stock (FinancialAsset):
         return returns
 
     def get_prices(self):
-        return get_historical_values(self.symbol, file_path, (self.current_price.time() - datetime.timedelta(days=365)).strftime('%Y-%m-%d'), self.current_price.time().strftime('%Y-%m-%d')).iloc[:, 1]
+        return get_historical_values(self.symbol, file_path, (self.current_price.time() - datetime.timedelta(days=182)).strftime('%Y-%m-%d'), self.current_price.time().strftime('%Y-%m-%d')).iloc[:, 1]
 
     def calculate_garch(self):
         returns = self.get_returns()
-        model = arch_model(returns, vol='GARCH', p=1, q=1)
-        fit = model.fit()
-        vol = np.sqrt(fit.forecast(horizon=30).variance).mean(axis=1).iloc[-1]
+        model = arch_model(returns, vol='GARCH', p=1, q=1, rescale=False)
+        fit = model.fit(disp='off')
+        vol = np.sqrt(fit.forecast(horizon=100).variance).mean(axis=1).iloc[-1]
         return vol * np.sqrt(252)
 
 
