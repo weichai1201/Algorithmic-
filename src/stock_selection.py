@@ -28,5 +28,9 @@ def main():
     print(result[len(result) - 1], result[len(result) - 2])
 
 
+# (0.010615660972065292, 'KO') (0.010711019177999836, 'JNJ')
+# (0.04465957542892037, 'SMCI') (0.04234928634216114, 'ENPH')
+
+
 if __name__ == "__main__":
     main()
