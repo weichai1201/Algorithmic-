@@ -13,9 +13,9 @@ class Agent:
 
     def __init__(self, strategies: dict[StrategyId, Strategy]):
         self._strategies = strategies
-        self._transactions = dict[StrategyId, Transactions]()
+        self._all_transactions = dict[StrategyId, Transactions]()
         for strategy_id in strategies.keys():
-            self._transactions[strategy_id] = Transactions(strategy_id)
+            self._all_transactions[strategy_id] = Transactions(strategy_id)
         pass
 
     def get_symbols(self):
@@ -37,10 +37,10 @@ class Agent:
                 #         positions = Positions(Position.LONG, order.quantity)
                 #     transaction = Transaction(positions, order.asset, datetime.datetime.now())
                 if transaction is not None:
-                    self._transactions.get(strategy_id).add_transaction(transaction)
+                    self._all_transactions.get(strategy_id).add_transaction(transaction)
 
     def transactions(self):
-        return self._transactions
+        return self._all_transactions
 
     def need_update(self, date: datetime) -> bool:
         return any([strategy.need_update(date) for strategy in self._strategies.values()])

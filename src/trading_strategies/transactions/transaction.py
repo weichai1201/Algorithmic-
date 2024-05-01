@@ -12,6 +12,7 @@ class Transaction:
         self.__asset = asset
         self.__time = time
         self.__msg = msg
+        self.__realised_payoff = .0
 
     def get_time(self):
         return self.__time
@@ -27,6 +28,12 @@ class Transaction:
 
     def is_long(self) -> bool:
         return self.__positions.position == Position.LONG
+
+    def realise_payoff(self, amount: float):
+        self.__realised_payoff = amount
+
+    def get_payoff(self):
+        return self.__realised_payoff
 
     def __str__(self):
         s = (f"Portfolio Entry:\n"
