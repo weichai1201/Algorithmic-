@@ -2,6 +2,7 @@ from abc import abstractmethod
 from datetime import datetime, timedelta
 
 from src.agent.agent import Agent
+from src.backtesting.backtesting_summary import BacktestingSummary
 from src.data_access.data_access import retrieve_stock
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
@@ -17,9 +18,7 @@ class Backtester:
         self._self_agent = self_agent
         self._agents = agents
         self._has_tested = False
-        self._profits = dict[StrategyId, float]
-        self._drawdowns = dict[StrategyId, float]
-        self._cagr = 0.0
+        self._summary = None
 
         # register stock symbols for both agents
         self._symbols = set[Symbol]()
@@ -35,35 +34,39 @@ class Backtester:
     def transactions(self, strategy_id: StrategyId):
         return self._self_agent.transactions()[strategy_id]
 
-    def get_profits(self):
-        if not self._has_tested:
-            self.run_back_testing()
-        return self._profits
-
-    def get_drawdowns(self):
-        if not self._has_tested:
-            self.run_back_testing()
-        return self._drawdowns
-
-    def get_profit(self, strategy_id: StrategyId):
-        if not self._has_tested:
-            self.run_back_testing()
-        return self._profits[strategy_id]
-
-    def get_drawdown(self, strategy_id: StrategyId):
-        if not self._has_tested:
-            self.run_back_testing()
-        return self._drawdowns[strategy_id]
-
-    def get_cagr(self):
-        if not self._has_tested:
-            self.run_back_testing()
-        return self._cagr
+    # def get_profits(self):
+    #     if not self._has_tested:
+    #         self.run_back_testing()
+    #     return self._profits
+    #
+    # def get_drawdowns(self):
+    #     if not self._has_tested:
+    #         self.run_back_testing()
+    #     return self._drawdowns
+    #
+    # def get_profit(self, strategy_id: StrategyId):
+    #     if not self._has_tested:
+    #         self.run_back_testing()
+    #     return self._profits[strategy_id]
+    #
+    # def get_drawdown(self, strategy_id: StrategyId):
+    #     if not self._has_tested:
+    #         self.run_back_testing()
+    #     return self._drawdowns[strategy_id]
+    #
+    # def get_cagr(self):
+    #     if not self._has_tested:
+    #         self.run_back_testing()
+    #     return self._cagr
 
     def summary(self):
         if not self._has_tested:
             self.run_back_testing()
-        return self._self_agent.evaluate()
+        dates, payoffs, profits, cumulative_profits, drawdowns = self._self_agent.evaluate()
+        self._summary = BacktestingSummary(0, 0,
+                                           dates, profits, cumulative_profits, drawdowns,
+                                           (self._end_date - self._start_date).days / 365)
+        return self._summary.__str__()
 
 
 class DailyMarketReplay(Backtester):

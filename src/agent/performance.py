@@ -2,8 +2,8 @@ from src.trading_strategies.transactions.transactions import Transactions
 
 
 def calculate_option_payoff(transactions: Transactions) -> tuple[list, list]:
-    payoffs = [0]
-    cumulative_payoffs = [0]
+    payoffs = []
+    cumulative_payoffs = []
     c = 0
     for transaction in transactions.get_transactions():
         p = transaction.get_payoff()
@@ -42,17 +42,5 @@ def calculate_drawdowns(values: [float]) -> (float, [float]):
             percentages.append(0)
         else:
             percentages.append((peak - value) / peak)
-    return max(percentages), percentages
+    return percentages
 
-
-def cagr(values: [float], years: float):
-    """
-    Compound annual growth rate.
-    :param values: a series of portfolio vlaues
-    :param years: time in years
-    :return: a rate expressed in decimal
-    """
-    assert len(values) > 1
-    v0 = values[0]
-    vt = values[len(values) - 1]
-    return (vt / v0) ** (1 / years) - 1

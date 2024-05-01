@@ -48,18 +48,24 @@ class Agent:
         return any([strategy.need_update(date) for strategy in self._strategies.values()])
 
     def evaluate(self):
+        dates = dict[StrategyId, list[float]]()
         payoffs = dict[StrategyId, list[float]]()
         profits = dict[StrategyId, list[float]]()
         cumulative_profits = dict[StrategyId, list[float]]()
         drawdowns = dict[StrategyId, list[float]]()
+
         for strategy_id, transactions in self._all_transactions.items():
+            dates[strategy_id] = []
+            for transaction in transactions.get_transactions():
+                dates[strategy_id].append(transaction.get_time())
             payoffs[strategy_id] = calculate_option_payoff(transactions)[0]
             profits[strategy_id], cumulative_profits[strategy_id] = calculate_option_profit(transactions)
             drawdowns[strategy_id] = calculate_drawdowns(cumulative_profits[strategy_id])
-        return {"payoffs": payoffs,
-                "profits": profits,
-                "cumulative_profits": cumulative_profits,
-                "drawdowns": drawdowns}
+        return (dates,
+                payoffs,
+                profits,
+                cumulative_profits,
+                drawdowns)
 
     def realise_payoff(self, information: (StrategyId, float)):
         strategy_id, payoff = information
