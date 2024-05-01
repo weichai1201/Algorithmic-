@@ -1,6 +1,8 @@
 import os.path
 from datetime import datetime
 
+from pandas import DataFrame
+
 from src.agent.agent import Agent
 from src.backtesting.backtester import DailyMarketReplay
 from src.trading_strategies.financial_asset.price import Price
@@ -8,16 +10,14 @@ from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.naked_put import NakedPut
 from src.trading_strategies.strategy.strategy_id import StrategyId
+import matplotlib.pyplot as plt
 
 
 def main():
-    start_date = datetime(2004, 10, 1)
+    start_date = datetime(2004, 1, 1)
     end_date = datetime(2024, 1, 1)
 
-    tmp = Stock(Symbol("CEG"), Price(0, datetime.now()))
-    tmp.get_returns()
-
-    symbol_strs = ["SMCI", "ENPH", "KO", "JNJ", "AAPL", "MSFT", "CMA", "MHK"]
+    symbol_strs = ["SMCI", "KO", "AAPL", "CMA", "RHI"]
     strategies = dict()
     for s in symbol_strs:
         strategy_id = StrategyId("NAKED_PUT_" + s)
@@ -39,8 +39,22 @@ def main():
         os.makedirs(foldername)
     data = backtester.get_data()
     for strategy_id, df in data.items():
-        filename = f"{foldername}/{strategy_id.get_id()}.csv"
-        df.to_csv(filename)
+        filename = f"{foldername}/{strategy_id.get_id()}"
+        df.to_csv(filename + ".csv")
+        _plot(df["Date"], df["Cumulative"], strategy_id.get_id(), filename + ".png")
+
+
+def _plot(x, y, title="", filename=""):
+    plt.figure(figsize=(10, 6))
+    plt.plot(x, y, linestyle="-")
+    plt.title(title)
+    plt.xlabel("Date")
+    plt.ylabel("Profit (USD)")
+    plt.grid(True)
+    if filename != "":
+        plt.savefig(filename)
+    else:
+        plt.show()
 
 
 if __name__ == "__main__":

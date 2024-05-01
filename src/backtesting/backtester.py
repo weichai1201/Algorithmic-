@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from datetime import datetime, timedelta
 
+import numpy as np
 import pandas as pd
 
 from src.agent.agent import Agent
@@ -77,6 +78,7 @@ class Backtester:
             self.summary()
         return self._summary.get_data()
 
+
 class DailyMarketReplay(Backtester):
     def run_back_testing(self):
         self._has_tested = True
@@ -95,7 +97,8 @@ class DailyMarketReplay(Backtester):
             if da_result.is_successful:
                 stock: Stock
                 stock = da_result.data
-
+                # if np.isnan(stock.current_price):
+                #     continue
                 new_data = (stock.current_price.price(), self._simulate_premiums(stock, date))
                 self._self_agent.update(symbol, new_data, date)
 

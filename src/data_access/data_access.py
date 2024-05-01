@@ -1,6 +1,8 @@
 import csv
 from datetime import datetime, timedelta
 
+import numpy as np
+
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
 from src.trading_strategies.financial_asset.option import Option
 from src.trading_strategies.financial_asset.price import Price
@@ -35,6 +37,8 @@ def retrieve_stock(symbol: Symbol, date: datetime) -> DataAccessResult:
     if len(data) == 0 or symbol.symbol not in data.columns:
         return DataAccessResult(None)
     price = data[symbol.symbol].values[0]
+    if np.isnan(price):
+        return DataAccessResult(None)
     stock = Stock(symbol, Price(price, date))
     return DataAccessResult(stock, True)
 

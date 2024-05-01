@@ -20,10 +20,10 @@ class BacktestingSummary:
         # convert to data frame
         for strategy_id in dates.keys():
             self._data[strategy_id] = pd.DataFrame({
-                "Dates": dates[strategy_id],
-                "Profits": profits[strategy_id],
+                "Date": dates[strategy_id],
+                "Profit": profits[strategy_id],
                 "Cumulative": cumulative_profits[strategy_id],
-                "Drawdowns": drawdowns[strategy_id]
+                "Drawdown": drawdowns[strategy_id]
             })
 
         self._years = years
