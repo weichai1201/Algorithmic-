@@ -32,3 +32,14 @@ def calculate_option_profit(transactions: Transactions) -> tuple[list, list]:
         prev_transaction = transaction
     return profits, cumulative_profits
 
+
+def drawdowns(values: [float]) -> (float, [float]):
+    percentages = []
+    peak = 0
+    for value in values:
+        peak = max(peak, value)
+        if peak == 0:
+            percentages.append(0)
+        else:
+            percentages.append((peak - value) / peak)
+    return max(percentages), percentages
