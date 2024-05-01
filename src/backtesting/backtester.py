@@ -1,17 +1,13 @@
 from abc import abstractmethod
 from datetime import datetime, timedelta
-from typing import Set
 
-from src.backtesting.agent import Agent
-from src.data_access.data_access import request_historical_price, retrieve_stock
-from src.trading_strategies.financial_asset.price import Price
+from src.agent.agent import Agent
+from src.data_access.data_access import retrieve_stock
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
-from src.trading_strategies.option_pricing import calculate_put_price, bsm_pricing
+from src.trading_strategies.option_pricing import bsm_pricing
 from src.trading_strategies.strategy.option_strategy.option_strike import simulate_strikes
 from src.trading_strategies.strategy.strategy_id import StrategyId
-from src.trading_strategies.transactions.transaction import Transaction
-from src.trading_strategies.transactions.transactions import Transactions
 
 
 class Backtester:

@@ -1,7 +1,7 @@
-from datetime import timedelta, datetime
+from datetime import datetime
 
-from src.backtesting.agent import Agent
-from src.backtesting.backtester import Backtester, DailyMarketReplay
+from src.agent.agent import Agent
+from src.backtesting.backtester import DailyMarketReplay
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.naked_put import NakedPut
 from src.trading_strategies.strategy.strategy_id import StrategyId
