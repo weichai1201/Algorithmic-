@@ -11,11 +11,15 @@ import matplotlib.pyplot as plt
 
 def main():
     start_date = datetime(2004, 1, 1)
-    end_date = datetime(2024, 1, 1)
+    end_date = datetime(2010, 1, 1)
 
+    foldername = "tmp"
     symbol_strs = ["SMCI", "KO", "AAPL", "CMA", "RHI"]
+    # volatility
+    # (0.010615660972065292, 'KO')(0.010711019177999836, 'JNJ')(0.010799562059302475, 'MCD')
+    symbol_low_vol = ["KO", "JNJ", "MCD"]
     strategies = dict()
-    for s in symbol_strs:
+    for s in ["KO"]:
         strategy_id = StrategyId("NAKED_PUT_" + s)
         strategy = NakedPut(strategy_id, Symbol(s), None, False)
         strategies[strategy_id] = strategy
@@ -30,7 +34,7 @@ def main():
     #     pass
 
     # write to csv
-    foldername = "back_testing_results"
+
     if not os.path.exists(foldername):
         os.makedirs(foldername)
     data = backtester.get_data()
@@ -38,6 +42,9 @@ def main():
         filename = f"{foldername}/{strategy_id.get_id()}"
         df.to_csv(filename + ".csv")
         _plot(df["Date"], df["Cumulative"], strategy_id.get_id(), filename + ".png")
+        txt = open(filename + ".txt", "w")
+        txt.write(backtester.transactions(strategy_id).__str__())
+        txt.close()
 
 
 def _plot(x, y, title="", filename=""):

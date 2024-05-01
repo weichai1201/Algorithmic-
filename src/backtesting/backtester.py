@@ -6,7 +6,7 @@ import pandas as pd
 
 from src.agent.agent import Agent
 from src.backtesting.backtesting_summary import BacktestingSummary
-from src.data_access.data_access import retrieve_stock
+from src.data_access.data_access import retrieve_stock, retrieve_rf
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.option_pricing import bsm_pricing
@@ -107,7 +107,9 @@ class DailyMarketReplay(Backtester):
         strikes = simulate_strikes(stock.current_price.price())
         result = dict[float, float]()
         for strike in strikes:
-            premium = bsm_pricing(stock, strike, date + timedelta(days=30), [], 0.05, is_call)
+            expiry_date = date + timedelta(days=30)
+            rf = retrieve_rf(expiry_date).data
+            premium = bsm_pricing(stock, strike, expiry_date, [], rf, is_call)
             result[strike] = round(premium, 2)
         return result
 
