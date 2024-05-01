@@ -1,6 +1,5 @@
-import datetime
 from abc import abstractmethod
-from typing import List, Dict, Optional
+from typing import Optional
 
 from src.trading_strategies.financial_asset.option import Option, PutOption, CallOption
 from src.trading_strategies.financial_asset.price import Price
@@ -9,13 +8,11 @@ from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.option_pricing import bsm_pricing, implied_date
 from src.trading_strategies.strategy.option_strategy.option_strike import get_strike_gap, calculate_strike, \
     roll_down_strike, roll_up_strike
-from src.trading_strategies.strategy.option_strategy.strike_spec import StrikeSpec
 from src.trading_strategies.strategy.strategy import Strategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
 from src.trading_strategies.transactions.position import Position
 from src.trading_strategies.transactions.positions import Positions
 from src.trading_strategies.transactions.transaction import Transaction
-from src.util.exception import ExceptionHandler
 from src.util.expiry_date import next_expiry_date, closest_expiration_date, nyse_calendar
 
 risk_free_rate = 0.03
@@ -45,10 +42,6 @@ class OptionStrategy(Strategy):
     @abstractmethod
     def itm_amount(self, stock_price: float, option) -> float:
         return option.itm_amount(stock_price)
-
-    # @abstractmethod
-    # def update(self, new_data):
-    #     pass
 
     def get_id(self) -> StrategyId:
         return self._id
@@ -90,10 +83,7 @@ class OptionStrategy(Strategy):
         return new_option
 
     def _roll_over_put(self, stock, expiration_date):
-        strike_price = calculate_strike(stock.current_price.price(), self._is_itm, self._num_of_strikes, True)
-        premium = bsm_pricing(stock, strike_price, expiration_date, [], risk_free_rate, False)
-        new_option = PutOption(stock.symbol, Price(strike_price, stock.current_price.time()), expiration_date, premium)
-        return new_option
+        pass
 
     def _update_mod_itm_option(self, stock, option) -> Option:
         premium = option.itm_amount(stock.current_price.price()) + get_strike_gap(stock.current_price.price())
@@ -116,14 +106,7 @@ class OptionStrategy(Strategy):
         return new_option
 
     def _roll_down(self, stock, option, premium) -> Option:
-        strike_price = roll_down_strike(stock.current_price.price(), option.get_strike().price(), self._num_of_strikes)
-        new_expiration = implied_date(stock.current_price, strike_price, risk_free_rate, premium,
-                                      stock.calculate_garch(), True)
-        new_expiration = closest_expiration_date(new_expiration, nyse_calendar)
-        premium = bsm_pricing(stock, strike_price, new_expiration, [], risk_free_rate, False)
-        strike = Price(strike_price, stock.current_price.time())
-        new_option = PutOption(stock.symbol, strike, new_expiration, premium)
-        return new_option
+        pass
 
     @staticmethod
     def _calculate_put_payoff(stock_price: float, strike_price: float):
