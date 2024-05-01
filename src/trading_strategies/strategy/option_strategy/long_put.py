@@ -10,7 +10,8 @@ from src.util.expiry_date import closest_expiration_date, nyse_calendar
 
 risk_free_rate = 0.03
 
-class NakedPut(OptionStrategy):
+
+class LongPut(OptionStrategy):
 
     def __init__(self, strategy_id: StrategyId, symbol: Symbol, is_itm: bool, position: Position,
                  is_weekly: bool, weekday, num_of_strikes, scale=1):
@@ -22,15 +23,3 @@ class NakedPut(OptionStrategy):
         premium = bsm_pricing(stock, strike_price, expiration_date, [], risk_free_rate, True)
         new_option = PutOption(stock.symbol, Price(strike_price, stock.current_price.time()), expiration_date, premium)
         return new_option
-
-    def _roll_down(self, stock, option, premium) -> Option:
-        strike_price = roll_down_strike(stock.current_price.price(), option.get_strike().price(), self._num_of_strikes)
-        new_expiration = implied_date(stock.current_price, strike_price, risk_free_rate, premium,
-                                      stock.calculate_garch(), True)
-        new_expiration = closest_expiration_date(new_expiration, nyse_calendar)
-        premium = bsm_pricing(stock, strike_price, new_expiration, [], risk_free_rate, True)
-        strike = Price(strike_price, stock.current_price.time())
-        new_option = PutOption(stock.symbol, strike, new_expiration, premium)
-        return new_option
-
-

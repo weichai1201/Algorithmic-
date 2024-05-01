@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
-from src.trading_strategies.transactions.position import Position
 from src.trading_strategies.transactions.positions import Positions
 
 
@@ -17,11 +16,14 @@ class Transaction:
     def get_time(self):
         return self.__time
 
-    def calculate_profit(self, other: "Transaction"):
-        pass
-
     def get_asset(self):
         return self.__asset
+
+    def calculate_premium(self):
+        return self.__asset.get_premium()
+
+    def calculate_payoff(self, stock_price):
+        return self.__asset.option_payoff(stock_price)
 
     def is_short(self) -> bool:
         return self.__positions.position == Position.SHORT
