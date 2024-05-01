@@ -16,6 +16,9 @@ class Option(FinancialAsset):
         self._expiration_date = expiration_date
         self._premium = premium
 
+    def price(self):
+        return self._premium
+
     @property
     def symbol(self):
         return self._symbol
@@ -51,6 +54,13 @@ class Option(FinancialAsset):
                 f"Strike Price: {self._strike_price},"
                 f" Expiration Date: {self._expiration_date},"
                 f" Premium: {self._premium}")
+
+    @abstractmethod
+    def option_payoff(self, stock: Stock):
+        pass
+
+    def payoff(self, optional) -> int:
+        return self.option_payoff(optional)
 
 
 class CallOption(Option):

@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
+from src.trading_strategies.transactions.position import Position
 from src.trading_strategies.transactions.positions import Positions
 
 
@@ -20,6 +21,12 @@ class Transaction:
 
     def get_asset(self):
         return self.__asset
+
+    def is_short(self) -> bool:
+        return self.__positions.position == Position.SHORT
+
+    def is_long(self) -> bool:
+        return self.__positions.position == Position.LONG
 
     def __str__(self):
         s = (f"Portfolio Entry:\n"
