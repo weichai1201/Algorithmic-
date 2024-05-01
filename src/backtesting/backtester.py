@@ -2,6 +2,7 @@ from abc import abstractmethod
 from datetime import datetime, timedelta
 
 from src.agent.agent import Agent
+from src.backtesting.backtesting_summary import BacktestingSummary
 from src.data_access.data_access import retrieve_stock
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
@@ -17,9 +18,7 @@ class Backtester:
         self._self_agent = self_agent
         self._agents = agents
         self._has_tested = False
-        self._profits = dict[StrategyId, float]
-        self._drawdowns = dict[StrategyId, float]
-        self._cagr = 0.0
+        self._summary = None
 
         # register stock symbols for both agents
         self._symbols = set[Symbol]()
@@ -35,38 +34,51 @@ class Backtester:
     def transactions(self, strategy_id: StrategyId):
         return self._self_agent.transactions()[strategy_id]
 
-    def get_profits(self):
-        if not self._has_tested:
-            self.run_back_testing()
-        return self._profits
-
-    def get_drawdowns(self):
-        if not self._has_tested:
-            self.run_back_testing()
-        return self._drawdowns
-
-    def get_profit(self, strategy_id: StrategyId):
-        if not self._has_tested:
-            self.run_back_testing()
-        return self._profits[strategy_id]
-
-    def get_drawdown(self, strategy_id: StrategyId):
-        if not self._has_tested:
-            self.run_back_testing()
-        return self._drawdowns[strategy_id]
-
-    def get_cagr(self):
-        if not self._has_tested:
-            self.run_back_testing()
-        return self._cagr
+    # def get_profits(self):
+    #     if not self._has_tested:
+    #         self.run_back_testing()
+    #     return self._profits
+    #
+    # def get_drawdowns(self):
+    #     if not self._has_tested:
+    #         self.run_back_testing()
+    #     return self._drawdowns
+    #
+    # def get_profit(self, strategy_id: StrategyId):
+    #     if not self._has_tested:
+    #         self.run_back_testing()
+    #     return self._profits[strategy_id]
+    #
+    # def get_drawdown(self, strategy_id: StrategyId):
+    #     if not self._has_tested:
+    #         self.run_back_testing()
+    #     return self._drawdowns[strategy_id]
+    #
+    # def get_cagr(self):
+    #     if not self._has_tested:
+    #         self.run_back_testing()
+    #     return self._cagr
 
     def summary(self):
         if not self._has_tested:
             self.run_back_testing()
-        pass
+        dates, payoffs, profits, cumulative_profits, drawdowns = self._self_agent.evaluate()
+        self._summary = BacktestingSummary(0, 0,
+                                           dates, profits, cumulative_profits, drawdowns,
+                                           (self._end_date - self._start_date).days / 365)
+        return self._summary.__str__()
 
 
 class DailyMarketReplay(Backtester):
+    def run_back_testing(self):
+        self._has_tested = True
+        date = self._start_date
+        while date < self._end_date:
+            self._update_by_symbol(self._self_agent, date)
+            for agent in self._agents:
+                self._update_by_symbol(agent, date)
+            date += timedelta(days=1)
+
     def _update_by_symbol(self, agent: Agent, date: datetime):
         if not agent.need_update(date):
             return
@@ -75,6 +87,7 @@ class DailyMarketReplay(Backtester):
             if da_result.is_successful:
                 stock: Stock
                 stock = da_result.data
+
                 new_data = (stock.current_price.price(), self._simulate_premiums(stock, date))
                 self._self_agent.update(symbol, new_data, date)
 
@@ -86,14 +99,6 @@ class DailyMarketReplay(Backtester):
             premium = bsm_pricing(stock, strike, date + timedelta(days=30), [], 0.05, is_call)
             result[strike] = round(premium, 2)
         return result
-
-    def run_back_testing(self):
-        date = self._start_date
-        while date < self._end_date:
-            self._update_by_symbol(self._self_agent, date)
-            for agent in self._agents:
-                self._update_by_symbol(agent, date)
-            date += timedelta(days=1)
 
 
 class MultiAgent(Backtester):

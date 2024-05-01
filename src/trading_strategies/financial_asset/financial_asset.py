@@ -14,6 +14,13 @@ class FinancialAsset:
         pass
 
     @abstractmethod
+    def price(self) -> float:
+        pass
+
+    def payoff(self, optional) -> int:
+        return 0
+
+    @abstractmethod
     def __str__(self):
         pass
 

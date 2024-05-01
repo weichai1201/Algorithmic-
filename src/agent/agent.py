@@ -1,5 +1,7 @@
 import datetime
 
+from src.agent.performance import calculate_option_payoff, calculate_option_profit, calculate_drawdowns
+from src.order.simulated_market import SimulatedMarket
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.strategy import Strategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
@@ -13,10 +15,10 @@ class Agent:
 
     def __init__(self, strategies: dict[StrategyId, Strategy]):
         self._strategies = strategies
-        self._transactions = dict[StrategyId, Transactions]()
-        for strategy_id in strategies.keys():
-            self._transactions[strategy_id] = Transactions(strategy_id)
-        pass
+        self._all_transactions = dict[StrategyId, Transactions]()
+        for strategy_id, strategy in strategies.items():
+            self._all_transactions[strategy_id] = Transactions(strategy_id)
+            strategy.register_agent(self)
 
     def get_symbols(self):
         result = set[Symbol]()
@@ -24,11 +26,11 @@ class Agent:
             result.add(strategy.symbol())
         return result
 
-    def update(self, symbol: Symbol, new_data, time: datetime):
+    def update(self, symbol: Symbol, new_data, time: datetime, market=SimulatedMarket()):
         for strategy_id, strategy in self._strategies.items():
             if symbol == strategy.symbol():
                 transaction = strategy.update(new_data, time)
-                # SimulatedMarket.submit_order(order)
+                # market.submit_order(order)
                 # if order.is_successful():
                 #     positions: Positions
                 #     if order.is_ask:
@@ -37,10 +39,36 @@ class Agent:
                 #         positions = Positions(Position.LONG, order.quantity)
                 #     transaction = Transaction(positions, order.asset, datetime.datetime.now())
                 if transaction is not None:
-                    self._transactions.get(strategy_id).add_transaction(transaction)
+                    self._all_transactions.get(strategy_id).add_transaction(transaction)
 
     def transactions(self):
-        return self._transactions
+        return self._all_transactions
 
     def need_update(self, date: datetime) -> bool:
         return any([strategy.need_update(date) for strategy in self._strategies.values()])
+
+    def evaluate(self):
+        dates = dict[StrategyId, list[float]]()
+        payoffs = dict[StrategyId, list[float]]()
+        profits = dict[StrategyId, list[float]]()
+        cumulative_profits = dict[StrategyId, list[float]]()
+        drawdowns = dict[StrategyId, list[float]]()
+
+        for strategy_id, transactions in self._all_transactions.items():
+            dates[strategy_id] = []
+            for transaction in transactions.get_transactions():
+                dates[strategy_id].append(transaction.get_time())
+            payoffs[strategy_id] = calculate_option_payoff(transactions)[0]
+            profits[strategy_id], cumulative_profits[strategy_id] = calculate_option_profit(transactions)
+            drawdowns[strategy_id] = calculate_drawdowns(cumulative_profits[strategy_id])
+        return (dates,
+                payoffs,
+                profits,
+                cumulative_profits,
+                drawdowns)
+
+    def realise_payoff(self, information: (StrategyId, float)):
+        strategy_id, payoff = information
+        t = self._all_transactions[strategy_id].peak_last()
+        if t is not None:
+            t.realise_payoff(payoff)

@@ -16,6 +16,9 @@ class Option(FinancialAsset):
         self._expiration_date = expiration_date
         self._premium = premium
 
+    def price(self):
+        return self._premium
+
     @property
     def symbol(self):
         return self._symbol
@@ -52,6 +55,13 @@ class Option(FinancialAsset):
                 f" Expiration Date: {self._expiration_date},"
                 f" Premium: {self._premium}")
 
+    @abstractmethod
+    def option_payoff(self, stock: Stock):
+        pass
+
+    def payoff(self, optional) -> int:
+        return self.option_payoff(optional)
+
 
 class CallOption(Option):
     def __init__(self, symbol: Symbol, strike_price: Price, expiration_date: datetime, premium: Price):
@@ -63,8 +73,10 @@ class CallOption(Option):
     def itm_amount(self, stock_price: float) -> float:
         return max(0, stock_price - self.get_strike().price())
 
-    def option_payoff(self, stock: Stock):
-        return np.maximum(stock.current_price.price() - self.get_strike().price(), 0)
+    def option_payoff(self, stock: Stock | float):
+        if isinstance(stock, Stock):
+            stock = stock.current_price.price()
+        return np.maximum(stock - self.get_strike().price(), 0)
 
 
 class PutOption(Option):
@@ -77,6 +89,8 @@ class PutOption(Option):
     def itm_amount(self, stock_price: float) -> float:
         return max(0, self.get_strike().price() - stock_price)
 
-    def option_payoff(self, stock: Stock):
-        payoff = np.maximum(self.get_strike().price() - stock.current_price.price(), 0)
+    def option_payoff(self, stock: Stock | float):
+        if isinstance(stock, Stock):
+            stock = stock.current_price.price()
+        payoff = np.maximum(self.get_strike().price() - stock, 0)
         return payoff

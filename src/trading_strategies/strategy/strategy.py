@@ -1,7 +1,6 @@
 from abc import abstractmethod
 from datetime import datetime
 
-from src.order.order import Order
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.strategy_id import StrategyId
 
@@ -11,6 +10,8 @@ class Strategy:
     def __init__(self, id: StrategyId, symbol: Symbol):
         self._id = id
         self._symbol = symbol
+        from src.agent.empty_agent import EmptyAgent
+        self._agent = EmptyAgent()
 
     def id(self):
         return self._id
@@ -28,3 +29,8 @@ class Strategy:
     def need_update(self, date: datetime):
         return True
 
+    def register_agent(self, agent):
+        self._agent = agent
+
+    def notify_agent(self, information):
+        pass
