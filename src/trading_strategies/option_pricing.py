@@ -3,7 +3,7 @@ import datetime
 import numpy as np
 from scipy.stats import norm
 import math
-from scipy.optimize import newton, fmin, minimize
+from scipy.optimize import newton
 
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.stock import Stock
@@ -74,9 +74,8 @@ def implied_t_call(stock_price, strike_price, risk_free_rate, premium, volatilit
 
 def implied_date(stock_price: Price, strike_price, risk_free_rate, premium, volatility, is_put):
     if is_put:
-        error_function = lambda t: abs(calculate_put_price(stock_price.price(), strike_price, volatility, t, risk_free_rate) - premium)
+        error_function = lambda t: calculate_put_price(stock_price.price(), strike_price, volatility, t, risk_free_rate) - premium
     else:
-        error_function = lambda t: abs(calculate_call_price(stock_price.price(), strike_price, volatility, t, risk_free_rate) - premium)
-    result = minimize(error_function, x0=0.1, bounds=[(0.02, 2)], method='Nelder-Mead')
-    implied_t = result.x[0]
+        error_function = lambda t: calculate_call_price(stock_price.price(), strike_price, volatility, t, risk_free_rate) - premium
+    implied_t = newton(error_function, x0=0.3)
     return next_nth_trading_day(stock_price.time(), int(implied_t*252))

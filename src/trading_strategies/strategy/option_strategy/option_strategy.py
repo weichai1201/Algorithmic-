@@ -62,7 +62,7 @@ class OptionStrategy(Strategy):
 
         if not option.is_expired(current_time):
             if option.get_strike().time() == current_time:
-                return Transaction(self._positions, option, current_time)
+                return Transaction(self._positions, option, option.get_strike().time())
             else:
                 return None
 
@@ -74,7 +74,7 @@ class OptionStrategy(Strategy):
         else:
             new_option = self._update_otm_option(new_stock)
 
-        return Transaction(self._positions, new_option, current_time)
+        return Transaction(self._positions, new_option, new_option.get_strike().time())
 
     def _update_otm_option(self, stock) -> Option:
         expiration_date = next_expiry_date(stock.current_price.time(), self._is_weekly, True, self._weekday)
@@ -98,8 +98,7 @@ class OptionStrategy(Strategy):
         new_expiration = implied_date(stock.current_price, strike_price, risk_free_rate, premium,
                                       stock.calculate_garch(), False)
         new_expiration = closest_expiration_date(new_expiration, nyse_calendar)
-        premium = bsm_pricing(stock, strike_price, new_expiration, [], risk_free_rate, True)
-        strike = Price(strike_price, stock.current_price.time())
+        strike = Price(strike_price, new_expiration)
         new_option = PutOption(stock.symbol, strike, new_expiration, premium)
         return new_option
 
@@ -108,10 +107,22 @@ class OptionStrategy(Strategy):
         new_expiration = implied_date(stock.current_price, strike_price, risk_free_rate, premium,
                                       stock.calculate_garch(), True)
         new_expiration = closest_expiration_date(new_expiration, nyse_calendar)
-        premium = bsm_pricing(stock, strike_price, new_expiration, [], risk_free_rate, False)
-        strike = Price(strike_price, stock.current_price.time())
+        strike = Price(strike_price, new_expiration)
         new_option = PutOption(stock.symbol, strike, new_expiration, premium)
         return new_option
+
+    # def get_expiry(self) -> [datetime]:
+    #     return [option.get_expiry() for option in self._options]
+
+    # def get_payoffs(self, stock_price: float | Price) -> [float]:
+    #     if isinstance(stock_price, Price):
+    #         stock_price = stock_price.price()
+    #     payoffs = []
+    #     for option in self._options:
+    #         if isinstance(option, CallOption):
+    #             payoffs.append(self._calculate_call_payoff(stock_price, option.get_strike()))
+    #         else:
+    #             payoffs.append(self._calculate_put_payoff(stock_price, option.get_strike()))
 
     @staticmethod
     def _calculate_put_payoff(stock_price: float, strike_price: float):
