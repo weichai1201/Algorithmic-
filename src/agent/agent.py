@@ -47,6 +47,13 @@ class Agent:
     def need_update(self, date: datetime) -> bool:
         return any([strategy.need_update(date) for strategy in self._strategies.values()])
 
+    def need_update_for(self, date: datetime, symbol: Symbol):
+        for strategy in self._strategies.values():
+            if strategy.is_same_symbol(symbol):
+                if strategy.need_update(date):
+                    return True
+        return False
+
     def evaluate(self):
         dates = dict[StrategyId, list[float]]()
         payoffs = dict[StrategyId, list[float]]()

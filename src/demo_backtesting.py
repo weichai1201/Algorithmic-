@@ -1,12 +1,8 @@
 import os.path
 from datetime import datetime
 
-from pandas import DataFrame
-
 from src.agent.agent import Agent
 from src.backtesting.backtester import DailyMarketReplay
-from src.trading_strategies.financial_asset.price import Price
-from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.naked_put import NakedPut
 from src.trading_strategies.strategy.strategy_id import StrategyId
