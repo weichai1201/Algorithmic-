@@ -33,7 +33,7 @@ def calculate_option_profit(transactions: Transactions) -> tuple[list, list]:
     return profits, cumulative_profits
 
 
-def drawdowns(values: [float]) -> (float, [float]):
+def calculate_drawdowns(values: [float]) -> (float, [float]):
     percentages = []
     peak = 0
     for value in values:
