@@ -50,3 +50,17 @@ def roll_down_strike(stock_price: float, current_strike: float, num_strikes: int
     """
     strike_gap = get_strike_gap(stock_price)
     return current_strike - num_strikes * strike_gap
+
+
+def roll_up_strike(stock_price: float, current_strike: float, num_strikes: int) -> float:
+    """
+    Using the strike gap guide to calculate the rolled down strike price.
+    :param current_strike:
+    :param stock_price: Used to determine the strike gap
+    :param num_strikes: number of strike gaps to be rolled
+    :return: new strike price.
+
+    @author: Huanjie Zhang
+    """
+    strike_gap = get_strike_gap(stock_price)
+    return current_strike + num_strikes * strike_gap

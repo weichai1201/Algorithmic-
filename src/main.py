@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -10,34 +10,40 @@ from src.trading_strategies.option_pricing import bsm_pricing, implied_t_put
 from src.trading_strategies.strategy.option_strategy.naked_put import NakedPut
 from src.trading_strategies.strategy.option_strategy.option_strike import calculate_strike
 from src.trading_strategies.strategy.strategy_id import StrategyId
-from src.util.expiry_date import next_expiry_date
+from src.trading_strategies.transactions.position import Position
+from src.trading_strategies.transactions.positions import Positions
+from src.util.expiry_date import next_expiry_date, closest_expiration_date
 from src.util.read_file import read_file, get_historical_values
 import pandas as pd
 
 
 def main():
-    csl_symbol = Symbol("CSL.AX")
+    file_path = '../src/data/sp500_adj_close_prices.csv'
+    aapl_symbol = Symbol('AAPL')
+    date = datetime.datetime(2010, 1, 4, 0, 0)
+    is_itm = False
+    num_strike = 1
+    is_weekly = True
+    weekday = "FRI"
 
-    file_path = '/Users/yifanxiao/Desktop/csl.csv'
-    stock_data = get_historical_values(csl_symbol, file_path, '2004-01-01', '2024-03-31')
+    stock_data = get_historical_values(aapl_symbol, file_path, date.strftime('%Y-%m-%d'))
     stock_data.set_index('Date', inplace=True)
-    # print(stock_data.loc['2004-03-31'].iloc[-1])
 
-    date = datetime(2004, 3, 31)
-    price = Price(stock_data.loc[date.strftime('%Y-%m-%d')].iloc[-1], date)
-    csl_stock = Stock(csl_symbol, price)
+    price = Price(stock_data.loc[date.strftime('%Y-%m-%d %H:%M:%S')].iloc[-1], date)
+    aapl_stock = Stock(aapl_symbol, price)
 
-    # print(csl_stock.garch_long_run)
+    expiry_date = next_expiry_date(date, True, True)
 
-    date = next_expiry_date(date, "thu", False, False)
+    strike_price = Price(calculate_strike(aapl_stock.current_price.price(), False, 1, True), aapl_stock.current_price.time())
 
-    strike_price = Price(calculate_strike(csl_stock.current_price.price(), False, 1, True), date)
+    premium = bsm_pricing(aapl_stock, strike_price.price(), expiry_date, [], 0.03, False)
+    put_option = PutOption(aapl_symbol, strike_price, expiry_date, premium)
 
-    # dividend = Price(0.5, datetime(2004, 4, 11))
-    # dividends = [dividend]
+    position = Position.SHORT
 
-    premium = bsm_pricing(csl_stock, strike_price.price(), date, [], 0.03, False)
-    put_option = PutOption(csl_symbol, strike_price, date, premium)
+    naked_put = NakedPut(StrategyId("1"), aapl_symbol, is_itm, position, is_weekly, weekday,
+                         num_strike)
+
 
     # marginHandler = EquityMarginHandler()
     # margin = marginHandler.naked_put_margin(csl_stock.current_price.price(), put_option.get_strike().price(),
@@ -49,19 +55,18 @@ def main():
 
     profit = []
 
-    for i in range(44):
-        naked_put = NakedPut(StrategyId("1"), [put_option], False, False)
+    for i in range(1000):
+        if naked_put.update(aapl_stock, put_option) is not None:
+            transaction = naked_put.update(aapl_stock, put_option)
+            if put_option.get_expiry() == date:
+                profit.append((-transaction.calculate_payoff(aapl_stock.current_price), transaction.get_time()))
+                put_option = transaction.get_asset()
+                continue
+            else:
+                profit.append((transaction.calculate_premium(), transaction.get_time()))
 
-        transaction = naked_put.roll(put_option, csl_stock.current_price.time())
-        profit.append((transaction.calculate_premium(), transaction.get_time()))
-
-        date = put_option.get_expiry()
-        csl_stock.set_current_price(Price(stock_data.loc[date.strftime('%Y-%m-%d')].iloc[-1], date))
-
-        put_option = naked_put.update(csl_stock)
-
-        profit.append((-transaction.calculate_payoff(csl_stock.current_price), csl_stock.current_price.time()))
-
+        date = closest_expiration_date(aapl_stock.current_price.time() + datetime.timedelta(days=1))
+        aapl_stock.set_current_price(Price(stock_data.loc[date.strftime('%Y-%m-%d %H:%M:%S')].iloc[-1], date))
 
 
     sum = []
@@ -69,22 +74,25 @@ def main():
     total = 0
     for data in profit:
         total += data[0]
-        sum.append((total, data[1]))
+        sum.append((data[1], total))
 
-    print(sum)
 
-    x = [d[1].strftime('%Y-%m-%d') for d in sum]  # Convert datetime to string
-    y = [d[0] for d in sum]
+    df_sum = pd.DataFrame(sum, columns=['Date', 'Value'])
+    print(df_sum)
+
+    x = [d[0].strftime('%Y-%m-%d') for d in sum]  # Convert datetime to string
+    y = [d[1] for d in sum]
+
+    prices = stock_data.loc[:date.strftime('%Y-%m-%d %H:%M:%S')]
 
     # Plot the data
     plt.figure(figsize=(10, 6))
-    plt.plot(x, y, marker='o', linestyle='-')
-    plt.title('Plot of Data')
+    plt.plot(df_sum['Date'], df_sum['Value'], linestyle='-')
+    plt.plot(prices.index, prices['AAPL'], linestyle='-')
+    plt.title('Value over Time')
     plt.xlabel('Date')
     plt.ylabel('Value')
-    plt.xticks(rotation=45)
     plt.grid(True)
-    plt.tight_layout()
     plt.show()
 
     pass
