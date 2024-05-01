@@ -1,6 +1,7 @@
 import os
 import sys
 import warnings
+from datetime import datetime, timedelta
 
 import numpy as np
 import statistics
@@ -44,7 +45,7 @@ class Stock(FinancialAsset):
         return returns
 
     def get_prices(self):
-        return get_historical_values(self.symbol, file_path, (self.current_price.time() - datetime.timedelta(days=182)).strftime('%Y-%m-%d'), self.current_price.time().strftime('%Y-%m-%d')).iloc[:, 1]
+        return get_historical_values(self.symbol, file_path, (self.current_price.time() - timedelta(days=182)).strftime('%Y-%m-%d'), self.current_price.time().strftime('%Y-%m-%d')).iloc[:, 1]
 
     def calculate_garch(self):
         returns = self.get_returns()
