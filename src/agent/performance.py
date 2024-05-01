@@ -28,7 +28,7 @@ def calculate_option_profit(transactions: Transactions) -> tuple[list, list]:
             gain *= -1
         profits.append(gain)
         c += gain
-        cumulative_profits.append(gain)
+        cumulative_profits.append(c)
         prev_transaction = transaction
     return profits, cumulative_profits
 
