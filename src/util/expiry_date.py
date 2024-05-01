@@ -9,7 +9,10 @@ nyse_calendar = get_calendar('XNYS')
 
 def next_week_expiry(date: datetime, weekday: str):
     days_until_weekday = (weekday_mapping[weekday.upper()] - date.weekday()) % 7
-    next_expire_date = date + timedelta(days=days_until_weekday)
+    if days_until_weekday == 0:
+        next_expire_date = date + timedelta(days=7)
+    else:
+        next_expire_date = date + timedelta(days=days_until_weekday)
 
     return next_expire_date
 
