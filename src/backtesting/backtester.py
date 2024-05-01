@@ -63,10 +63,19 @@ class Backtester:
     def summary(self):
         if not self._has_tested:
             self.run_back_testing()
-        pass
+        return self._self_agent.evaluate()
 
 
 class DailyMarketReplay(Backtester):
+    def run_back_testing(self):
+        self._has_tested = True
+        date = self._start_date
+        while date < self._end_date:
+            self._update_by_symbol(self._self_agent, date)
+            for agent in self._agents:
+                self._update_by_symbol(agent, date)
+            date += timedelta(days=1)
+
     def _update_by_symbol(self, agent: Agent, date: datetime):
         if not agent.need_update(date):
             return
@@ -75,6 +84,7 @@ class DailyMarketReplay(Backtester):
             if da_result.is_successful:
                 stock: Stock
                 stock = da_result.data
+
                 new_data = (stock.current_price.price(), self._simulate_premiums(stock, date))
                 self._self_agent.update(symbol, new_data, date)
 
@@ -86,14 +96,6 @@ class DailyMarketReplay(Backtester):
             premium = bsm_pricing(stock, strike, date + timedelta(days=30), [], 0.05, is_call)
             result[strike] = round(premium, 2)
         return result
-
-    def run_back_testing(self):
-        date = self._start_date
-        while date < self._end_date:
-            self._update_by_symbol(self._self_agent, date)
-            for agent in self._agents:
-                self._update_by_symbol(agent, date)
-            date += timedelta(days=1)
 
 
 class MultiAgent(Backtester):

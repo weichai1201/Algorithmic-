@@ -20,6 +20,11 @@ class Transactions:
     def get_transactions(self):
         return self._transactions_list
 
+    def peak_last(self):
+        if len(self._transactions_list) == 0:
+            return None
+        return self._transactions_list[len(self._transactions_list) - 1]
+
     def __str__(self):
         s = ""
         for t in self._transactions_list:

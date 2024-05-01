@@ -16,9 +16,9 @@ class Agent:
     def __init__(self, strategies: dict[StrategyId, Strategy]):
         self._strategies = strategies
         self._all_transactions = dict[StrategyId, Transactions]()
-        for strategy_id in strategies.keys():
+        for strategy_id, strategy in strategies.items():
             self._all_transactions[strategy_id] = Transactions(strategy_id)
-        pass
+            strategy.register_agent(self)
 
     def get_symbols(self):
         result = set[Symbol]()
@@ -60,3 +60,9 @@ class Agent:
                 "profits": profits,
                 "cumulative_profits": cumulative_profits,
                 "drawdowns": drawdowns}
+
+    def realise_payoff(self, information: (StrategyId, float)):
+        strategy_id, payoff = information
+        t = self._all_transactions[strategy_id].peak_last()
+        if t is not None:
+            t.realise_payoff(payoff)

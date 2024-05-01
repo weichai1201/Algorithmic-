@@ -8,7 +8,7 @@ from src.trading_strategies.strategy.strategy_id import StrategyId
 
 
 def main():
-    start_date = datetime(2005, 1, 1)
+    start_date = datetime(2023, 1, 1)
     end_date = datetime(2024, 1, 1)
 
     strategy_id = StrategyId("NAKED_PUT_AAPL")
@@ -18,6 +18,7 @@ def main():
     backtester.run_back_testing()
 
     print(backtester.transactions(strategy_id))
+    print(backtester.summary())
 
 
 if __name__ == "__main__":

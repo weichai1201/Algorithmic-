@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
 
+from src.agent.empty_agent import EmptyAgent
 from src.data_access.data_access import retrieve_rf
 from src.trading_strategies.financial_asset.option import Option, PutOption
 from src.trading_strategies.financial_asset.price import Price
@@ -96,6 +97,10 @@ class NakedPut(OptionStrategy):
             return True
         return self.any_expired(date)
 
+    def notify_agent(self, information):
+        if not isinstance(self._agent, EmptyAgent):
+            self._agent.realise_payoff((self._id, information))
+
     def update(self, new_data, time: datetime) -> Optional[Transaction]:
         """
         :param new_data: a tuple of prices (stock_price, dict(strike -> premium)).
@@ -104,6 +109,10 @@ class NakedPut(OptionStrategy):
         :return:
         """
         stock_price, premiums = new_data
+
+        for option in self._options:
+            # update the payoffs for current transactions
+            self.notify_agent(option.payoff(stock_price))
         result: Transaction
         if len(self._options) == 0:
             result = self._roll_over(stock_price, premiums, time, True)
