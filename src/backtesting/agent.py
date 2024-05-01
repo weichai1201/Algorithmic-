@@ -19,26 +19,34 @@ class Agent:
 
     def __init__(self, strategies: dict[StrategyId, Strategy]):
         self._strategies = strategies
-        self._transactions = dict[StrategyId, Transactions]
+        self._transactions = dict[StrategyId, Transactions]()
+        for strategy_id in strategies.keys():
+            self._transactions[strategy_id] = Transactions(strategy_id)
         pass
 
     def get_symbols(self):
-        result = Set[Symbol]
+        result = set[Symbol]()
         for strategy in self._strategies.values():
-            result().add(strategy.symbol())
+            result.add(strategy.symbol())
         return result
 
-    def update(self, asset: FinancialAsset):
-        symbol = asset.symbol()
+    def update(self, symbol: Symbol, new_data, time: datetime):
         for strategy_id, strategy in self._strategies.items():
             if symbol == strategy.symbol():
-                order = strategy.update()
-                SimulatedMarket.submit_order(order)
-                if order.is_successful():
-                    positions: Positions
-                    if order.is_ask:
-                        positions = Positions(Position.SHORT, order.quantity)
-                    else:
-                        positions = Positions(Position.LONG, order.quantity)
-                    transaction = Transaction(positions, order.asset, datetime.datetime.now())
-                    self._transactions().get(strategy_id).add_transaction(transaction)
+                transaction = strategy.update(new_data, time)
+                # SimulatedMarket.submit_order(order)
+                # if order.is_successful():
+                #     positions: Positions
+                #     if order.is_ask:
+                #         positions = Positions(Position.SHORT, order.quantity)
+                #     else:
+                #         positions = Positions(Position.LONG, order.quantity)
+                #     transaction = Transaction(positions, order.asset, datetime.datetime.now())
+                if transaction is not None:
+                    self._transactions.get(strategy_id).add_transaction(transaction)
+
+    def transactions(self):
+        return self._transactions
+
+    def need_update(self, date: datetime) -> bool:
+        return any([strategy.need_update(date) for strategy in self._strategies.values()])

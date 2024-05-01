@@ -10,3 +10,6 @@ class StrategyId:
         if not isinstance(other, StrategyId):
             return False
         return self._id == other._id
+
+    def __hash__(self):
+        return self._id.__hash__()

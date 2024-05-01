@@ -9,6 +9,9 @@ class Positions:
         self.position = position
         self.quantity = quantity
 
+    def __str__(self):
+        return self.position.__str__() + " " + str(self.quantity)
+
 
 class ShortPositions(Positions):
     def __init__(self, quantity: int):

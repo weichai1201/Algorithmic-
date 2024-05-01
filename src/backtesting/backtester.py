@@ -1,11 +1,17 @@
 from abc import abstractmethod
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Set
 
 from src.backtesting.agent import Agent
-from src.data_access.data_access import request_historical_price
+from src.data_access.data_access import request_historical_price, retrieve_stock
+from src.trading_strategies.financial_asset.price import Price
+from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
+from src.trading_strategies.option_pricing import calculate_put_price, bsm_pricing
+from src.trading_strategies.strategy.option_strategy.option_strike import simulate_strikes
 from src.trading_strategies.strategy.strategy_id import StrategyId
+from src.trading_strategies.transactions.transaction import Transaction
+from src.trading_strategies.transactions.transactions import Transactions
 
 
 class Backtester:
@@ -20,8 +26,8 @@ class Backtester:
         self._cagr = 0.0
 
         # register stock symbols for both agents
-        self._symbols = Set[Symbol]()
-        self._symbols.add(self_agent.get_symbols())
+        self._symbols = set[Symbol]()
+        self._symbols.union(self_agent.get_symbols())
         if (agents is not None) & len(agents) != 0:
             for agent in agents:
                 self._symbols.add(agent.get_symbols())
@@ -29,6 +35,9 @@ class Backtester:
     @abstractmethod
     def run_back_testing(self):
         pass
+
+    def transactions(self, strategy_id: StrategyId):
+        return self._self_agent.transactions()[strategy_id]
 
     def get_profits(self):
         if not self._has_tested:
@@ -63,10 +72,24 @@ class Backtester:
 
 class DailyMarketReplay(Backtester):
     def _update_by_symbol(self, agent: Agent, date: datetime):
+        if not agent.need_update(date):
+            return
         for symbol in self._self_agent.get_symbols():
-            da_result = request_historical_price(symbol, date)
+            da_result = retrieve_stock(symbol, date)
             if da_result.is_successful:
-                self._self_agent.update(da_result.data)
+                stock: Stock
+                stock = da_result.data
+                new_data = (stock.current_price.price(), self._simulate_premiums(stock, date))
+                self._self_agent.update(symbol, new_data, date)
+
+    @staticmethod
+    def _simulate_premiums(stock: Stock, date: datetime, is_call=False):
+        strikes = simulate_strikes(stock.current_price.price())
+        result = dict[float, float]()
+        for strike in strikes:
+            premium = bsm_pricing(stock, strike, date + timedelta(days=30), [], 0.05, is_call)
+            result[strike] = round(premium, 2)
+        return result
 
     def run_back_testing(self):
         date = self._start_date
@@ -74,7 +97,7 @@ class DailyMarketReplay(Backtester):
             self._update_by_symbol(self._self_agent, date)
             for agent in self._agents:
                 self._update_by_symbol(agent, date)
-            date += 1
+            date += timedelta(days=1)
 
 
 class MultiAgent(Backtester):
