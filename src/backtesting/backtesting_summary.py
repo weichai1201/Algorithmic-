@@ -35,6 +35,9 @@ class BacktestingSummary:
     def get_cagr(self):
         return self._cagr
 
+    def get_data(self) -> dict[StrategyId, pd.DataFrame]:
+        return self._data
+
     def __str__(self):
         result = ""
         for strategy_id in self._data.keys():

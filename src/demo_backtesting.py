@@ -1,24 +1,46 @@
+import os.path
 from datetime import datetime
 
 from src.agent.agent import Agent
 from src.backtesting.backtester import DailyMarketReplay
+from src.trading_strategies.financial_asset.price import Price
+from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.naked_put import NakedPut
 from src.trading_strategies.strategy.strategy_id import StrategyId
 
 
 def main():
-    start_date = datetime(2023, 1, 1)
+    start_date = datetime(2004, 10, 1)
     end_date = datetime(2024, 1, 1)
 
-    strategy_id = StrategyId("NAKED_PUT_AAPL")
-    naked_put = NakedPut(strategy_id, Symbol("AAPL"), None, False)
-    agent = Agent({strategy_id: naked_put})
+    tmp = Stock(Symbol("CEG"), Price(0, datetime.now()))
+    tmp.get_returns()
+
+    symbol_strs = ["SMCI", "ENPH", "KO", "JNJ", "AAPL", "MSFT", "CMA", "MHK"]
+    strategies = dict()
+    for s in symbol_strs:
+        strategy_id = StrategyId("NAKED_PUT_" + s)
+        strategy = NakedPut(strategy_id, Symbol(s), None, False)
+        strategies[strategy_id] = strategy
+    agent = Agent(strategies)
     backtester = DailyMarketReplay(start_date, end_date, agent, [])
     backtester.run_back_testing()
 
-    print(backtester.transactions(strategy_id))
-    print(backtester.summary())
+    # demo print
+    # try:
+    #     print(backtester.transactions(StrategyId("NAKED_PUT_SMCI")))
+    # except KeyError:
+    #     pass
+
+    # write to csv
+    foldername = "back_testing_results"
+    if not os.path.exists(foldername):
+        os.makedirs(foldername)
+    data = backtester.get_data()
+    for strategy_id, df in data.items():
+        filename = f"{foldername}/{strategy_id.get_id()}.csv"
+        df.to_csv(filename)
 
 
 if __name__ == "__main__":

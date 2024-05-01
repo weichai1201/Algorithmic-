@@ -41,7 +41,7 @@ class Agent:
                 if transaction is not None:
                     self._all_transactions.get(strategy_id).add_transaction(transaction)
 
-    def transactions(self):
+    def get_all_transactions(self) -> dict[StrategyId, Transactions]:
         return self._all_transactions
 
     def need_update(self, date: datetime) -> bool:

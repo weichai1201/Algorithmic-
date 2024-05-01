@@ -40,6 +40,7 @@ class Stock(FinancialAsset):
 
     def get_returns(self):
         prices = [price for price in self.get_prices()]
+        prices = [p for p in prices if not np.isnan(p)]
         returns = np.diff(prices) / prices[:-1]
         return returns
 
