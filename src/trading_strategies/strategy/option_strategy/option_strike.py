@@ -46,9 +46,9 @@ def calculate_strike(stock_price: float, is_itm: bool, num_strikes: int, is_put:
     strike_gap = get_strike_gap(stock_price)
 
     if (is_put and is_itm) or (not is_put and not is_itm):
-        strike = (int(stock_price / strike_gap) + num_strikes) * strike_gap
-    else:
         strike = (int(stock_price / strike_gap) + 1 - num_strikes) * strike_gap
+    else:
+        strike = (int(stock_price / strike_gap) + num_strikes) * strike_gap
 
     return strike
 

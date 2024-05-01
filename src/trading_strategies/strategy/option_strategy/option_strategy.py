@@ -1,19 +1,16 @@
 from abc import abstractmethod
 from typing import Optional
 
-from src.trading_strategies.financial_asset.option import Option, PutOption, CallOption
-from src.trading_strategies.financial_asset.price import Price
+from src.trading_strategies.financial_asset.option import Option, CallOption
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
-from src.trading_strategies.option_pricing import bsm_pricing, implied_date
-from src.trading_strategies.strategy.option_strategy.option_strike import get_strike_gap, calculate_strike, \
-    roll_down_strike, roll_up_strike
+from src.trading_strategies.strategy.option_strategy.option_strike import get_strike_gap
 from src.trading_strategies.strategy.strategy import Strategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
 from src.trading_strategies.transactions.position import Position
 from src.trading_strategies.transactions.positions import Positions
 from src.trading_strategies.transactions.transaction import Transaction
-from src.util.expiry_date import next_expiry_date, closest_expiration_date, nyse_calendar
+from src.util.expiry_date import next_expiry_date
 
 risk_free_rate = 0.03
 
