@@ -43,3 +43,16 @@ def drawdowns(values: [float]) -> (float, [float]):
         else:
             percentages.append((peak - value) / peak)
     return max(percentages), percentages
+
+
+def cagr(values: [float], years: float):
+    """
+    Compound annual growth rate.
+    :param values: a series of portfolio vlaues
+    :param years: time in years
+    :return: a rate expressed in decimal
+    """
+    assert len(values) > 1
+    v0 = values[0]
+    vt = values[len(values) - 1]
+    return (vt / v0) ** (1 / years) - 1
