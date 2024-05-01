@@ -39,6 +39,6 @@ class BacktestingSummary:
         result = ""
         for strategy_id in self._data.keys():
             result += (f"{strategy_id} traded for {self._years} years: \n"
-                       f"  {self._data[strategy_id]} \n"
+                       f"  {self._data[strategy_id].round(2)} \n"
                        f"=========================== \n\n")
         return result
