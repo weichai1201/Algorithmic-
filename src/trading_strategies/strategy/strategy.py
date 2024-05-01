@@ -22,9 +22,9 @@ class Strategy:
     def is_same_symbol(self, other: Symbol) -> bool:
         return self._symbol == other
 
-    @abstractmethod
-    def update(self, new_data, time: datetime):
-        pass
+    # @abstractmethod
+    # def update(self, new_data) -> Order:
+    #     pass
 
     def need_update(self, date: datetime):
         return True

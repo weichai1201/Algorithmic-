@@ -47,7 +47,7 @@ class Option(FinancialAsset):
         return self._strike_price.price() == stock_price
 
     def is_expired(self, time: datetime) -> bool:
-        return time > self._expiration_date
+        return time >= self._expiration_date
 
     def __str__(self):
         return (f"Option: {self._symbol}, "
@@ -75,7 +75,9 @@ class CallOption(Option):
 
     def option_payoff(self, stock: Stock | float):
         if isinstance(stock, Stock):
-            stock = stock.current_price.price()
+            stock = float(stock.current_price.price())
+        if isinstance(stock, Price):
+            stock = stock.price()
         return np.maximum(stock - self.get_strike().price(), 0)
 
 

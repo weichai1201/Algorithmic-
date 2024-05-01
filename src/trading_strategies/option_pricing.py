@@ -3,12 +3,12 @@ import datetime
 import numpy as np
 from scipy.stats import norm
 import math
-from scipy.optimize import newton, minimize
+from scipy.optimize import newton, fmin, minimize
 
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.stock import Stock
 import src.util.util as util
-from src.util.expiry_date import next_nth_trading_day
+from src.util.expiry_date import trading_days, nyse_calendar, next_nth_trading_day
 
 """
 @:param volatility: annual
@@ -60,7 +60,7 @@ def adjust_dividends(stock, dividends, risk_free):
     return stock_price
 
 
-def implied_t_put(stock_price, strike_price, risk_free_rate, premium, volatility, default_time: float = 60 / 365):
+def implied_t_put(stock_price, strike_price, risk_free_rate, premium, volatility, default_time: float = 30 / 365):
     error_function = lambda t: calculate_put_price(stock_price, strike_price, volatility, t, risk_free_rate) - premium
     try:
         implied_t = newton(error_function, x0=0.15, maxiter=1000)

@@ -1,6 +1,7 @@
 import os
 import sys
 import warnings
+from datetime import datetime, timedelta
 
 import numpy as np
 import statistics
@@ -44,20 +45,15 @@ class Stock(FinancialAsset):
         returns = np.diff(prices) / prices[:-1]
         return returns
 
-    def get_prices(self, start_date='2004-01-01', end_date='2024-03-31'):
-        return get_historical_values(self.symbol, file_path, start_date, end_date).iloc[:, 1]
+    def get_prices(self):
+        return get_historical_values(self.symbol, file_path, (self.current_price.time() - timedelta(days=182)).strftime('%Y-%m-%d'), self.current_price.time().strftime('%Y-%m-%d')).iloc[:, 1]
 
-    def calculate_garch(self, forecast_horizon=1000):
-        with warnings.catch_warnings(action="ignore"):
-            sys.stdout = open(os.devnull, 'w')
-            returns = self.get_returns()
-            model = arch_model(returns, vol='GARCH', p=1, q=1)
-            fit = model.fit(show_warning=False)
-            vol = np.sqrt(fit.forecast(horizon=forecast_horizon).variance).mean(axis=1).iloc[-1]
-            sys.stdout = sys.__stdout__
-            print("Run GARCH for {symbol} on the date {date}".
-                  format(symbol=self.symbol, date=self.current_price.time().strftime("%Y-%m-%d")))
-            return vol * np.sqrt(252)
+    def calculate_garch(self):
+        returns = self.get_returns()
+        model = arch_model(returns, vol='GARCH', p=1, q=1, rescale=False)
+        fit = model.fit(disp='off')
+        vol = np.sqrt(fit.forecast(horizon=100).variance).mean(axis=1).iloc[-1]
+        return vol * np.sqrt(252)
 
     @property
     def symbol(self):
@@ -65,6 +61,9 @@ class Stock(FinancialAsset):
 
     def price(self) -> float:
         return self.current_price.price()
+
+    def set_current_price(self, price):
+        self.current_price = price
 
     def __str__(self):
         return f"Stock {self.symbol}: {self.current_price}"
