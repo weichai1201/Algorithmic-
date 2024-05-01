@@ -18,14 +18,14 @@ import pandas as pd
 
 def main():
     file_path = '../src/data/sp500_adj_close_prices.csv'
-    symbol = Symbol('COO')
+    symbol = Symbol('RHI')
     date = datetime.datetime(2005, 1, 4, 0, 0)
-    end_date = datetime.datetime(2015, 1, 4, 0, 0)
+    end_date = datetime.datetime(2010, 1, 4, 0, 0)
     is_itm = True
     num_strike = 1
-    is_weekly = True
+    is_weekly = False
     weekday = "FRI"
-    is_put = True
+    is_put = False
 
     stock_data = get_historical_values(symbol, file_path, date.strftime('%Y-%m-%d'))
     stock_data.set_index('Date', inplace=True)
