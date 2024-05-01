@@ -1,9 +1,12 @@
 from abc import abstractmethod
 from datetime import datetime, timedelta
 
+import numpy as np
+import pandas as pd
+
 from src.agent.agent import Agent
 from src.backtesting.backtesting_summary import BacktestingSummary
-from src.data_access.data_access import retrieve_stock
+from src.data_access.data_access import retrieve_stock, retrieve_rf
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.option_pricing import bsm_pricing
@@ -32,7 +35,7 @@ class Backtester:
         pass
 
     def transactions(self, strategy_id: StrategyId):
-        return self._self_agent.transactions()[strategy_id]
+        return self._self_agent.get_all_transactions()[strategy_id]
 
     # def get_profits(self):
     #     if not self._has_tested:
@@ -59,14 +62,21 @@ class Backtester:
     #         self.run_back_testing()
     #     return self._cagr
 
-    def summary(self):
+    def summary(self, to_print=False):
         if not self._has_tested:
             self.run_back_testing()
         dates, payoffs, profits, cumulative_profits, drawdowns = self._self_agent.evaluate()
         self._summary = BacktestingSummary(0, 0,
                                            dates, profits, cumulative_profits, drawdowns,
                                            (self._end_date - self._start_date).days / 365)
-        return self._summary.__str__()
+        if to_print:
+            return self._summary.__str__()
+        return ""
+
+    def get_data(self) -> dict[StrategyId, pd.DataFrame]:
+        if self._summary is None:
+            self.summary()
+        return self._summary.get_data()
 
 
 class DailyMarketReplay(Backtester):
@@ -80,14 +90,15 @@ class DailyMarketReplay(Backtester):
             date += timedelta(days=1)
 
     def _update_by_symbol(self, agent: Agent, date: datetime):
-        if not agent.need_update(date):
-            return
-        for symbol in self._self_agent.get_symbols():
+        for symbol in agent.get_symbols():
+            if not agent.need_update_for(date, symbol):
+                continue
             da_result = retrieve_stock(symbol, date)
             if da_result.is_successful:
                 stock: Stock
                 stock = da_result.data
-
+                # if np.isnan(stock.current_price):
+                #     continue
                 new_data = (stock.current_price.price(), self._simulate_premiums(stock, date))
                 self._self_agent.update(symbol, new_data, date)
 
@@ -96,7 +107,9 @@ class DailyMarketReplay(Backtester):
         strikes = simulate_strikes(stock.current_price.price())
         result = dict[float, float]()
         for strike in strikes:
-            premium = bsm_pricing(stock, strike, date + timedelta(days=30), [], 0.05, is_call)
+            expiry_date = date + timedelta(days=30)
+            rf = retrieve_rf(expiry_date).data
+            premium = bsm_pricing(stock, strike, expiry_date, [], rf, is_call)
             result[strike] = round(premium, 2)
         return result
 

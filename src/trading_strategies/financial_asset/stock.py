@@ -40,6 +40,7 @@ class Stock(FinancialAsset):
 
     def get_returns(self):
         prices = [price for price in self.get_prices()]
+        prices = [p for p in prices if not np.isnan(p)]
         returns = np.diff(prices) / prices[:-1]
         return returns
 
@@ -55,7 +56,7 @@ class Stock(FinancialAsset):
             vol = np.sqrt(fit.forecast(horizon=forecast_horizon).variance).mean(axis=1).iloc[-1]
             sys.stdout = sys.__stdout__
             print("Run GARCH for {symbol} on the date {date}".
-                  format(symbol=self.symbol, date=self.current_price.time()))
+                  format(symbol=self.symbol, date=self.current_price.time().strftime("%Y-%m-%d")))
             return vol * np.sqrt(252)
 
     @property
