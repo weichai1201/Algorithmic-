@@ -1,14 +1,8 @@
 import datetime
-from typing import Set
 
-from src.backtesting.simulated_market import SimulatedMarket
-from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.strategy import Strategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
-from src.trading_strategies.transactions.position import Position
-from src.trading_strategies.transactions.positions import Positions
-from src.trading_strategies.transactions.transaction import Transaction
 from src.trading_strategies.transactions.transactions import Transactions
 
 
