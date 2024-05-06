@@ -1,7 +1,9 @@
 from abc import abstractmethod
+from datetime import datetime
 from typing import Optional
 
 from src.trading_strategies.financial_asset.option import Option, CallOption
+from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.option_strike import get_strike_gap
@@ -13,6 +15,7 @@ from src.trading_strategies.transactions.transaction import Transaction
 from src.util.expiry_date import next_expiry_date
 
 risk_free_rate = 0.03
+
 
 class OptionStrategy(Strategy):
 
@@ -43,19 +46,13 @@ class OptionStrategy(Strategy):
     def get_id(self) -> StrategyId:
         return self._id
 
-    # def roll(self, new_option: Option) -> Optional[Transaction]:
-    #     return Transaction(self._positions, new_option, new_option.get_strike().time())
-
-    def update(self, new_stock: Stock, option: Option) -> Optional[Transaction]:
-        current_time = new_stock.current_price.time()
-        stock_price = new_stock.current_price.price()
-
-        if not option.is_expired(current_time):
-            if option.get_strike().time() == current_time:
-                return Transaction(self._positions, option, current_time)
+    def update(self, stock_price: float, option: Option, date: datetime) -> Optional[Transaction]:
+        if not option.is_expired(date):
+            if option.get_strike().time() == date:
+                return Transaction(self._positions, option, date)
             else:
                 return None
-
+        new_stock = Stock(self.symbol(), Price(stock_price, date))
         if self.in_the_money(stock_price, option):
             if self.deep_in_the_money(stock_price, option):
                 new_option = self._update_deep_itm_option(new_stock, option)
@@ -64,14 +61,11 @@ class OptionStrategy(Strategy):
         else:
             new_option = self._update_otm_option(new_stock)
 
-        return Transaction(self._positions, new_option, current_time)
+        return Transaction(self._positions, new_option, date)
 
     def _update_otm_option(self, stock) -> Option:
         expiration_date = next_expiry_date(stock.current_price.time(), self._is_weekly, True, self._weekday)
         return self._roll_over(stock, expiration_date)
-
-    def _roll_over(self, stock, expiration_date) -> Option:
-        pass
 
     def _update_mod_itm_option(self, stock, option) -> Option:
         premium = option.itm_amount(stock.current_price.price()) + get_strike_gap(stock.current_price.price())
@@ -83,19 +77,12 @@ class OptionStrategy(Strategy):
     def _update_deep_itm_option(self, new_stock, option) -> Option:
         return self._update_otm_option(new_stock)
 
+    def _roll_over(self, stock, expiration_date) -> Option:
+        pass
+
     def _roll_up(self, stock, option, premium) -> Option:
         pass
 
     def _roll_down(self, stock, option, premium) -> Option:
         pass
-
-    @staticmethod
-    def _calculate_put_payoff(stock_price: float, strike_price: float):
-        # assume long position.
-        return max(0.0, strike_price - stock_price)
-
-    @staticmethod
-    def _calculate_call_payoff(stock_price: float, strike_price: float):
-        # assume long position.
-        return max(0.0, stock_price - strike_price)
 
