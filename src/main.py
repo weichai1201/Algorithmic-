@@ -30,26 +30,26 @@ def main():
     stock_data = get_historical_values(symbol, file_path, date.strftime('%Y-%m-%d'))
     stock_data.set_index('Date', inplace=True)
 
-    price = Price(stock_data.loc[date.strftime('%Y-%m-%d %H:%M:%S')].iloc[-1], date)
-    stock = Stock(symbol, price)
+    price: float = stock_data.loc[date.strftime('%Y-%m-%d %H:%M:%S')].iloc[-1]
+    stock: Stock = Stock(symbol, Price(price, date))
 
     expiry_date = next_expiry_date(date, is_weekly, True)
-    strike_price = Price(calculate_strike(stock.current_price.price(), is_itm, num_strike, is_put), stock.current_price.time())
+    strike_price = Price(calculate_strike(price, is_itm, num_strike, is_put), stock.current_price.time())
     premium = bsm_pricing(stock, strike_price.price(), expiry_date, [], 0.03, is_put)
 
     profit = []
 
     if is_put:
         put_option = PutOption(symbol, strike_price, expiry_date, premium)
-        naked_put = NakedPut(StrategyId("1"), symbol, is_itm, Position.SHORT, is_weekly, weekday,num_strike)
+        naked_put = NakedPut(StrategyId("1"), symbol, is_itm, Position.SHORT, is_weekly, weekday, num_strike)
 
-        transaction = naked_put.update(stock, put_option)
+        transaction = naked_put.update(price, put_option, date)
 
         while date < end_date:
-            if naked_put.update(stock, put_option) is not None:
+            if naked_put.update(price, put_option, date) is not None:
                 if put_option.get_expiry() == date:
                     profit.append((-transaction.calculate_payoff(stock.current_price), date))
-                    transaction = naked_put.update(stock, put_option)
+                    transaction = naked_put.update(price, put_option, date)
                     put_option = transaction.get_asset()
                     continue
                 else:
@@ -62,13 +62,13 @@ def main():
         call_option = CallOption(symbol, strike_price, expiry_date, premium)
         naked_call = NakedCall(StrategyId("1"), symbol, is_itm, Position.SHORT, is_weekly, weekday, num_strike)
 
-        transaction = naked_call.update(stock, call_option)
+        transaction = naked_call.update(price, call_option, date)
 
         while date < end_date:
-            if naked_call.update(stock, call_option) is not None:
+            if naked_call.update(price, call_option, date) is not None:
                 if call_option.get_expiry() == date:
                     profit.append((-transaction.calculate_payoff(stock.current_price), date))
-                    transaction = naked_call.update(stock, call_option)
+                    transaction = naked_call.update(price, call_option, date)
                     call_option = transaction.get_asset()
                     continue
                 else:
@@ -100,6 +100,7 @@ def main():
     plt.show()
 
     pass
+
 
 if __name__ == "__main__":
     main()

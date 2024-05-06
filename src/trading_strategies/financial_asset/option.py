@@ -59,9 +59,6 @@ class Option(FinancialAsset):
     def option_payoff(self, stock: Stock):
         pass
 
-    def payoff(self, optional) -> int:
-        return self.option_payoff(optional)
-
 
 class CallOption(Option):
     def __init__(self, symbol: Symbol, strike_price: Price, expiration_date: datetime, premium: Price):
