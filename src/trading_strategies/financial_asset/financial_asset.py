@@ -1,26 +1,41 @@
 from abc import abstractmethod
+from datetime import datetime
 
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.symbol import Symbol
 
 
 class FinancialAsset:
-    def __init__(self):
-        # TODO: fix financial constructor; define more clearly and simply role of child classes.
-        pass
+    def __init__(self, symbol: Symbol, price: Price):
+        self._symbol = symbol
+        self._price = price
 
-    @abstractmethod
-    def symbol(self) -> Symbol:
-        pass
+    def get_price_numeric(self) -> float:
+        return self._price.price()
 
-    @abstractmethod
-    def price(self) -> float:
-        pass
+    def get_price(self) -> Price:
+        return self._price
+
+    def get_t0(self) -> datetime:
+        return self._price.time()
+
+    def close(self) -> [float]:
+        # close asset and return the profits (loss)
+        return [0]
+
+    def commission_fee(self, optional=None) -> [float]:
+        return 0
 
     def payoff(self, optional) -> int:
         return 0
 
+    def is_same_symbol(self, other: Symbol) -> bool:
+        assert isinstance(other, Symbol)
+        return self._symbol.__eq__(other)
+
+    def symbol(self) -> Symbol:
+        return self._symbol
+
     @abstractmethod
     def __str__(self):
         pass
-
