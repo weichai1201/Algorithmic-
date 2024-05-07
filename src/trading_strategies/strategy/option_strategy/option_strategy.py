@@ -63,12 +63,12 @@ class OptionStrategy(Strategy):
 
         return Transaction(self._positions, new_option, date)
 
-    def _update_otm_option(self, stock) -> Option:
-        expiration_date = next_expiry_date(stock.current_price.time(), self._is_weekly, True, self._weekday)
+    def _update_otm_option(self, stock: Stock) -> Option:
+        expiration_date = next_expiry_date(stock.get_price().time(), self._is_weekly, True, self._weekday)
         return self._roll_over(stock, expiration_date)
 
-    def _update_mod_itm_option(self, stock, option) -> Option:
-        premium = option.itm_amount(stock.current_price.price()) + get_strike_gap(stock.current_price.price())
+    def _update_mod_itm_option(self, stock: Stock, option) -> Option:
+        premium = option.itm_amount(stock.get_price().price()) + get_strike_gap(stock.get_price().price())
         if isinstance(option, CallOption):
             return self._roll_up(stock, option, premium)
         else:

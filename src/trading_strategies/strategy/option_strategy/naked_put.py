@@ -18,18 +18,18 @@ class NakedPut(OptionStrategy):
                          weekday, num_of_strikes, scale)
 
     def _roll_over(self, stock, expiration_date):
-        strike_price = calculate_strike(stock.current_price.price(), self._is_itm, self._num_of_strikes, True)
+        strike_price = calculate_strike(stock.get_price().price(), self._is_itm, self._num_of_strikes, True)
         premium = bsm_pricing(stock, strike_price, expiration_date, [], risk_free_rate, True)
-        new_option = PutOption(stock.symbol, Price(strike_price, stock.current_price.time()), expiration_date, premium)
+        new_option = PutOption(stock.symbol, Price(strike_price, stock.get_price().time()), expiration_date, premium)
         return new_option
 
     def _roll_down(self, stock, option, premium) -> Option:
-        strike_price = roll_down_strike(stock.current_price.price(), option.get_strike().price(), self._num_of_strikes)
-        new_expiration = implied_date(stock.current_price, strike_price, risk_free_rate, premium,
+        strike_price = roll_down_strike(stock.get_price().price(), option.get_strike().price(), self._num_of_strikes)
+        new_expiration = implied_date(stock.get_price(), strike_price, risk_free_rate, premium,
                                       stock.calculate_garch(), True)
         new_expiration = closest_expiration_date(new_expiration, nyse_calendar)
         premium = bsm_pricing(stock, strike_price, new_expiration, [], risk_free_rate, True)
-        strike = Price(strike_price, stock.current_price.time())
+        strike = Price(strike_price, stock.get_price().time())
         new_option = PutOption(stock.symbol, strike, new_expiration, premium)
         return new_option
 

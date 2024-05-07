@@ -17,7 +17,7 @@ from src.util.expiry_date import trading_days, nyse_calendar, next_nth_trading_d
 
 
 def bsm_pricing(stock: Stock, strike: float, expiration_date, dividends: list[Price], risk_free_rate, is_call):
-    time_to_maturity = (expiration_date - stock.current_price.time()) / datetime.timedelta(days=365)
+    time_to_maturity = (expiration_date - stock.get_price().time()) / datetime.timedelta(days=365)
     volatility = stock.garch()
     adjusted_price = adjust_dividends(stock, dividends, risk_free_rate)
     if is_call:
@@ -51,11 +51,11 @@ def calculate_d2(d1, volatility, time_to_maturity):
     return d1 - volatility * np.sqrt(time_to_maturity)
 
 
-def adjust_dividends(stock, dividends, risk_free):
-    stock_price = stock.current_price.price()
+def adjust_dividends(stock: Stock, dividends: [float], risk_free: float):
+    stock_price = stock.get_price().price()
     for dividend in dividends:
         stock_price -= dividend.price() * math.exp(
-            (stock.current_price.time() - dividend.time()) / datetime.timedelta(days=365) * risk_free)
+            (stock.get_price().time() - dividend.time()) / datetime.timedelta(days=365) * risk_free)
 
     return stock_price
 

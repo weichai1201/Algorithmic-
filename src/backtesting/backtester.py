@@ -99,12 +99,12 @@ class DailyMarketReplay(Backtester):
                 stock = da_result.data
                 # if np.isnan(stock.current_price):
                 #     continue
-                new_data = (stock.current_price.price(), self._simulate_premiums(stock, date))
+                new_data = (stock.get_price().price(), self._simulate_premiums(stock, date))
                 self._self_agent.update(symbol, new_data, date)
 
     @staticmethod
     def _simulate_premiums(stock: Stock, date: datetime, is_call=False):
-        strikes = simulate_strikes(stock.current_price.price())
+        strikes = simulate_strikes(stock.get_price().price())
         result = dict[float, float]()
         for strike in strikes:
             expiry_date = date + timedelta(days=30)

@@ -18,7 +18,7 @@ class LongCall(OptionStrategy):
                          weekday, num_of_strikes, scale)
 
     def _roll_over(self, stock, expiration_date):
-        strike_price = calculate_strike(stock.current_price.price(), self._is_itm, self._num_of_strikes, False)
+        strike_price = calculate_strike(stock.get_price().price(), self._is_itm, self._num_of_strikes, False)
         premium = bsm_pricing(stock, strike_price, expiration_date, [], risk_free_rate, False)
-        new_option = CallOption(stock.symbol, Price(strike_price, stock.current_price.time()), expiration_date, premium)
+        new_option = CallOption(stock.symbol, Price(strike_price, stock.get_price().time()), expiration_date, premium)
         return new_option

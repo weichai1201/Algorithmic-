@@ -19,7 +19,7 @@ import pandas as pd
 def main():
     file_path = '../src/data/sp500_adj_close_prices.csv'
     symbol = Symbol('RHI')
-    date = datetime.datetime(2005, 1, 4, 0, 0)
+    date = datetime.datetime(2008, 1, 4, 0, 0)
     end_date = datetime.datetime(2010, 1, 4, 0, 0)
     is_itm = True
     num_strike = 1
@@ -34,7 +34,7 @@ def main():
     stock: Stock = Stock(symbol, Price(price, date))
 
     expiry_date = next_expiry_date(date, is_weekly, True)
-    strike_price = Price(calculate_strike(price, is_itm, num_strike, is_put), stock.current_price.time())
+    strike_price = Price(calculate_strike(price, is_itm, num_strike, is_put), stock.get_price().time())
     premium = bsm_pricing(stock, strike_price.price(), expiry_date, [], 0.03, is_put)
 
     profit = []
@@ -48,14 +48,14 @@ def main():
         while date < end_date:
             if naked_put.update(price, put_option, date) is not None:
                 if put_option.get_expiry() == date:
-                    profit.append((-transaction.calculate_payoff(stock.current_price), date))
+                    profit.append((-transaction.calculate_payoff(stock.get_price()), date))
                     transaction = naked_put.update(price, put_option, date)
                     put_option = transaction.get_asset()
                     continue
                 else:
                     profit.append((transaction.calculate_premium(), date))
 
-            date = closest_expiration_date(stock.current_price.time() + datetime.timedelta(days=1))
+            date = closest_expiration_date(stock.get_price().time() + datetime.timedelta(days=1))
             stock.update_price(Price(stock_data.loc[date.strftime('%Y-%m-%d %H:%M:%S')].iloc[-1], date))
 
     else:
@@ -67,14 +67,14 @@ def main():
         while date < end_date:
             if naked_call.update(price, call_option, date) is not None:
                 if call_option.get_expiry() == date:
-                    profit.append((-transaction.calculate_payoff(stock.current_price), date))
+                    profit.append((-transaction.calculate_payoff(stock.get_price()), date))
                     transaction = naked_call.update(price, call_option, date)
                     call_option = transaction.get_asset()
                     continue
                 else:
                     profit.append((transaction.calculate_premium(), date))
 
-            date = closest_expiration_date(stock.current_price.time() + datetime.timedelta(days=1))
+            date = closest_expiration_date(stock.get_price().time() + datetime.timedelta(days=1))
             stock.update_price(Price(stock_data.loc[date.strftime('%Y-%m-%d %H:%M:%S')].iloc[-1], date))
 
     profit_sum = []
