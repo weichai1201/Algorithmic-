@@ -19,14 +19,13 @@ class FinancialAsset:
     def get_t0(self) -> datetime:
         return self._price.time()
 
-    def close(self) -> [float]:
+    def close_at_price(self, price_t: Price | float) -> [float]:
         # close asset and return the profits (loss)
+        # only current price for stock
+        # calculate payoff for options
         return [0]
 
     def commission_fee(self, optional=None) -> [float]:
-        return 0
-
-    def payoff(self, optional) -> int:
         return 0
 
     def is_same_symbol(self, other: Symbol) -> bool:

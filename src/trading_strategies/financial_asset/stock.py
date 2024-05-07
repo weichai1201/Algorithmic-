@@ -17,10 +17,8 @@ file_path = 'data/sp500_adj_close_prices.csv'
 
 
 class Stock(FinancialAsset):
-    def __init__(self, symbol: Symbol, current_price: Price):
-        super().__init__()
-        self._symbol = symbol
-        self.current_price = current_price
+    def __init__(self, symbol: Symbol, price: Price):
+        super().__init__(symbol, price)
         # self.historical_price = historical_price
         # self.volatility = self.calculate_volatility()
         self._garch_long_run = -1
@@ -46,7 +44,9 @@ class Stock(FinancialAsset):
         return returns
 
     def get_prices(self):
-        return get_historical_values(self.symbol, file_path, (self.current_price.time() - timedelta(days=182)).strftime('%Y-%m-%d'), self.current_price.time().strftime('%Y-%m-%d')).iloc[:, 1]
+        prev_date = self._price.time() - timedelta(days=182)
+        return get_historical_values(self._symbol, file_path, prev_date.strftime('%Y-%m-%d'),
+                                     self._price.time().strftime('%Y-%m-%d')).iloc[:, 1]
 
     def calculate_garch(self):
         returns = self.get_returns()
@@ -55,15 +55,8 @@ class Stock(FinancialAsset):
         vol = np.sqrt(fit.forecast(horizon=100).variance).mean(axis=1).iloc[-1]
         return vol * np.sqrt(252)
 
-    @property
-    def symbol(self):
-        return self._symbol
-
-    def price(self) -> float:
-        return self.current_price.price()
-
-    def set_current_price(self, price):
-        self.current_price = price
+    def update_price(self, price: Price):
+        self._price = price
 
     def __str__(self):
-        return f"Stock {self.symbol}: {self.current_price}"
+        return f"Stock {self.symbol}: {self._price}"

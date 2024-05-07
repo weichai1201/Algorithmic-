@@ -56,7 +56,7 @@ def main():
                     profit.append((transaction.calculate_premium(), date))
 
             date = closest_expiration_date(stock.current_price.time() + datetime.timedelta(days=1))
-            stock.set_current_price(Price(stock_data.loc[date.strftime('%Y-%m-%d %H:%M:%S')].iloc[-1], date))
+            stock.update_price(Price(stock_data.loc[date.strftime('%Y-%m-%d %H:%M:%S')].iloc[-1], date))
 
     else:
         call_option = CallOption(symbol, strike_price, expiry_date, premium)
@@ -75,7 +75,7 @@ def main():
                     profit.append((transaction.calculate_premium(), date))
 
             date = closest_expiration_date(stock.current_price.time() + datetime.timedelta(days=1))
-            stock.set_current_price(Price(stock_data.loc[date.strftime('%Y-%m-%d %H:%M:%S')].iloc[-1], date))
+            stock.update_price(Price(stock_data.loc[date.strftime('%Y-%m-%d %H:%M:%S')].iloc[-1], date))
 
     profit_sum = []
 

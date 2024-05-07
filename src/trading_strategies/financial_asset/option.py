@@ -9,19 +9,10 @@ from src.trading_strategies.financial_asset.price import Price
 
 
 class Option(FinancialAsset):
-    def __init__(self, symbol: Symbol, strike_price: Price, expiration_date: datetime, premium: Price):
-        super().__init__()
-        self._symbol = symbol
+    def __init__(self, symbol: Symbol, premium: Price, strike_price: Price, expiration_date: datetime):
+        super().__init__(symbol, premium)
         self._strike_price = strike_price
         self._expiration_date = expiration_date
-        self._premium = premium
-
-    def price(self):
-        return self._premium
-
-    @property
-    def symbol(self):
-        return self._symbol
 
     @abstractmethod
     def in_the_money(self, stock_price: float) -> bool:
@@ -38,10 +29,10 @@ class Option(FinancialAsset):
         return self._expiration_date
 
     def get_premium(self):
-        return self._premium
+        return self._price
 
     def set_premium(self, premium):
-        self._premium = premium
+        self._price = premium
 
     def at_the_money(self, stock_price: float) -> bool:
         return self._strike_price.price() == stock_price
@@ -53,7 +44,7 @@ class Option(FinancialAsset):
         return (f"Option: {self._symbol}, "
                 f"Strike Price: {self._strike_price},"
                 f" Expiration Date: {self._expiration_date},"
-                f" Premium: {self._premium}")
+                f" Premium: {self._price}")
 
     @abstractmethod
     def option_payoff(self, stock: Stock):
@@ -62,7 +53,7 @@ class Option(FinancialAsset):
 
 class CallOption(Option):
     def __init__(self, symbol: Symbol, strike_price: Price, expiration_date: datetime, premium: Price):
-        super().__init__(symbol, strike_price, expiration_date, premium)
+        super().__init__(symbol, premium, strike_price, expiration_date)
 
     def in_the_money(self, stock_price: float) -> bool:
         return self.get_strike().price() < stock_price
@@ -72,7 +63,7 @@ class CallOption(Option):
 
     def option_payoff(self, stock: Stock | float):
         if isinstance(stock, Stock):
-            stock = float(stock.current_price.price())
+            stock = float(stock.get_price().price())
         if isinstance(stock, Price):
             stock = stock.price()
         return np.maximum(stock - self.get_strike().price(), 0)
@@ -80,7 +71,7 @@ class CallOption(Option):
 
 class PutOption(Option):
     def __init__(self, symbol: Symbol, strike_price: Price, expiration_date: datetime, premium: Price):
-        super().__init__(symbol, strike_price, expiration_date, premium)
+        super().__init__(symbol, premium, strike_price, expiration_date)
 
     def in_the_money(self, stock_price: float) -> bool:
         return self.get_strike().price() > stock_price
@@ -90,6 +81,6 @@ class PutOption(Option):
 
     def option_payoff(self, stock: Stock | float):
         if isinstance(stock, Stock):
-            stock = stock.current_price.price()
+            stock = stock.get_price().price()
         payoff = np.maximum(self.get_strike().price() - stock, 0)
         return payoff
