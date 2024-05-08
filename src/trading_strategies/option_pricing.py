@@ -16,14 +16,14 @@ from src.util.expiry_date import trading_days, nyse_calendar, next_nth_trading_d
 """
 
 
-def bsm_pricing(stock: Stock, strike: float, expiration_date, dividends: list[Price], risk_free_rate, is_call):
+def bsm_pricing(stock: Stock, strike: float, expiration_date, dividends: list[Price], risk_free_rate, is_put: bool):
     time_to_maturity = (expiration_date - stock.get_price().time()) / datetime.timedelta(days=365)
     volatility = stock.garch()
     adjusted_price = adjust_dividends(stock, dividends, risk_free_rate)
-    if is_call:
-        return calculate_call_price(adjusted_price, strike, volatility, time_to_maturity, risk_free_rate)
-    else:
+    if is_put:
         return calculate_put_price(adjusted_price, strike, volatility, time_to_maturity, risk_free_rate)
+    else:
+        return calculate_call_price(adjusted_price, strike, volatility, time_to_maturity, risk_free_rate)
 
 
 def calculate_call_price(stock_price, strike_price, volatility, time_to_maturity, risk_free_rate):
@@ -60,28 +60,20 @@ def adjust_dividends(stock: Stock, dividends: [float], risk_free: float):
     return stock_price
 
 
-def implied_t_put(stock_price, strike_price, risk_free_rate, premium, volatility, default_time: float = 30 / 365):
-    error_function = lambda t: calculate_put_price(stock_price, strike_price, volatility, t, risk_free_rate) - premium
-    try:
-        implied_t = newton(error_function, x0=0.15, maxiter=1000)
-        return implied_t
-    except RuntimeError:
-        print(f"Fail to converge with stock: {stock_price}, strike: {strike_price},"
-              f" rf: {risk_free_rate}, premium: {premium}, volatility: {volatility}")
-        return default_time
+def implied_date(stock_price: Price, strike_price: float, risk_free_rate: float, premium: float, volatility: float,
+                 is_put: bool):
 
-
-def implied_t_call(stock_price, strike_price, risk_free_rate, premium, volatility):
-    error_function = lambda t: calculate_call_price(stock_price, strike_price, volatility, t, risk_free_rate) - premium
-    implied_t = newton(error_function, x0=0.15)
-    return implied_t
-
-
-def implied_date(stock_price: Price, strike_price, risk_free_rate, premium, volatility, is_put):
-    if is_put:
-        error_function = lambda t: abs(calculate_put_price(stock_price.price(), strike_price, volatility, t, risk_free_rate) - premium)
-    else:
-        error_function = lambda t: abs(calculate_call_price(stock_price.price(), strike_price, volatility, t, risk_free_rate) - premium)
-    result = minimize(error_function, x0=0.1, bounds=[(0.02, 2)], method='Nelder-Mead')
+    result = minimize(
+        lambda t: error_function(t, stock_price.price(), strike_price, premium, volatility, risk_free_rate,is_put),
+        x0=0.1,
+        bounds=[(0.02, 2)],
+        method='Nelder-Mead')
     implied_t = result.x[0]
-    return next_nth_trading_day(stock_price.time(), int(implied_t*252))
+    return next_nth_trading_day(stock_price.time(), int(implied_t * 252))
+
+
+def error_function(t, s0: float, strike: float, premium: float, volatility: float, risk_free: float,
+                   is_put: bool) -> bool:
+    if is_put:
+        return abs(calculate_put_price(s0, strike, volatility, t, risk_free) - premium)
+    return abs(calculate_call_price(s0, strike, volatility, t, risk_free) - premium)
