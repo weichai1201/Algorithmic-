@@ -93,8 +93,8 @@ Administrative tasks are archived in Google Drive.
 - [Statement of Work](https://drive.google.com/drive/folders/1Da-R7BeQcE7UW6mm0t8g83BNgJ0khVrg)
 
 # Showcase
-- [Link to Showcase Video](will update in the future)
-- [Link to Poster](will update in the future)
+- [Link to Showcase Video](https://drive.google.com/drive/folders/1wmVJscwAAQrasQefEwNkxCPcizGH3mBO)
+- [Link to Poster](https://drive.google.com/drive/folders/1wmVJscwAAQrasQefEwNkxCPcizGH3mBO)
 
 
 
