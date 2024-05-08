@@ -1,5 +1,5 @@
 # Financial Markets & Algorithmic Trading (Part II)
-<img alt="Invitation page" src="https://github.com/weichai1201/Algorithmic-/assets/135306395/a2f7313f-0962-40e1-854e-edf3638e4095" width=80% height=80%>
+<img alt="Invitation page" src="https://github.com/weichai1201/Algorithmic-/assets/135306395/be924335-5c8b-4a77-b401-a786d8b190e0" width=80% height=80%>
 
 ## Project Overview
 ## Our Client
