@@ -6,7 +6,7 @@ from src.market.simulated_market import SimulatedMarket
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.strategy import Strategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
-from src.trading_strategies.transactions.transactions import Transactions
+from src.agent.transactions.transactions import Transactions
 
 
 class Agent:

@@ -1,4 +1,4 @@
-from src.trading_strategies.transactions.transactions import Transactions
+from src.agent.transactions.transactions import Transactions
 
 
 def calculate_option_payoff(transactions: Transactions) -> tuple[list, list]:

@@ -11,9 +11,9 @@ from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.option_strike import get_strike_gap
 from src.trading_strategies.strategy.strategy import Strategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
-from src.trading_strategies.transactions.position import Position
-from src.trading_strategies.transactions.positions import Positions
-from src.trading_strategies.transactions.transaction import Transaction
+from src.agent.transactions.position import Position
+from src.agent.transactions.positions import Positions
+from src.agent.transactions.transaction import Transaction
 from src.util.expiry_date import next_expiry_date
 
 risk_free_rate = 0.03

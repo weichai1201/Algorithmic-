@@ -1,8 +1,8 @@
 from datetime import datetime
 
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
-from src.trading_strategies.transactions.position import Position
-from src.trading_strategies.transactions.positions import Positions
+from src.agent.transactions.position import Position
+from src.agent.transactions.positions import Positions
 
 
 class Transaction:

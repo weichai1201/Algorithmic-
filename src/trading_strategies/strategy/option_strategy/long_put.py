@@ -1,12 +1,11 @@
-from src.trading_strategies.financial_asset.option import PutOption, Option
+from src.trading_strategies.financial_asset.option import PutOption
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.symbol import Symbol
-from src.trading_strategies.option_pricing import bsm_pricing, implied_date
+from src.trading_strategies.option_pricing import bsm_pricing
 from src.trading_strategies.strategy.option_strategy.option_strategy import OptionStrategy
-from src.trading_strategies.strategy.option_strategy.option_strike import calculate_strike, roll_down_strike
+from src.trading_strategies.strategy.option_strategy.option_strike import calculate_strike
 from src.trading_strategies.strategy.strategy_id import StrategyId
-from src.trading_strategies.transactions.position import Position
-from src.util.expiry_date import closest_expiration_date, nyse_calendar
+from src.agent.transactions.position import Position
 
 risk_free_rate = 0.03
 
