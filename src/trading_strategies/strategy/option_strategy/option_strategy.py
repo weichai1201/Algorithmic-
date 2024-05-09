@@ -37,15 +37,15 @@ class OptionStrategy(Strategy):
         pass
 
     @abstractmethod
-    def roll_over(self, stock: Stock, expiration_date: datetime) -> Option:
+    def roll_over(self, stock: Stock, expiration_date: datetime) -> (float, datetime):
         pass
 
     @abstractmethod
-    def roll_up(self, stock: Stock, option: Option, premium: float) -> Option:
+    def roll_up(self, stock: Stock, option: Option, premium: float) -> (float, datetime):
         pass
 
     @abstractmethod
-    def roll_down(self, stock: Stock, option: Option, premium: float) -> Option:
+    def roll_down(self, stock: Stock, option: Option, premium: float) -> (float, datetime):
         pass
 
     def get_id(self) -> StrategyId:
