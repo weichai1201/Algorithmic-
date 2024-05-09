@@ -2,6 +2,8 @@ import datetime
 from typing import Set
 
 from src.agent.performance import calculate_option_payoff, calculate_option_profit, calculate_drawdowns
+from src.agent.transactions.transaction import Transaction
+from src.data_access.data_package import DataPackage
 from src.market.simulated_market import SimulatedMarket
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.strategy import Strategy
@@ -20,6 +22,7 @@ class Agent:
         for strategy_id, strategy in strategies.items():
             self._all_transactions[strategy_id] = Transactions(strategy_id)
             strategy.register_agent(self)
+        self._market = SimulatedMarket()
 
     def get_symbols(self) -> Set:
         result: Set[Symbol] = set()
@@ -27,20 +30,14 @@ class Agent:
             result.add(strategy.symbol())
         return result
 
-    def update(self, symbol: Symbol, new_data, time: datetime, market=SimulatedMarket()):
+    def update(self, symbol: Symbol, new_data: DataPackage):
         for strategy_id, strategy in self._strategies.items():
             if symbol == strategy.symbol():
-                transaction = strategy.update(new_data, time)
-                # market.submit_order(order)
-                # if order.is_successful():
-                #     positions: Positions
-                #     if order.is_ask:
-                #         positions = Positions(Position.SHORT, order.quantity)
-                #     else:
-                #         positions = Positions(Position.LONG, order.quantity)
-                #     transaction = Transaction(positions, order.asset, datetime.datetime.now())
-                if transaction is not None:
-                    self._all_transactions.get(strategy_id).add_transaction(transaction)
+                order = strategy.update(new_data)
+                self._market.submit_order(order)
+                if order.is_successful():
+                    transaction = Transaction(order.positions, order.asset, order.date, order.msg)
+                    self._all_transactions[strategy_id].add_transaction(transaction)
 
     def get_all_transactions(self) -> dict[StrategyId, Transactions]:
         return self._all_transactions

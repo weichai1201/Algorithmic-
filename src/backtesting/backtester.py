@@ -6,7 +6,7 @@ import pandas as pd
 
 from src.agent.agent import Agent
 from src.backtesting.backtesting_summary import BacktestingSummary
-from src.data_access.data_access import retrieve_stock, retrieve_rf
+from src.data_access.data_access import retrieve_stock, retrieve_rf, DataAccess
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.option_pricing import bsm_pricing
@@ -22,12 +22,12 @@ class Backtester:
         self._agents = agents
         self._has_tested = False
         self._summary = None
-
         # register stock symbols for both agents
         self._symbols = self_agent.get_symbols()
         if (agents is not None) & len(agents) != 0:
             for agent in agents:
                 self._symbols.add(agent.get_symbols())
+        DataAccess().get_stock(self._symbols, start_date, end_date)
 
     @abstractmethod
     def run_back_testing(self):

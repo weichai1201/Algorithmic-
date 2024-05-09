@@ -1,21 +1,18 @@
 from datetime import datetime
 
+from src.agent.transactions.position import Position
+from src.agent.transactions.positions import Positions
 from src.market.order_task import OrderTask
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
 
 
 class Order:
 
-    def __init__(self, asset: FinancialAsset, date: datetime, quantity=1.0, ask=0.0, bid=0.0):
+    def __init__(self, asset: FinancialAsset, date: datetime, positions: Positions, msg=""):
         self.asset = asset
         self.date = date
-        self.quantity = quantity
-        self.ask = ask
-        self.bid = bid
-        if self.ask > 0:
-            self.is_ask = True
-        else:
-            self.is_ask = False
+        self.positions = positions
+        self.msg = msg
         self._task = OrderTask()
 
     def is_complete(self):
@@ -36,4 +33,4 @@ class Order:
 
 class EmptyOrder(Order):
     def __init__(self, asset: FinancialAsset):
-        super().__init__(asset)
+        super().__init__(asset, datetime.now(), Positions(Position.LONG, 0))

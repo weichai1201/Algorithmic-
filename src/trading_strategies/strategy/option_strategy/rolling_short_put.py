@@ -1,5 +1,6 @@
 from typing import List
 
+from src.agent.transactions.positions import Positions
 from src.data_access.data_package import DataPackage
 from src.market.order import Order, EmptyOrder
 from src.trading_strategies.financial_asset import option
@@ -37,20 +38,24 @@ class RollingShortPut(OptionStrategy):
         stock_price = new_stock.get_price().price()
         expiry = next_expiry_date(date, self._is_weekly)
         strike: float
+        msg = ""
         if isinstance(self._option, EmptyOption):
             # initiate the first roll
             strike = self._naked_put.roll_over(new_stock, expiry)[0]
+            msg = "Initiate first option."
         elif not self._option.is_expired(date):
             return EmptyOrder(EmptyAsset())
         elif self._require_roll_over(stock_price):
             strike = self._naked_put.roll_over(new_stock, expiry)[0]
+            msg = "Roll over naked short put."
         else:
             # moderately in the money
             premium = self._option.itm_amount(stock_price) + get_strike_gap(stock_price)
             strike, expiry = self._naked_put.roll_down(new_stock, self._option, premium)
+            msg = "Roll down naked short put."
         strike_price = Price(strike, date)
         next_option = PutOption(self._symbol, strike_price, expiry, EmptyPrice())
-        order = Order(next_option, quantity=self._scale)
+        order = Order(next_option, date, Positions(Position.SHORT, self._scale), msg)
         return order
 
     def update_order(self, orders: List[Order]):

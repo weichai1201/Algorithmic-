@@ -61,23 +61,27 @@ class DataAccess(metaclass=DataSingletonMeta):
             self._risk_free[entry] = RiskFree(0, rate_period, date)
         return self._risk_free[entry]
 
-    def retrieve_rf(date: datetime):
-        result = _retrieve_by_date(tbills_filename, tbills_date_column_name, date, tbills_date_format)
-        traceback_days = 10
-        i = 0
-        # in case risk free is not available on that date, search back a few days before.
-        while len(result) == 0 and i < traceback_days:
-            date = date - timedelta(days=1)
-            result = _retrieve_by_date(tbills_filename, tbills_date_column_name, date, tbills_date_format)
-            i += 1
-        if len(result) == 0:
-            return DataAccessResult(None)
-        result = result["DTB3"].values[0]
-        if result == ".":
-            return retrieve_rf(date - timedelta(days=1))
-        return DataAccessResult(float(result) / 100, True)
+    # def retrieve_rf(date: datetime):
+    #     result = _retrieve_by_date(tbills_filename, tbills_date_column_name, date, tbills_date_format)
+    #     traceback_days = 10
+    #     i = 0
+    #     # in case risk free is not available on that date, search back a few days before.
+    #     while len(result) == 0 and i < traceback_days:
+    #         date = date - timedelta(days=1)
+    #         result = _retrieve_by_date(tbills_filename, tbills_date_column_name, date, tbills_date_format)
+    #         i += 1
+    #     if len(result) == 0:
+    #         return DataAccessResult(None)
+    #     result = result["DTB3"].values[0]
+    #     if result == ".":
+    #         return retrieve_rf(date - timedelta(days=1))
+    #     return DataAccessResult(float(result) / 100, True)
 
     # ==== stock
+    def is_trading_in_historical(self, date: datetime) -> bool:
+        dates = self._historical_stock[self._stock_price_file["date_column_name"]]
+        return date in dates
+
     def _add_stock(self, stock_df: pd.DataFrame):
         self._historical_stock.add(stock_df)
 
@@ -163,39 +167,39 @@ class DataAccessResult:
         self.is_successful = is_successful
 
 
-def retrieve_stock(symbol: Symbol, date: datetime) -> DataAccessResult:
-    data = _retrieve_by_date(stock_filename, stock_date_column_name, date, stock_date_format)
-    if len(data) == 0 or symbol.symbol not in data.columns:
-        return DataAccessResult(None)
-    price = data[symbol.symbol].values[0]
-    if np.isnan(price):
-        return DataAccessResult(None)
-    stock = Stock(symbol, Price(price, date))
-    return DataAccessResult(stock, True)
+# def retrieve_stock(symbol: Symbol, date: datetime) -> DataAccessResult:
+#     data = _retrieve_by_date(stock_filename, stock_date_column_name, date, stock_date_format)
+#     if len(data) == 0 or symbol.symbol not in data.columns:
+#         return DataAccessResult(None)
+#     price = data[symbol.symbol].values[0]
+#     if np.isnan(price):
+#         return DataAccessResult(None)
+#     stock = Stock(symbol, Price(price, date))
+#     return DataAccessResult(stock, True)
 
 
-def retrieve_rf(date: datetime):
-    result = _retrieve_by_date(tbills_filename, tbills_date_column_name, date, tbills_date_format)
-    traceback_days = 10
-    i = 0
-    # in case risk free is not available on that date, search back a few days before.
-    while len(result) == 0 and i < traceback_days:
-        date = date - timedelta(days=1)
-        result = _retrieve_by_date(tbills_filename, tbills_date_column_name, date, tbills_date_format)
-        i += 1
-    if len(result) == 0:
-        return DataAccessResult(None)
-    result = result["DTB3"].values[0]
-    if result == ".":
-        return retrieve_rf(date - timedelta(days=1))
-    return DataAccessResult(float(result) / 100, True)
-
-
-def _retrieve_by_date(filename: str, col_name: str, date: datetime, date_format=""):
-    data = _read_file(filename)
-    date_str = date.strftime(date_format)
-    result = data[data[col_name] == date_str]
-    return data[data[col_name] == date_str]
+# def retrieve_rf(date: datetime):
+#     result = _retrieve_by_date(tbills_filename, tbills_date_column_name, date, tbills_date_format)
+#     traceback_days = 10
+#     i = 0
+#     # in case risk free is not available on that date, search back a few days before.
+#     while len(result) == 0 and i < traceback_days:
+#         date = date - timedelta(days=1)
+#         result = _retrieve_by_date(tbills_filename, tbills_date_column_name, date, tbills_date_format)
+#         i += 1
+#     if len(result) == 0:
+#         return DataAccessResult(None)
+#     result = result["DTB3"].values[0]
+#     if result == ".":
+#         return retrieve_rf(date - timedelta(days=1))
+#     return DataAccessResult(float(result) / 100, True)
+#
+#
+# def _retrieve_by_date(filename: str, col_name: str, date: datetime, date_format=""):
+#     data = _read_file(filename)
+#     date_str = date.strftime(date_format)
+#     result = data[data[col_name] == date_str]
+#     return data[data[col_name] == date_str]
 
 
 def _read_file(file_path: str):
