@@ -1,10 +1,8 @@
 import os.path
 from datetime import datetime
 
-from src.agent.agent import Agent
 from src.backtesting.backtesting import run_daily_market_replay
 from src.trading_strategies.financial_asset.symbol import Symbol
-from src.trading_strategies.strategy.option_strategy.naked_put import NakedPut
 from src.trading_strategies.strategy.option_strategy.rolling_short_put import RollingShortPut
 from src.trading_strategies.strategy.strategy_id import StrategyId
 import matplotlib.pyplot as plt

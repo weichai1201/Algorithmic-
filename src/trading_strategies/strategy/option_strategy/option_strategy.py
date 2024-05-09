@@ -1,19 +1,13 @@
 from abc import abstractmethod
 from datetime import datetime
-from typing import Optional
-from typing_extensions import deprecated
 
 from src.data_access.data_package import DataPackage
 from src.trading_strategies.financial_asset.option import Option, CallOption
-from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.option_strike import get_strike_gap
 from src.trading_strategies.strategy.strategy import Strategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
-from src.agent.transactions.position import Position
-from src.agent.transactions.positions import Positions
-from src.agent.transactions.transaction import Transaction
 from src.util.expiry_date import next_expiry_date
 
 risk_free_rate = 0.03
@@ -54,7 +48,6 @@ class OptionStrategy(Strategy):
     def in_the_money(self, stock_price: float, option: Option) -> bool:
         return option.in_the_money(stock_price)
 
-    @deprecated
     def deep_in_the_money(self, stock_price: float, option: Option) -> bool:
         return self.itm_amount(stock_price, option) > 5 * get_strike_gap(stock_price)
 

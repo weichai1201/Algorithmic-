@@ -1,19 +1,17 @@
-import csv
 import json
 import os
 from datetime import datetime, timedelta
 from typing import Dict, Tuple
 
-import numpy as np
 import pandas as pd
 
+from src.data_access.data_access_meta import DataSingletonMeta
 from src.data_access.risk_free_rate import RatePeriod, RiskFree
 from src.data_access.volatility import Volatility, VolatilityType
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
-from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
-from src.util.calculate_volatility import calculate_vol
+
 
 stock_filename = "data/sp500_adj_close_prices.csv"
 stock_date_format = "%Y-%m-%d %H:%M:%S"  # 2004-01-02 00:00:00
@@ -21,16 +19,6 @@ stock_date_column_name = "Date"
 tbills_filename = "data/T-Bills.csv"
 tbills_date_format = "%d/%m/%Y"  # 16/01/2004
 tbills_date_column_name = "DATE"
-
-
-class DataSingletonMeta(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            instance = super().__call__(*args, **kwargs)
-            cls._instances[cls] = instance
-        return cls._instances[cls]
 
 
 class DataAccess(metaclass=DataSingletonMeta):
@@ -51,6 +39,7 @@ class DataAccess(metaclass=DataSingletonMeta):
     def get_volaitlity(self, symbol: Symbol, volatility_type: VolatilityType, date: datetime):
         entry = tuple((symbol, volatility_type, date))
         if entry not in self._volatilities.keys():
+            from src.util.calculate_volatility import calculate_vol
             self._volatilities[entry] = calculate_vol(symbol, volatility_type, date)
         return self._volatilities[entry]
 

@@ -21,8 +21,7 @@ class MarketSingletonMeta(type):
         return cls._instances[cls]
 
 
-class SimulatedMarket(MetaClass=MarketSingletonMeta):
-
+class SimulatedMarket(metaclass=MarketSingletonMeta):
     def __init__(self):
         self._order_book = []
 
