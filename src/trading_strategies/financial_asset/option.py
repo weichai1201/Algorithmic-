@@ -84,3 +84,21 @@ class PutOption(Option):
             stock = stock.get_price().price()
         payoff = np.maximum(self.get_strike().price() - stock, 0)
         return payoff
+
+
+class EmptyOption(Option):
+    def __init__(self):
+        symbol = Symbol("Empty")
+        premium = Price(0, datetime.now())
+        strike_price = Price(0, datetime.now())
+        expiration_date = datetime.now()
+        super().__init__(symbol, premium, strike_price, expiration_date)
+
+    def in_the_money(self, stock_price: float) -> bool:
+        pass
+
+    def itm_amount(self, stock_price: float) -> float:
+        pass
+
+    def option_payoff(self, stock: Stock):
+        pass
