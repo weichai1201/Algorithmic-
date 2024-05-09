@@ -1,3 +1,4 @@
+from src.data_access.data_package import DataPackage
 from src.trading_strategies.financial_asset.option import PutOption, Option
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.symbol import Symbol
@@ -10,6 +11,7 @@ from src.util.expiry_date import closest_expiration_date, nyse_calendar
 
 risk_free_rate = 0.03
 
+
 class NakedPut(OptionStrategy):
 
     def __init__(self, strategy_id: StrategyId, symbol: Symbol, is_itm: bool, position: Position,
@@ -17,20 +19,24 @@ class NakedPut(OptionStrategy):
         super().__init__(strategy_id, symbol, is_itm, position, is_weekly,
                          weekday, num_of_strikes, scale)
 
-    def _roll_over(self, stock, expiration_date):
+    def roll_over(self, stock, expiration_date) -> Option:
         strike_price = calculate_strike(stock.get_price().price(), self._is_itm, self._num_of_strikes, True)
         premium = bsm_pricing(stock, strike_price, expiration_date, [], risk_free_rate, True)
-        new_option = PutOption(stock.symbol, Price(strike_price, stock.get_price().time()), expiration_date, premium)
+        new_option = PutOption(stock.symbol(), Price(strike_price, stock.get_price().time()), expiration_date, premium)
         return new_option
 
-    def _roll_down(self, stock, option, premium) -> Option:
+    def roll_down(self, stock, option, premium: float) -> Option:
         strike_price = roll_down_strike(stock.get_price().price(), option.get_strike().price(), self._num_of_strikes)
         new_expiration = implied_date(stock.get_price(), strike_price, risk_free_rate, premium,
                                       stock.calculate_garch(), True)
         new_expiration = closest_expiration_date(new_expiration, nyse_calendar)
         premium = bsm_pricing(stock, strike_price, new_expiration, [], risk_free_rate, True)
         strike = Price(strike_price, stock.get_price().time())
-        new_option = PutOption(stock.symbol, strike, new_expiration, premium)
+        new_option = PutOption(stock.symbol(), strike, new_expiration, premium)
         return new_option
 
+    def roll_up(self, stock, option, premium) -> Option:
+        pass
 
+    def update(self, new_data: DataPackage):
+        pass
