@@ -17,9 +17,9 @@ risk_free_rate = 0.03
 
 class NakedPut(OptionStrategy):
 
-    def __init__(self, strategy_id: StrategyId, symbol: Symbol, is_itm: bool, position: Position,
+    def __init__(self, strategy_id: StrategyId, symbol: Symbol, is_itm: bool,
                  is_weekly: bool, weekday, num_of_strikes, scale=1):
-        super().__init__(strategy_id, symbol, is_itm, position, is_weekly,
+        super().__init__(strategy_id, symbol, is_itm, is_weekly,
                          weekday, num_of_strikes, scale)
 
     def roll_over(self, stock: Stock, expiration_date: datetime) -> (float, datetime):

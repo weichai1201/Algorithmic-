@@ -1,9 +1,9 @@
+from datetime import datetime
 from typing import List
 
 from src.agent.transactions.positions import Positions
 from src.data_access.data_package import DataPackage
 from src.market.order import Order, EmptyOrder
-from src.trading_strategies.financial_asset import option
 from src.trading_strategies.financial_asset.financial_asset import EmptyAsset
 from src.trading_strategies.financial_asset.option import Option, EmptyOption, PutOption
 from src.trading_strategies.financial_asset.price import Price, EmptyPrice
@@ -12,16 +12,21 @@ from src.trading_strategies.strategy.option_strategy.naked_put import NakedPut
 from src.trading_strategies.strategy.option_strategy.option_strategy import OptionStrategy
 from src.trading_strategies.strategy.option_strategy.option_strike import get_strike_gap
 from src.trading_strategies.strategy.strategy_id import StrategyId
-from src.trading_strategies.transactions.position import Position
+from src.agent.transactions.position import Position
 from src.util.expiry_date import next_expiry_date
 
 
 class RollingShortPut(OptionStrategy):
-    def __init__(self, strategy_id: StrategyId, symbol: Symbol, is_itm: bool, position: Position, is_weekly: bool,
-                 weekday, num_of_strikes, scale=1):
-        super().__init__(strategy_id, symbol, is_itm, position, is_weekly, weekday, num_of_strikes)
-        self._naked_put = NakedPut(strategy_id, symbol, is_itm, position, is_weekly, weekday, num_of_strikes, scale)
+    def __init__(self, strategy_id: StrategyId, symbol: Symbol, is_itm: bool, is_weekly: bool,
+                 weekday, num_of_strikes: int, scale=1):
+        super().__init__(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes)
+        self._naked_put = NakedPut(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale)
         self._option: Option = EmptyOption()
+
+    def need_update(self, date: datetime):
+        if isinstance(self._option, EmptyOption):
+            return True
+        return self._option.is_expired(date)
 
     def _require_roll_over(self, stock_price: float):
         if isinstance(self._option, EmptyOption):
