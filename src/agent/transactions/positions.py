@@ -1,4 +1,4 @@
-from src.trading_strategies.transactions.position import Position
+from src.agent.transactions.position import Position
 
 """
 @author: Yifan Xiao

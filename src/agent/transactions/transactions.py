@@ -1,5 +1,5 @@
 from src.trading_strategies.strategy.strategy_id import StrategyId
-from src.trading_strategies.transactions.transaction import Transaction
+from src.agent.transactions.transaction import Transaction
 
 
 class Transactions:
