@@ -6,6 +6,7 @@ from src.trading_strategies.financial_asset.financial_asset import FinancialAsse
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.price import Price
+from src.trading_strategies.strategy.option_strategy.option_strike import get_strike_gap
 
 
 class Option(FinancialAsset):
@@ -21,6 +22,9 @@ class Option(FinancialAsset):
     @abstractmethod
     def itm_amount(self, stock_price: float) -> float:
         pass
+
+    def deep_in_the_money(self, stock_price: float):
+        return self.itm_amount(stock_price) >= 5 * get_strike_gap(stock_price)
 
     def get_strike(self):
         return self._strike_price
