@@ -7,7 +7,7 @@ from src.trading_strategies.financial_asset.option import Option, PutOption, Cal
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
-from src.trading_strategies.option_pricing import bsm_pricing
+from src.trading_strategies.option_pricing import bsm_pricing, bsm_pricing2
 from src.trading_strategies.strategy.option_strategy.option_strike import simulate_strikes, get_closest_strike
 
 
@@ -48,5 +48,5 @@ class SimulatedMarket(MetaClass=MarketSingletonMeta):
                                date: datetime, expiry: datetime, is_put=True):
         strike_price = get_closest_strike(stock_price, target_strike)
         rf = DataAccess().get_risk_free(RatePeriod.TEN_YEAR, date)
-        premium = bsm_pricing(Stock(symbol, Price(stock_price, date)), strike_price, expiry, [], rf, is_put)
+        premium = bsm_pricing2(Stock(symbol, Price(stock_price, date)), strike_price, expiry, [], rf, is_put)
         return strike_price, premium
