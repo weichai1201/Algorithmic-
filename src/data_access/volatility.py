@@ -7,7 +7,7 @@ class VolatilityType(Enum):
     SIMPLE = "Standard_Deviation"
 
     def __hash__(self):
-        self.value.__hash__()
+        return self.value.__hash__()
 
 
 class Volatility:
@@ -19,4 +19,5 @@ class Volatility:
         self._end_date = end_date
 
     def __hash__(self):
-        self.value.__hash__() + self.type.__hash__() + self.start_date.__hash__() + self._end_date.__hash__()
+        return (2 * self.value.__hash__() + 3 * self.type.__hash__() +
+                5 * self.start_date.__hash__() + 7 * self._end_date.__hash__())
