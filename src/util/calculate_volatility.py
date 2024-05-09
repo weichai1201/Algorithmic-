@@ -8,7 +8,7 @@ from src.data_access.volatility import VolatilityType, Volatility
 from src.trading_strategies.financial_asset.symbol import Symbol
 
 
-def calculate_vol(volatility_type: VolatilityType, symbol: Symbol, start: datetime, end: datetime) -> Volatility:
+def calculate_vol(symbol: Symbol, volatility_type: VolatilityType, start: datetime, end: datetime) -> Volatility:
     if volatility_type == VolatilityType.GARCH:
         value = calculate_garch(symbol, start, end)
     else:

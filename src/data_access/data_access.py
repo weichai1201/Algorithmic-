@@ -12,6 +12,7 @@ from src.trading_strategies.financial_asset.financial_asset import FinancialAsse
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
+from src.util.calculate_volatility import calculate_vol
 
 stock_filename = "data/sp500_adj_close_prices.csv"
 stock_date_format = "%Y-%m-%d %H:%M:%S"  # 2004-01-02 00:00:00
@@ -48,7 +49,7 @@ class DataAccess(metaclass=DataSingletonMeta):
     def get_volaitlity(self, symbol: Symbol, volatility_type: VolatilityType, start_date: datetime, end_date: datetime):
         entry = tuple((symbol, volatility_type, start_date, end_date))
         if entry not in self._volatilities.keys():
-            self._volatilities[entry] = 0
+            self._volatilities[entry] = calculate_vol(symbol, volatility_type, start_date, end_date)
         return self._volatilities[entry]
 
     def _add_stock(self, stock_df: pd.DataFrame):
@@ -65,7 +66,11 @@ class DataAccess(metaclass=DataSingletonMeta):
         if len(missing_symbols) > 0:
             self._request_stock_from_local(missing_symbols, start_date, end_date)
         columns = [self._stock_price_file["date_column_name"]] + symbols
-        return self._historical_stock[columns]
+        dates = self._historical_stock[self._stock_price_file["date_column_name"]]
+        s = start_date.strftime(self._stock_price_file["date_format"])
+        e = end_date.strftime(self._stock_price_file["date_format"])
+        rows = (s <= dates <= e)
+        return self._historical_stock[rows, columns]
 
     def has_stock_data(self, symbol):
         if isinstance(symbol, Symbol):
