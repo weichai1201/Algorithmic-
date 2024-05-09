@@ -2,10 +2,12 @@ import csv
 import json
 import os
 from datetime import datetime, timedelta
+from typing import Dict, Tuple
 
 import numpy as np
 import pandas as pd
 
+from src.data_access.volatility import Volatility, VolatilityType
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.stock import Stock
@@ -41,6 +43,13 @@ class DataAccess(metaclass=DataSingletonMeta):
                               "date_format": "%d/%m/%Y",  # 2004-01-02 00:00:00
                               "date_column_name": "DATE"
                               }
+        self._volatilities: Dict[Tuple[Symbol, VolatilityType, datetime, datetime], Volatility] = dict()
+
+    def get_volaitlity(self, symbol: Symbol, volatility_type: VolatilityType, start_date: datetime, end_date: datetime):
+        entry = tuple((symbol, volatility_type, start_date, end_date))
+        if entry not in self._volatilities.keys():
+            self._volatilities[entry] = 0
+        return self._volatilities[entry]
 
     def _add_stock(self, stock_df: pd.DataFrame):
         self._historical_stock.add(stock_df)

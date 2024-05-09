@@ -12,12 +12,12 @@ class VolatilityType(Enum):
 
 class Volatility:
 
-    def __init__(self, value: float, volatility_type: VolatilityType, start_date: datetime, end_date: datetime):
+    def __init__(self, value: float, volatility_type: VolatilityType):
         self.value = value
         self.type = volatility_type
-        self.start_date = start_date
-        self._end_date = end_date
+        # self.start_date = start_date
+        # self._end_date = end_date
 
-    def __hash__(self):
-        return (2 * self.value.__hash__() + 3 * self.type.__hash__() +
-                5 * self.start_date.__hash__() + 7 * self._end_date.__hash__())
+    # def __hash__(self):
+    #     return (2 * self.value.__hash__() + 3 * self.type.__hash__() +
+    #             5 * self.start_date.__hash__() + 7 * self._end_date.__hash__())
