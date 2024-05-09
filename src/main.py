@@ -10,7 +10,7 @@ from src.trading_strategies.strategy.option_strategy.naked_call import NakedCall
 from src.trading_strategies.strategy.option_strategy.naked_put import NakedPut
 from src.trading_strategies.strategy.option_strategy.option_strike import calculate_strike
 from src.trading_strategies.strategy.strategy_id import StrategyId
-from src.trading_strategies.transactions.position import Position
+from src.agent.transactions.position import Position
 from src.util.expiry_date import next_expiry_date, closest_expiration_date
 from src.util.read_file import get_historical_values
 import pandas as pd
