@@ -45,13 +45,13 @@ class DataAccess(metaclass=DataSingletonMeta):
                               "date_column_name": "DATE"
                               }
 
-        self._volatilities: Dict[Tuple[Symbol, VolatilityType, datetime, datetime], Volatility] = dict()
+        self._volatilities: Dict[Tuple[Symbol, VolatilityType, datetime], Volatility] = dict()
         self._risk_free: Dict[Tuple[RatePeriod, datetime], RiskFree] = dict()
 
-    def get_volaitlity(self, symbol: Symbol, volatility_type: VolatilityType, start_date: datetime, end_date: datetime):
-        entry = tuple((symbol, volatility_type, start_date, end_date))
+    def get_volaitlity(self, symbol: Symbol, volatility_type: VolatilityType, date: datetime):
+        entry = tuple((symbol, volatility_type, date))
         if entry not in self._volatilities.keys():
-            self._volatilities[entry] = calculate_vol(symbol, volatility_type, start_date, end_date)
+            self._volatilities[entry] = calculate_vol(symbol, volatility_type, date)
         return self._volatilities[entry]
 
     # ==== risk free

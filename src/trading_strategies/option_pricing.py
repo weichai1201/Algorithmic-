@@ -28,6 +28,7 @@ def bsm_pricing2(stock: Stock, strike: float, expiry: datetime,
     else:
         return calculate_call_price(adjusted_price, strike, volatility, time_to_maturity, risk_free_rate)
 
+
 def bsm_pricing(stock: Stock, strike: float, expiration_date, dividends: list[Price], risk_free_rate, is_put: bool):
     time_to_maturity = (expiration_date - stock.get_price().time()) / datetime.timedelta(days=365)
     volatility = stock.garch()
@@ -74,9 +75,8 @@ def adjust_dividends(stock: Stock, dividends: [float], risk_free: float):
 
 def implied_date(stock_price: Price, strike_price: float, risk_free_rate: float, premium: float, volatility: float,
                  is_put: bool):
-
     result = minimize(
-        lambda t: error_function(t, stock_price.price(), strike_price, premium, volatility, risk_free_rate,is_put),
+        lambda t: error_function(t, stock_price.price(), strike_price, premium, volatility, risk_free_rate, is_put),
         x0=0.1,
         bounds=[(0.02, 2)],
         method='Nelder-Mead')
