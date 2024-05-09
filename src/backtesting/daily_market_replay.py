@@ -11,6 +11,9 @@ from src.trading_strategies.strategy.option_strategy.option_strike import simula
 
 
 class DailyMarketReplay(Backtester):
+    def __init__(self, start_date: datetime, end_date: datetime, self_agent: Agent, agents: list[Agent]):
+        super().__init__(start_date, end_date, self_agent, agents)
+
     def run_back_testing(self):
         self._has_tested = True
         date = self._start_date

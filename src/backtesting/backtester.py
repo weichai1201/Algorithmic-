@@ -6,7 +6,7 @@ import pandas as pd
 
 from src.agent.agent import Agent
 from src.backtesting.backtesting_summary import BacktestingSummary
-from src.data_access.data_access import retrieve_stock, retrieve_rf, DataAccess
+from src.data_access.data_access import DataAccess
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.option_pricing import bsm_pricing
