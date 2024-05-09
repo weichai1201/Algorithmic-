@@ -38,7 +38,7 @@ class DataAccess(metaclass=DataSingletonMeta):
                                   "date_column_name": "Date"
                                   }
         self._t_bills_file = {"filename": "data/T-Bills.csv",
-                              "date_format": "%d/%m/%Y",  # 2004-01-02 00:00:00
+                              "date_format": "%d/%m/%Y",  # 02-01-2004
                               "date_column_name": "DATE"
                               }
 
@@ -62,6 +62,7 @@ class DataAccess(metaclass=DataSingletonMeta):
         if isinstance(symbol, Symbol):
             symbol = symbol.symbol
         return symbol in self._historical_stock
+
 
     def _request_stock_from_local(self, symbols, start_date: datetime, end_date: datetime = None):
         if len(symbols) == 0:

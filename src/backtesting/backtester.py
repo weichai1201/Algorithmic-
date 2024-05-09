@@ -24,8 +24,7 @@ class Backtester:
         self._summary = None
 
         # register stock symbols for both agents
-        self._symbols = set[Symbol]()
-        self._symbols.union(self_agent.get_symbols())
+        self._symbols = self_agent.get_symbols()
         if (agents is not None) & len(agents) != 0:
             for agent in agents:
                 self._symbols.add(agent.get_symbols())

@@ -1,7 +1,8 @@
 import datetime
+from typing import Set
 
 from src.agent.performance import calculate_option_payoff, calculate_option_profit, calculate_drawdowns
-from src.order.simulated_market import SimulatedMarket
+from src.market.simulated_market import SimulatedMarket
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.strategy import Strategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
@@ -20,8 +21,8 @@ class Agent:
             self._all_transactions[strategy_id] = Transactions(strategy_id)
             strategy.register_agent(self)
 
-    def get_symbols(self):
-        result = set[Symbol]()
+    def get_symbols(self) -> Set:
+        result: Set[Symbol] = set()
         for strategy in self._strategies.values():
             result.add(strategy.symbol())
         return result
