@@ -7,6 +7,7 @@ from typing import Dict, Tuple
 import numpy as np
 import pandas as pd
 
+from src.data_access.risk_free_rate import RatePeriod, RiskFree
 from src.data_access.volatility import Volatility, VolatilityType
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
 from src.trading_strategies.financial_asset.price import Price
@@ -35,7 +36,6 @@ class DataSingletonMeta(type):
 class DataAccess(metaclass=DataSingletonMeta):
     def __init__(self):
         self._historical_stock: pd.DataFrame = pd.DataFrame()
-        self._risk_free: pd.DataFrame = pd.DataFrame()
         self._stock_price_file = {"filename": "data/sp500_adj_close_prices.csv",
                                   "date_format": "%Y-%m-%d %H:%M:%S",  # 2004-01-02 00:00:00
                                   "date_column_name": "Date"
@@ -44,7 +44,9 @@ class DataAccess(metaclass=DataSingletonMeta):
                               "date_format": "%d/%m/%Y",  # 2004-01-02 00:00:00
                               "date_column_name": "DATE"
                               }
+
         self._volatilities: Dict[Tuple[Symbol, VolatilityType, datetime, datetime], Volatility] = dict()
+        self._risk_free: Dict[Tuple[RatePeriod, datetime], RiskFree] = dict()
 
     def get_volaitlity(self, symbol: Symbol, volatility_type: VolatilityType, start_date: datetime, end_date: datetime):
         entry = tuple((symbol, volatility_type, start_date, end_date))
@@ -52,6 +54,32 @@ class DataAccess(metaclass=DataSingletonMeta):
             self._volatilities[entry] = calculate_vol(symbol, volatility_type, start_date, end_date)
         return self._volatilities[entry]
 
+    # ==== risk free
+    def get_risk_free(self, rate_period: RatePeriod, date: datetime):
+        entry = tuple((rate_period, date))
+        if entry not in self._risk_free.keys():
+            self._risk_free[entry] = RiskFree(0, rate_period, date)
+        return self._risk_free[entry]
+
+    def retrieve_rf(date: datetime):
+        result = _retrieve_by_date(tbills_filename, tbills_date_column_name, date, tbills_date_format)
+        traceback_days = 10
+        i = 0
+        # in case risk free is not available on that date, search back a few days before.
+        while len(result) == 0 and i < traceback_days:
+            date = date - timedelta(days=1)
+            result = _retrieve_by_date(tbills_filename, tbills_date_column_name, date, tbills_date_format)
+            i += 1
+        if len(result) == 0:
+            return DataAccessResult(None)
+        result = result["DTB3"].values[0]
+        if result == ".":
+            return retrieve_rf(date - timedelta(days=1))
+        return DataAccessResult(float(result) / 100, True)
+
+
+
+    # ==== stock
     def _add_stock(self, stock_df: pd.DataFrame):
         self._historical_stock.add(stock_df)
 
