@@ -1,4 +1,4 @@
-from src.order.order import Order
+from src.market.order import Order
 
 
 class SimulatedMarket:

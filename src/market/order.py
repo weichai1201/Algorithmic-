@@ -1,4 +1,4 @@
-from src.order.order_task import OrderTask
+from src.market.order_task import OrderTask
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
 
 
@@ -29,3 +29,8 @@ class Order:
 
     def symbol(self):
         return self.asset.symbol()
+
+
+class EmptyOrder(Order):
+    def __init__(self, asset: FinancialAsset):
+        super().__init__(asset)

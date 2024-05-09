@@ -32,7 +32,7 @@ def simulate_strikes(stock_price: float, num=5) -> list[float]:
     return result
 
 
-def calculate_strike(stock_price: float, is_itm: bool, num_strikes: int, is_put: bool):
+def calculate_strike(stock_price: float, is_itm: bool, num_strikes: int, is_put: bool) -> float:
     """
     :param stock_price: current stock price.
     :param is_itm: boolean, if true, itm side; else otm side.

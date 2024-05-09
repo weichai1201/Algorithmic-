@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from datetime import datetime
 
-from src.trading_strategies.financial_asset.price import Price
+from src.trading_strategies.financial_asset.price import Price, EmptyPrice
 from src.trading_strategies.financial_asset.symbol import Symbol
 
 
@@ -38,3 +38,14 @@ class FinancialAsset:
     @abstractmethod
     def __str__(self):
         pass
+
+
+class EmptyAsset(FinancialAsset):
+
+    def __init__(self):
+        symbol = Symbol("Empty")
+        price = EmptyPrice()
+        super().__init__(symbol, price)
+
+    def __str__(self):
+        return f"Empty asset created at {self._price.time()}"

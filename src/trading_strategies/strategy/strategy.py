@@ -28,6 +28,7 @@ class Strategy:
     def update(self, new_data: DataPackage) -> Order:
         pass
 
+    @abstractmethod
     def need_update(self, date: datetime):
         return True
 
