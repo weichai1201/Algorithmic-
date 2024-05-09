@@ -5,6 +5,7 @@ from scipy.stats import norm
 import math
 from scipy.optimize import newton, fmin, minimize
 
+from src.data_access.data_access import DataAccess
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.stock import Stock
 import src.util.util as util
@@ -15,6 +16,17 @@ from src.util.expiry_date import trading_days, nyse_calendar, next_nth_trading_d
 @:param risk free rate: continuous
 """
 
+
+def bsm_pricing2(stock: Stock, strike: float, expiry: datetime,
+                 dividends: list[Price], risk_free_rate, is_put: bool):
+    t0 = stock.get_t0()
+    time_to_maturity = (expiry - t0) / datetime.timedelta(days=365)
+    volatility = DataAccess().get_volaitlity(stock.symbol(), )
+    adjusted_price = adjust_dividends(stock, dividends, risk_free_rate)
+    if is_put:
+        return calculate_put_price(adjusted_price, strike, volatility, time_to_maturity, risk_free_rate)
+    else:
+        return calculate_call_price(adjusted_price, strike, volatility, time_to_maturity, risk_free_rate)
 
 def bsm_pricing(stock: Stock, strike: float, expiration_date, dividends: list[Price], risk_free_rate, is_put: bool):
     time_to_maturity = (expiration_date - stock.get_price().time()) / datetime.timedelta(days=365)

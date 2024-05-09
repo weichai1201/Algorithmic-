@@ -1,11 +1,14 @@
+from datetime import datetime
+
 from src.market.order_task import OrderTask
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
 
 
 class Order:
 
-    def __init__(self, asset: FinancialAsset, quantity=1.0, ask=0.0, bid=0.0):
+    def __init__(self, asset: FinancialAsset, date: datetime, quantity=1.0, ask=0.0, bid=0.0):
         self.asset = asset
+        self.date = date
         self.quantity = quantity
         self.ask = ask
         self.bid = bid

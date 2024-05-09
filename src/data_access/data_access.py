@@ -77,8 +77,6 @@ class DataAccess(metaclass=DataSingletonMeta):
             return retrieve_rf(date - timedelta(days=1))
         return DataAccessResult(float(result) / 100, True)
 
-
-
     # ==== stock
     def _add_stock(self, stock_df: pd.DataFrame):
         self._historical_stock.add(stock_df)
@@ -86,6 +84,10 @@ class DataAccess(metaclass=DataSingletonMeta):
     def refresh(self):
         self._historical_stock = pd.DataFrame()
         self._risk_free = pd.DataFrame()
+
+    def get_stock_price_at(self, symbol: Symbol, date: datetime):
+        # use case: has already store all necessary data
+        return self.get_stock([symbol], date, date)
 
     def get_stock(self, symbols, start_date: datetime, end_date: datetime = None, refresh=False):
         if refresh:
@@ -104,7 +106,6 @@ class DataAccess(metaclass=DataSingletonMeta):
         if isinstance(symbol, Symbol):
             symbol = symbol.symbol
         return symbol in self._historical_stock
-
 
     def _request_stock_from_local(self, symbols, start_date: datetime, end_date: datetime = None):
         if len(symbols) == 0:
