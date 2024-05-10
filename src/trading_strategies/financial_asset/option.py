@@ -82,5 +82,7 @@ class PutOption(Option):
     def option_payoff(self, stock: Stock | float):
         if isinstance(stock, Stock):
             stock = stock.get_price().price()
-        payoff = np.maximum(self.get_strike().price() - stock, 0)
+        if isinstance(stock, Price):
+            stock = stock.price()
+        payoff = max(self.get_strike().price() - stock, 0)
         return payoff
