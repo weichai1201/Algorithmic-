@@ -60,6 +60,7 @@ class RollingShortPut(OptionStrategy):
             msg = "Roll down naked short put."
         strike_price = Price(strike, date)
         next_option = PutOption(self._symbol, strike_price, expiry, EmptyPrice())
+        msg = msg + f" Stock price at {stock_price}."
         order = Order(next_option, date, Positions(Position.SHORT, self._scale), msg)
         return order
 
