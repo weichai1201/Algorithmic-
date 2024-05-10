@@ -35,6 +35,11 @@ class SimulatedMarket(metaclass=MarketSingletonMeta):
             is_put = isinstance(order.asset, PutOption)
             strike_price, premium = self._simulate_option_price(
                 symbol, stock_price, target_strike, date, expiry, is_put)
+            if premium == -1:
+                # cannot simulate the premium due to not enough data in calculating vol.
+                order.reject_order()
+                return
+
             if is_put:
                 new_option = PutOption(symbol, Price(strike_price, date), expiry, Price(premium, date))
             else:

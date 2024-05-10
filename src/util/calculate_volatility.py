@@ -4,14 +4,17 @@ import numpy as np
 from arch import arch_model
 
 from src.data_access.data_access import DataAccess
-from src.data_access.volatility import VolatilityType, Volatility
+from src.data_access.volatility import VolatilityType, Volatility, EmptyVolatility
 from src.trading_strategies.financial_asset.symbol import Symbol
 
 
 def calculate_vol(symbol: Symbol, volatility_type: VolatilityType, end: datetime, days=182) -> Volatility:
     start = end - timedelta(days=days)
     if volatility_type == VolatilityType.GARCH:
-        value = calculate_garch(symbol, start, end)
+        try:
+            value = calculate_garch(symbol, start, end)
+        except ValueError:
+            return EmptyVolatility()
     else:
         value = 0
     return Volatility(value, volatility_type)
