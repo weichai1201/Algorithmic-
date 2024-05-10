@@ -57,7 +57,7 @@ class Agent:
         dates = dict[StrategyId, list[float]]()
         payoffs = dict[StrategyId, list[float]]()
         profits = dict[StrategyId, list[float]]()
-        cumulative_profits = dict[StrategyId, list[float]]()
+        cumulative_profits = dict[StrategyId, list[tuple[float, float]]]()
         drawdowns = dict[StrategyId, list[float]]()
 
         for strategy_id, transactions in self._all_transactions.items():
@@ -66,7 +66,7 @@ class Agent:
                 dates[strategy_id].append(transaction.get_time())
             payoffs[strategy_id] = calculate_option_payoff(transactions)[0]
             profits[strategy_id], cumulative_profits[strategy_id] = calculate_option_profit(transactions)
-            drawdowns[strategy_id] = calculate_drawdowns(cumulative_profits[strategy_id])
+            # drawdowns[strategy_id] = calculate_drawdowns(cumulative_profits[strategy_id])
         return (dates,
                 payoffs,
                 profits,

@@ -1,11 +1,14 @@
 import os.path
 from datetime import datetime
 
+import pandas as pd
+
 from src.backtesting.backtesting import run_daily_market_replay
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.rolling_short_put import RollingShortPut
 from src.trading_strategies.strategy.strategy_id import StrategyId
 import matplotlib.pyplot as plt
+import ast
 
 
 # (0.010615660972065292, 'KO')(0.010711019177999836, 'JNJ')(0.010799562059302475, 'MCD')
@@ -14,14 +17,14 @@ def main():
     # output directory
     foldername = "backtesting_result"
 
-    start_date = datetime(2007, 1, 1)
-    end_date = datetime(2011, 1, 1)
+    start_date = datetime(2005, 1, 1)
+    end_date = datetime(2015, 1, 1)
     symbol_strs = ["SMCI", "KO", "AAPL", "CMA", "RHI"]
     symbol_low_vol = ["KO", "JNJ", "MCD"]
 
     # option specification
     is_itm = True
-    is_weekly = False
+    is_weekly = True
     weekday = "FRI"
     num_strike = 1
 
@@ -42,7 +45,13 @@ def main():
     for strategy_id, df in data.items():
         filename = f"{foldername}/{strategy_id.get_id()}"
         df.to_csv(filename + ".csv")
-        _plot(df["Date"], df["Cumulative"], strategy_id.get_id(), filename + ".png")
+
+        df['Cumulative'] = df['Cumulative'].apply(list)
+        duplicated_df = pd.DataFrame(
+            [[date, cumulative] for date, cumulatives in zip(df['Date'], df['Cumulative']) for cumulative in
+             cumulatives], columns=['Date', 'Cumulative'])
+
+        _plot(duplicated_df["Date"], duplicated_df["Cumulative"], strategy_id.get_id(), filename + ".png")
         txt = open(filename + ".txt", "w")
         txt.write(backtester.transactions(strategy_id).__str__())
         txt.close()
