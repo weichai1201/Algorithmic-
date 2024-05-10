@@ -1,4 +1,5 @@
 import os.path
+import timeit
 from datetime import datetime
 
 import pandas as pd
@@ -17,7 +18,7 @@ import ast
 def main():
     foldername = "backtesting_result"
 
-    start_date = datetime(2008, 1, 1)
+    start_date = datetime(2005, 1, 1)
     end_date = datetime(2022, 1, 1)
 
     low_vol = ["KO", "JNJ", "MCD"]
@@ -25,11 +26,20 @@ def main():
     high_market_cap = ["MSFT", "AAPL", "NVDA", "GOOG", "AMZN"]
     low_market_cap = ["BEN", "NCLH", "IVZ"]  # https://www.slickcharts.com/sp500
     symbols = low_vol + high_vol + high_market_cap + low_market_cap
+    timers = []
+    timers.append(timeit.default_timer())
     _run(symbols, start_date, end_date, foldername)
+    timers.append(timeit.default_timer())
     _run(symbols, start_date, end_date, foldername, is_itm=False)
+    timers.append(timeit.default_timer())
     _run(symbols, start_date, end_date, foldername, is_weekly=False)
+    timers.append(timeit.default_timer())
     _run(symbols, start_date, end_date, foldername, is_itm=False, is_weekly=False)
+    timers.append(timeit.default_timer())
     _run(symbols, start_date, end_date, foldername, num_of_strikes=2)
+    timers.append(timeit.default_timer())
+    for i in range(len(timers))[1:]:
+        print(f"used time activity {i}: {timers[i] - timers[i - 1]} \n")
 
 
 def _run(symbols: [str], start_date, end_date, foldername, is_itm=True, is_weekly=True, num_of_strikes=1,
@@ -58,6 +68,8 @@ def _run(symbols: [str], start_date, end_date, foldername, is_itm=True, is_weekl
     # write to csv
     if not os.path.exists(foldername):
         os.makedirs(foldername)
+    if not os.path.exists(f"{foldername}/{sub_folder}"):
+        os.makedirs(f"{foldername}/{sub_folder}")
     data = backtester.get_data()
     for strategy_id, df in data.items():
         filename = f"{foldername}/{sub_folder}/{strategy_id.get_id()}"
