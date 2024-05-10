@@ -26,6 +26,9 @@ class OptionStrategy(Strategy):
         self._weekday = weekday
         self._is_itm = is_itm
 
+    def notify_agent(self, information: (StrategyId, float)):
+        self._agent.realise_payoff(information)
+
     @abstractmethod
     def update(self, new_data: DataPackage):
         pass

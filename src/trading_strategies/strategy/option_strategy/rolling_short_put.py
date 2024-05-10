@@ -50,14 +50,16 @@ class RollingShortPut(OptionStrategy):
             msg = "Initiate first option."
         elif not self._option.is_expired(date):
             return EmptyOrder(EmptyAsset())
-        elif self._require_roll_over(stock_price):
-            strike = self._naked_put.roll_over(new_stock, expiry)[0]
-            msg = "Roll over naked short put."
         else:
-            # moderately in the money
-            premium = self._option.itm_amount(stock_price) + get_strike_gap(stock_price)
-            strike, expiry = self._naked_put.roll_down(new_stock, self._option, premium)
-            msg = "Roll down naked short put."
+            self.notify_agent((self.id(), self._option.option_payoff(stock_price)))
+            if self._require_roll_over(stock_price):
+                strike = self._naked_put.roll_over(new_stock, expiry)[0]
+                msg = "Roll over naked short put."
+            else:
+                # moderately in the money
+                premium = self._option.itm_amount(stock_price) + get_strike_gap(stock_price)
+                strike, expiry = self._naked_put.roll_down(new_stock, self._option, premium)
+                msg = "Roll down naked short put."
         strike_price = Price(strike, date)
         next_option = PutOption(self._symbol, strike_price, expiry, EmptyPrice())
         msg = msg + f" Stock price at {stock_price}."
