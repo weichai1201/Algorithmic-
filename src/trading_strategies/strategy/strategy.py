@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from datetime import datetime
+from typing import List
 
 from src.data_access.data_package import DataPackage
 from src.market.order import Order
@@ -26,6 +27,10 @@ class Strategy:
 
     @abstractmethod
     def update(self, new_data: DataPackage) -> Order:
+        pass
+
+    @abstractmethod
+    def update_order(self, orders: List[Order]):
         pass
 
     @abstractmethod

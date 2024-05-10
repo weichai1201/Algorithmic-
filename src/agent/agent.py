@@ -36,6 +36,7 @@ class Agent:
                 order = strategy.update(new_data)
                 self._market.submit_order(order)
                 if order.is_successful():
+                    strategy.update_order([order])
                     transaction = Transaction(order.positions, order.asset, order.date, order.msg)
                     self._all_transactions[strategy_id].add_transaction(transaction)
 

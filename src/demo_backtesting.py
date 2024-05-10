@@ -14,8 +14,8 @@ def main():
     # output directory
     foldername = "backtesting_result"
 
-    start_date = datetime(2009, 1, 1)
-    end_date = datetime(2010, 1, 1)
+    start_date = datetime(2007, 1, 1)
+    end_date = datetime(2011, 1, 1)
     symbol_strs = ["SMCI", "KO", "AAPL", "CMA", "RHI"]
     symbol_low_vol = ["KO", "JNJ", "MCD"]
 
