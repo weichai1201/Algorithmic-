@@ -18,7 +18,7 @@ def main():
     foldername = "backtesting_result"
 
     start_date = datetime(2005, 1, 1)
-    end_date = datetime(2015, 1, 1)
+    end_date = datetime(2010, 1, 1)
     symbol_strs = ["SMCI", "KO", "AAPL", "CMA", "RHI"]
     symbol_low_vol = ["KO", "JNJ", "MCD"]
 
