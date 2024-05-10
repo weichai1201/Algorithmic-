@@ -27,7 +27,7 @@ class Backtester:
         if (agents is not None) & len(agents) != 0:
             for agent in agents:
                 self._symbols.add(agent.get_symbols())
-        DataAccess().get_stock(self._symbols, start_date, end_date)
+        DataAccess().get_stock(self._symbols, start_date - timedelta(days=190), end_date)
 
     @abstractmethod
     def run_back_testing(self):

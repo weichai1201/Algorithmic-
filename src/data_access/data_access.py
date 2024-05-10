@@ -82,7 +82,7 @@ class DataAccess(metaclass=DataSingletonMeta):
     def get_stock_price_at(self, symbol: Symbol, date: datetime) -> float:
         # use case: has already store all necessary data
         tmp = self.get_stock([symbol], date, date)
-        return float(tmp[symbol.symbol])
+        return tmp[symbol.symbol].tolist()[0]
 
     def get_stock(self, symbols, start_date: datetime, end_date: datetime = None, refresh=False):
         symbols = [x.symbol for x in symbols]

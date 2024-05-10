@@ -22,7 +22,7 @@ def bsm_pricing2(stock: Stock, strike: float, expiry: datetime,
                  dividends: list[Price], risk_free_rate, is_put: bool):
     t0 = stock.get_t0()
     time_to_maturity = (expiry - t0) / timedelta(days=365)
-    volatility = DataAccess().get_volaitlity(stock.symbol(), VolatilityType.GARCH, t0)
+    volatility = DataAccess().get_volaitlity(stock.symbol(), VolatilityType.GARCH, t0).value
     adjusted_price = adjust_dividends(stock, dividends, risk_free_rate)
     if is_put:
         return calculate_put_price(adjusted_price, strike, volatility, time_to_maturity, risk_free_rate)

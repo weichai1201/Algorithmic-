@@ -47,5 +47,5 @@ class SimulatedMarket(metaclass=MarketSingletonMeta):
                                date: datetime, expiry: datetime, is_put=True):
         strike_price = get_closest_strike(stock_price, target_strike)
         rf = DataAccess().get_risk_free(RatePeriod.TEN_YEAR, date)
-        premium = bsm_pricing2(Stock(symbol, Price(stock_price, date)), strike_price, expiry, [], rf, is_put)
+        premium = bsm_pricing2(Stock(symbol, Price(stock_price, date)), strike_price, expiry, [], rf.value, is_put)
         return strike_price, premium
