@@ -12,7 +12,6 @@ from src.trading_strategies.financial_asset.financial_asset import FinancialAsse
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
 
-
 stock_filename = "data/sp500_adj_close_prices.csv"
 stock_date_format = "%Y-%m-%d %H:%M:%S"  # 2004-01-02 00:00:00
 stock_date_column_name = "Date"
@@ -69,7 +68,9 @@ class DataAccess(metaclass=DataSingletonMeta):
     # ==== stock
     def is_trading_in_historical(self, date: datetime) -> bool:
         dates = self._historical_stock[self._stock_price_file["date_column_name"]]
-        return date in dates
+        date = date.strftime(self._stock_price_file["date_format"])
+        return date in set(dates)
+        # FIXME: may result in high computation time
 
     def _add_stock(self, stock_df: pd.DataFrame):
         self._historical_stock.add(stock_df)
@@ -78,9 +79,10 @@ class DataAccess(metaclass=DataSingletonMeta):
         self._historical_stock = pd.DataFrame()
         self._risk_free = pd.DataFrame()
 
-    def get_stock_price_at(self, symbol: Symbol, date: datetime):
+    def get_stock_price_at(self, symbol: Symbol, date: datetime) -> float:
         # use case: has already store all necessary data
-        return self.get_stock([symbol], date, date)
+        tmp = self.get_stock([symbol], date, date)
+        return float(tmp[symbol.symbol])
 
     def get_stock(self, symbols, start_date: datetime, end_date: datetime = None, refresh=False):
         symbols = [x.symbol for x in symbols]

@@ -21,7 +21,8 @@ def get_returns(symbol: Symbol, start_date: datetime, end_date: datetime):
     # TODO: timeframe might not in the data_access
     da = DataAccess()
     data = da.get_stock([symbol], start_date, end_date)
-    prices = [p for p in data[[symbol]] if not np.isnan(p)]
+    data = list(data[[symbol.symbol]])
+    prices = [p for p in data if not np.isnan(p)]
     return np.diff(prices) / prices[:-1]
 
 

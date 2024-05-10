@@ -34,17 +34,18 @@ def main():
     backtester = run_daily_market_replay(strategies, start_date, end_date)
 
 
+
 # write to csv
-    # if not os.path.exists(foldername):
-    #     os.makedirs(foldername)
-    # data = backtester.get_data()
-    # for strategy_id, df in data.items():
-    #     filename = f"{foldername}/{strategy_id.get_id()}"
-    #     df.to_csv(filename + ".csv")
-    #     _plot(df["Date"], df["Cumulative"], strategy_id.get_id(), filename + ".png")
-    #     txt = open(filename + ".txt", "w")
-    #     txt.write(backtester.transactions(strategy_id).__str__())
-    #     txt.close()
+    if not os.path.exists(foldername):
+        os.makedirs(foldername)
+    data = backtester.get_data()
+    for strategy_id, df in data.items():
+        filename = f"{foldername}/{strategy_id.get_id()}"
+        df.to_csv(filename + ".csv")
+        _plot(df["Date"], df["Cumulative"], strategy_id.get_id(), filename + ".png")
+        txt = open(filename + ".txt", "w")
+        txt.write(backtester.transactions(strategy_id).__str__())
+        txt.close()
 
 
 def _plot(x, y, title="", filename=""):
