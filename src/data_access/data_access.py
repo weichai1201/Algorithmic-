@@ -83,6 +83,7 @@ class DataAccess(metaclass=DataSingletonMeta):
         return self.get_stock([symbol], date, date)
 
     def get_stock(self, symbols, start_date: datetime, end_date: datetime = None, refresh=False):
+        symbols = [x.symbol for x in symbols]
         if refresh:
             self.refresh()
         missing_symbols = [x for x in symbols if not self.has_stock_data(x)]
@@ -92,8 +93,8 @@ class DataAccess(metaclass=DataSingletonMeta):
         dates = self._historical_stock[self._stock_price_file["date_column_name"]]
         s = start_date.strftime(self._stock_price_file["date_format"])
         e = end_date.strftime(self._stock_price_file["date_format"])
-        rows = (s <= dates <= e)
-        return self._historical_stock[rows, columns]
+        rows = (s <= dates) & (dates <= e)
+        return self._historical_stock[rows][columns]
 
     def has_stock_data(self, symbol):
         if isinstance(symbol, Symbol):
