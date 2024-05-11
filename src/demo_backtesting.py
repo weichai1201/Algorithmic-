@@ -1,10 +1,10 @@
 import os.path
-import timeit
 from datetime import datetime
 
 import pandas as pd
 
 from src.backtesting.backtesting import run_daily_market_replay
+from src.data_access.data_access import DataAccess
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.rolling_short_put import RollingShortPut
 from src.trading_strategies.strategy.strategy_id import StrategyId
@@ -18,28 +18,20 @@ import ast
 def main():
     foldername = "backtesting_result"
 
-    start_date = datetime(2005, 1, 1)
-    end_date = datetime(2022, 1, 1)
+    start_date = datetime(2006, 1, 1)
+    end_date = datetime(2010, 1, 1)
 
     low_vol = ["KO", "JNJ", "MCD"]
     high_vol = ["SMCI", "ENPH", "EPAM"]
     high_market_cap = ["MSFT", "AAPL", "NVDA", "GOOG", "AMZN"]
     low_market_cap = ["BEN", "NCLH", "IVZ"]  # https://www.slickcharts.com/sp500
     symbols = low_vol + high_vol + high_market_cap + low_market_cap
-    timers = []
-    timers.append(timeit.default_timer())
+    symbols = ["AAPL"]
     _run(symbols, start_date, end_date, foldername)
-    timers.append(timeit.default_timer())
     _run(symbols, start_date, end_date, foldername, is_itm=False)
-    timers.append(timeit.default_timer())
     _run(symbols, start_date, end_date, foldername, is_weekly=False)
-    timers.append(timeit.default_timer())
     _run(symbols, start_date, end_date, foldername, is_itm=False, is_weekly=False)
-    timers.append(timeit.default_timer())
     _run(symbols, start_date, end_date, foldername, num_of_strikes=2)
-    timers.append(timeit.default_timer())
-    for i in range(len(timers))[1:]:
-        print(f"used time activity {i}: {timers[i] - timers[i - 1]} \n")
 
 
 def _run(symbols: [str], start_date, end_date, foldername, is_itm=True, is_weekly=True, num_of_strikes=1,
@@ -70,6 +62,7 @@ def _run(symbols: [str], start_date, end_date, foldername, is_itm=True, is_weekl
         os.makedirs(foldername)
     if not os.path.exists(f"{foldername}/{sub_folder}"):
         os.makedirs(f"{foldername}/{sub_folder}")
+
     data = backtester.get_data()
     for strategy_id, df in data.items():
         filename = f"{foldername}/{sub_folder}/{strategy_id.get_id()}"
@@ -79,8 +72,12 @@ def _run(symbols: [str], start_date, end_date, foldername, is_itm=True, is_weekl
         duplicated_df = pd.DataFrame(
             [[date, cumulative] for date, cumulatives in zip(df['Date'], df['Cumulative']) for cumulative in
              cumulatives], columns=['Date', 'Cumulative'])
+        # _plot(duplicated_df["Date"], duplicated_df["Cumulative"], strategy_id.get_id(), filename + ".png")
+        symbol = strategies[strategy_id].symbol()
+        stock_df = DataAccess().get_stock([symbol], start_date, end_date)
+        _plot_with_stock(duplicated_df, stock_df,
+                         title=strategy_id.get_id() + sub_folder, filename=filename + ".png")
 
-        _plot(duplicated_df["Date"], duplicated_df["Cumulative"], strategy_id.get_id(), filename + ".png")
         txt = open(filename + ".txt", "w")
         txt.write(backtester.transactions(strategy_id).__str__())
         txt.close()
@@ -98,6 +95,29 @@ def _plot(x, y, title="", filename=""):
     else:
         plt.show()
     plt.clf()
+
+
+def _plot_with_stock(profit_df, stock_df, title="", filename=""):
+    plt.figure(figsize=(18, 8))
+    ax = plt.gca()
+    ax2 = ax.twiny()
+    # plt.tick_params(labeltop=False, top=False)
+    profit_df.plot(ax=ax, x=profit_df.columns[0], y=profit_df.columns[1], c='xkcd:burgundy', legend=True)
+    stock_df.plot(ax=ax2, x=stock_df.columns[0], y=stock_df.columns[1], c='xkcd:baby blue', secondary_y=True)
+    ax2.set_xticks([])
+    # stock_df.plot(ax=ax, x='ts', y='value', c='xkcd:mustard')
+    plt.gcf().autofmt_xdate()
+
+    plt.title(title)
+    plt.xlabel("Date")
+    plt.ylabel("Profit (USD)")
+    plt.grid(True)
+    if filename != "":
+        plt.savefig(filename)
+    else:
+        plt.show()
+    plt.clf()
+    plt.close()
 
 
 if __name__ == "__main__":
