@@ -74,7 +74,7 @@ def _run(strategy_func: Callable, symbols: [str], start_date, end_date, folderna
 
     strategies = dict()
     for s in symbols:
-        strategy_id = StrategyId("NAKED_PUT_" + s)
+        strategy_id = StrategyId(f"{strategy_func.__name__}-{s}")
         strategy = strategy_func(strategy_id, Symbol(s), is_itm, is_weekly, weekday, num_of_strikes)
         strategies[strategy_id] = strategy
 
@@ -83,13 +83,13 @@ def _run(strategy_func: Callable, symbols: [str], start_date, end_date, folderna
     # write to csv
     if not os.path.exists(foldername):
         os.makedirs(foldername)
-    if not os.path.exists(f"{foldername}/{sub_folder}"):
-        os.makedirs(f"{foldername}/{sub_folder}")
+    # if not os.path.exists(f"{foldername}/{sub_folder}"):
+    #     os.makedirs(f"{foldername}/{sub_folder}")
 
     data = backtester.get_data()
     # output results
     for strategy_id, df in data.items():
-        filename = f"{foldername}/{sub_folder}/{strategy_id.get_id()}"
+        filename = f"{foldername}/{strategy_id.get_id()}_{sub_folder}"
 
         # profits
         df.to_csv(filename + ".csv")
