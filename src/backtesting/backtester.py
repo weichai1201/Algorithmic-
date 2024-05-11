@@ -1,16 +1,11 @@
 from abc import abstractmethod
 from datetime import datetime, timedelta
 
-import numpy as np
 import pandas as pd
 
 from src.agent.agent import Agent
 from src.backtesting.backtesting_summary import BacktestingSummary
 from src.data_access.data_access import DataAccess
-from src.trading_strategies.financial_asset.stock import Stock
-from src.trading_strategies.financial_asset.symbol import Symbol
-from src.trading_strategies.option_pricing import bsm_pricing
-from src.trading_strategies.strategy.option_strategy.option_strike import simulate_strikes
 from src.trading_strategies.strategy.strategy_id import StrategyId
 
 

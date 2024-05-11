@@ -1,12 +1,11 @@
 from abc import abstractmethod
 from datetime import datetime
-import numpy as np
 
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.price import Price
-from src.trading_strategies.strategy.option_strategy.option_strike import get_strike_gap
+from src.trading_strategies.strategy.option_strategy.calculators.option_strike import get_strike_gap
 
 
 class Option(FinancialAsset):

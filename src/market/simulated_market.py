@@ -8,8 +8,8 @@ from src.trading_strategies.financial_asset.option import Option, PutOption, Cal
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
-from src.trading_strategies.option_pricing import bsm_pricing, bsm_pricing2
-from src.trading_strategies.strategy.option_strategy.option_strike import simulate_strikes, get_closest_strike
+from src.trading_strategies.strategy.option_strategy.calculators.option_pricing import bsm_pricing2
+from src.trading_strategies.strategy.option_strategy.calculators.option_strike import get_closest_strike
 
 
 class MarketSingletonMeta(type):

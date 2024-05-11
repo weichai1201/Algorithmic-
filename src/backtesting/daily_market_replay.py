@@ -8,8 +8,6 @@ from src.data_access.data_access import DataAccess
 from src.data_access.data_package import DataPackage
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.stock import Stock
-from src.trading_strategies.option_pricing import bsm_pricing
-from src.trading_strategies.strategy.option_strategy.option_strike import simulate_strikes
 
 
 class DailyMarketReplay(Backtester):

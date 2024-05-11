@@ -5,7 +5,7 @@ from src.data_access.data_package import DataPackage
 from src.trading_strategies.financial_asset.option import Option, CallOption
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
-from src.trading_strategies.strategy.option_strategy.option_strike import get_strike_gap
+from src.trading_strategies.strategy.option_strategy.calculators.option_strike import get_strike_gap
 from src.trading_strategies.strategy.strategy import Strategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
 from src.util.expiry_date import next_expiry_date

@@ -5,10 +5,10 @@ from src.trading_strategies.financial_asset.option import PutOption, CallOption
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
-from src.trading_strategies.option_pricing import bsm_pricing
+from src.trading_strategies.strategy.option_strategy.calculators.option_pricing import bsm_pricing
 from src.trading_strategies.strategy.option_strategy.naked_call import NakedCall
 from src.trading_strategies.strategy.option_strategy.naked_put import NakedPut
-from src.trading_strategies.strategy.option_strategy.option_strike import calculate_strike
+from src.trading_strategies.strategy.option_strategy.calculators.option_strike import calculate_strike
 from src.trading_strategies.strategy.strategy_id import StrategyId
 from src.agent.transactions.position import Position
 from src.util.expiry_date import next_expiry_date, closest_expiration_date

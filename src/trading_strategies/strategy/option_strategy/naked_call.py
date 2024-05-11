@@ -1,9 +1,9 @@
 from src.trading_strategies.financial_asset.option import Option, CallOption
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.symbol import Symbol
-from src.trading_strategies.option_pricing import bsm_pricing, implied_date
+from src.trading_strategies.strategy.option_strategy.calculators.option_pricing import bsm_pricing, implied_date
 from src.trading_strategies.strategy.option_strategy.option_strategy import OptionStrategy
-from src.trading_strategies.strategy.option_strategy.option_strike import calculate_strike, \
+from src.trading_strategies.strategy.option_strategy.calculators.option_strike import calculate_strike, \
     roll_up_strike
 from src.trading_strategies.strategy.strategy_id import StrategyId
 from src.agent.transactions.position import Position

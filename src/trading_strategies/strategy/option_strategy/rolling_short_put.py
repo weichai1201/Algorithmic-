@@ -10,7 +10,7 @@ from src.trading_strategies.financial_asset.price import Price, EmptyPrice
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.naked_put import NakedPut
 from src.trading_strategies.strategy.option_strategy.option_strategy import OptionStrategy
-from src.trading_strategies.strategy.option_strategy.option_strike import get_strike_gap
+from src.trading_strategies.strategy.option_strategy.calculators.option_strike import get_strike_gap
 from src.trading_strategies.strategy.strategy_id import StrategyId
 from src.agent.transactions.position import Position
 from src.util.expiry_date import next_expiry_date
