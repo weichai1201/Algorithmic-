@@ -1,20 +1,13 @@
 from datetime import datetime
 from typing import List, Dict
 
-from src.agent.transactions.positions import Positions
 from src.data_access.data_package import DataPackage
 from src.market.order import Order, EmptyOrder
-from src.trading_strategies.financial_asset.financial_asset import EmptyAsset
 from src.trading_strategies.financial_asset.option import Option, EmptyOption, PutOption, CallOption
-from src.trading_strategies.financial_asset.price import Price, EmptyPrice
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.long_call import LongCall
-from src.trading_strategies.strategy.option_strategy.naked_put import NakedPut
 from src.trading_strategies.strategy.option_strategy.option_strategy import OptionStrategy
-from src.trading_strategies.strategy.option_strategy.option_strike import get_strike_gap
 from src.trading_strategies.strategy.strategy_id import StrategyId
-from src.agent.transactions.position import Position
-from src.util.expiry_date import next_expiry_date
 
 
 class Straddle(OptionStrategy):
