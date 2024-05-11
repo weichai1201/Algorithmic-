@@ -1,4 +1,5 @@
 import os.path
+import timeit
 from datetime import datetime
 
 import pandas as pd
@@ -9,14 +10,12 @@ from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.rolling_short_put import RollingShortPut
 from src.trading_strategies.strategy.strategy_id import StrategyId
 import matplotlib.pyplot as plt
-import ast
 
 
 # volatility
 # (0.010615660972065288, 'KO') (0.010711019177999836, 'JNJ') (0.010799562059302473, 'MCD')
 # (0.04465957542892037, 'SMCI') (0.04234928634216114, 'ENPH') (0.04224288734882527, 'EPAM')
-start_date = datetime(2005, 1, 1)
-end_date = datetime(2022, 1, 1)
+
 
 def main():
     foldername = "backtesting_result"
@@ -90,21 +89,18 @@ def _run(symbols: [str], start_date, end_date, foldername, is_itm=True, is_weekl
         # _plot(duplicated_df["Date"], duplicated_df["Cumulative"], strategy_id.get_id(), filename + ".png")
         symbol = strategies[strategy_id].symbol()
         stock_df = DataAccess().get_stock([symbol], start_date, end_date)
-        _plot_with_stock(duplicated_df, stock_df,
-                         title=strategy_id.get_id() + sub_folder, filename=filename + ".png")
+        stock_df["Date"] = stock_df["Date"].apply(lambda x: datetime.strptime(x, "%Y-%m-%d %H:%M:%S"))
+        _plot_with_stock(duplicated_df, stock_df, symbol.symbol,
+                         title=strategy_id.get_id() + "_" + sub_folder, filename=filename + ".png")
 
-        _plot(duplicated_df["Date"], duplicated_df["Cumulative"], strategy_id.get_id(), filename + ".png")
         txt = open(filename + ".txt", "w")
         txt.write(backtester.transactions(strategy_id).__str__())
         txt.close()
 
-
-def _plot(x, y, title="", filename=""):
-    plt.figure(figsize=(12, 8))
-    plt.plot(x, y, linestyle="-", label="Naked Put Profit")
-    hist_data = DataAccess().get_stock([Symbol(title.split("_")[-1])], start_date, end_date)
-    hist_data["Date"] = hist_data["Date"].apply(lambda x: datetime.strptime(x, "%Y-%m-%d %H:%M:%S"))
-    plt.plot(hist_data["Date"], hist_data[title.split("_")[-1]], linestyle="-", label="Stock Price")
+def _plot_with_stock(profit_df, stock_df, symbol, title="", filename=""):
+    plt.figure(figsize=(14, 8))
+    plt.plot(profit_df["Date"], profit_df["Cumulative"], linestyle="-", label="Naked Put Profit")
+    plt.plot(stock_df["Date"], stock_df[symbol], linestyle="-", label="Stock Price")
     plt.title(title)
     plt.xlabel("Date")
     plt.ylabel("Profit (USD)")
@@ -115,29 +111,27 @@ def _plot(x, y, title="", filename=""):
     else:
         plt.show()
     plt.clf()
-
-
-def _plot_with_stock(profit_df, stock_df, title="", filename=""):
-    plt.figure(figsize=(18, 8))
-    ax = plt.gca()
-    ax2 = ax.twiny()
-    # plt.tick_params(labeltop=False, top=False)
-    profit_df.plot(ax=ax, x=profit_df.columns[0], y=profit_df.columns[1], c='xkcd:burgundy', legend=True)
-    stock_df.plot(ax=ax2, x=stock_df.columns[0], y=stock_df.columns[1], c='xkcd:baby blue', secondary_y=True)
-    ax2.set_xticks([])
-    # stock_df.plot(ax=ax, x='ts', y='value', c='xkcd:mustard')
-    plt.gcf().autofmt_xdate()
-
-    plt.title(title)
-    plt.xlabel("Date")
-    plt.ylabel("Profit (USD)")
-    plt.grid(True)
-    if filename != "":
-        plt.savefig(filename)
-    else:
-        plt.show()
-    plt.clf()
     plt.close()
+
+
+
+
+# def _plot(x, y, title="", filename=""):
+#     plt.figure(figsize=(12, 8))
+#     plt.plot(x, y, linestyle="-", label="Naked Put Profit")
+#     hist_data = DataAccess().get_stock([Symbol(title.split("_")[-1])], start_date, end_date)
+#     hist_data["Date"] = hist_data["Date"].apply(lambda x: datetime.strptime(x, "%Y-%m-%d %H:%M:%S"))
+#     plt.plot(hist_data["Date"], hist_data[title.split("_")[-1]], linestyle="-", label="Stock Price")
+#     plt.title(title)
+#     plt.xlabel("Date")
+#     plt.ylabel("Profit (USD)")
+#     plt.grid(True)
+#     plt.legend()
+#     if filename != "":
+#         plt.savefig(filename)
+#     else:
+#         plt.show()
+#     plt.clf()
 
 
 if __name__ == "__main__":
