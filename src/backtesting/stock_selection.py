@@ -6,6 +6,7 @@ import numpy as np
 
 from src.util.read_file import read_file
 
+
 class StockSelection:
     def __init__(self):
         low_vol = ["KO", "JNJ"]
@@ -24,7 +25,6 @@ def dividend_analysis():
     dividend_file = "../data/sp500_dividends.csv"
     data = read_file(dividend_file)
     symbols = data.columns.tolist().remove("Date")
-
 
 
 def main():
@@ -47,11 +47,14 @@ def main():
     low_vol = ["KO", "JNJ"]
     high_vol = ["SMCI", "ENPH"]
     high_market_cap = ["MSFT", "AAPL", "NVDA", "GOOG"]
-    low_market_cap = ["CMA", "MHK"]  # https://medium.com/@businessandbooks/10-smallest-companies-in-the-s-p500-index-df72498a788b
-    negative_beta = ["WDFC"]   # https://www.suredividend.com/negative-beta-stocks/#:~:text=A%20beta%20of%201.0%20means,precisely%20opposite%20the%20S%26P%20500
+    low_market_cap = ["CMA",
+                      "MHK"]  # https://medium.com/@businessandbooks/10-smallest-companies-in-the-s-p500-index-df72498a788b
+    negative_beta = [
+        "WDFC"]  # https://www.suredividend.com/negative-beta-stocks/#:~:text=A%20beta%20of%201.0%20means,precisely%20opposite%20the%20S%26P%20500
     dividends_paying_10years = ["GIS"]
 
     dividend_analysis()
+
 
 # (0.0106, 'KO') (0.0107, 'JNJ') (0.0108, 'MCD')
 # (0.0447, 'SMCI') (0.0423, 'ENPH') (0.0422, 'EPAM')
