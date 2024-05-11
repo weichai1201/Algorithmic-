@@ -6,7 +6,7 @@ from typing import Callable
 import pandas as pd
 
 from src.backtesting.backtesting import run_daily_market_replay
-from src.backtesting.backtesting_config import OptionBacktestConfigBundle
+from src.backtesting.backtesting_config import OptionBacktestConfigBundle, OptionBacktestConfig
 from src.backtesting.stock_selection import StockSelection
 from src.data_access.data_access import DataAccess
 from src.trading_strategies.financial_asset.symbol import Symbol
@@ -31,7 +31,7 @@ def main():
     # beginning of run
     timers = [timeit.default_timer()]
     for config in naked_put_configs.configs:
-        _run(config.strategy, symbols, config.start_date, config.end_date, foldername)
+        _run_config(config, symbols, foldername)
         timers.append(timeit.default_timer())
         t_diff = timers[len(timers) - 1] - timers[len(timers) - 2]
         print(f"Finished running backtesing in {round(t_diff, 2)} seconds"
@@ -39,7 +39,7 @@ def main():
               f"\n{config}\n")
 
     for config in straddle_configs.configs:
-        _run(config.strategy, symbols, config.start_date, config.end_date, foldername)
+        _run_config(config, symbols, foldername)
         timers.append(timeit.default_timer())
         t_diff = timers[len(timers) - 1] - timers[len(timers) - 2]
         print(f"Finished running backtesing in {round(t_diff, 2)} seconds"
@@ -47,9 +47,16 @@ def main():
               f"\n{config}\n")
 
 
+def _run_config(config: OptionBacktestConfig, symbols, foldername):
+    _run_option(strategy_func=config.strategy, symbols=symbols, foldername=foldername,
+                start_date=config.start_date, end_date=config.end_date,
+                is_itm=config.is_itm, is_weekly=config.is_weekly,
+                num_of_strikes=config.num_of_strikes, weekday=config.weekday)
 
-def _run(strategy_func: Callable, symbols: [str], start_date, end_date, foldername, is_itm=True, is_weekly=True, num_of_strikes=1,
-         weekday="FRI"):
+
+def _run_option(strategy_func: Callable, symbols: [str], foldername, start_date, end_date, is_itm=True, is_weekly=True,
+                num_of_strikes=1,
+                weekday="FRI"):
     # output directory
     # option specification
     sub_folder = ""
