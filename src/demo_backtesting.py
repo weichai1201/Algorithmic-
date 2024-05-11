@@ -1,13 +1,17 @@
 import os.path
 import timeit
 from datetime import datetime
+from typing import Callable
 
 import pandas as pd
 
 from src.backtesting.backtesting import run_daily_market_replay
+from src.backtesting.backtesting_config import OptionBacktestConfigBundle, OptionBacktestConfig
+from src.backtesting.stock_selection import StockSelection
 from src.data_access.data_access import DataAccess
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.rolling_short_put import RollingShortPut
+from src.trading_strategies.strategy.option_strategy.straddle import Straddle
 from src.trading_strategies.strategy.strategy_id import StrategyId
 import matplotlib.pyplot as plt
 
@@ -20,53 +24,62 @@ import matplotlib.pyplot as plt
 def main():
     foldername = "backtesting_result"
 
-    start_date = datetime(2006, 1, 1)
-    end_date = datetime(2022, 1, 1)
+    symbols = StockSelection().full
+    naked_put_configs = OptionBacktestConfigBundle(RollingShortPut)
+    straddle_configs = OptionBacktestConfigBundle(Straddle)
 
-    low_vol = ["KO", "JNJ"]
-    high_vol = ["SMCI", "ENPH"]
-    high_market_cap = ["MSFT", "AAPL", "NVDA", "GOOG"]
-    low_market_cap = ["BEN", "NCLH"]  # https://www.slickcharts.com/sp500
-    symbols = low_vol + high_vol + high_market_cap + low_market_cap
-    timers = []
-    timers.append(timeit.default_timer())
-    _run(symbols, start_date, end_date, foldername)
-    timers.append(timeit.default_timer())
-    _run(symbols, start_date, end_date, foldername, is_itm=False)
-    timers.append(timeit.default_timer())
-    _run(symbols, start_date, end_date, foldername, is_weekly=False)
-    timers.append(timeit.default_timer())
-    _run(symbols, start_date, end_date, foldername, is_itm=False, is_weekly=False)
-    timers.append(timeit.default_timer())
+    # beginning of run
+    timers = [timeit.default_timer()]
+    for config in naked_put_configs.configs:
+        _run_config(config, symbols, foldername)
+        timers.append(timeit.default_timer())
+        t_diff = timers[len(timers) - 1] - timers[len(timers) - 2]
+        print(f"Finished running backtesing in {round(t_diff, 2)} seconds"
+              f" for {len(symbols)} companies with:"
+              f"\n{config}\n")
 
-    _run(symbols, start_date, end_date, foldername, num_of_strikes=2)
-    timers.append(timeit.default_timer())
-
-    for i in range(len(timers))[1:]:
-        print(f"used time activity {i}: {timers[i] - timers[i - 1]} \n")
-
-    print(f"total time: {timers[len(timers) - 1] - timers[0]} ")
+    for config in straddle_configs.configs:
+        _run_config(config, symbols, foldername)
+        timers.append(timeit.default_timer())
+        t_diff = timers[len(timers) - 1] - timers[len(timers) - 2]
+        print(f"Finished running backtesing in {round(t_diff, 2)} seconds"
+              f" for {len(symbols)} companies with:"
+              f"\n{config}\n")
 
 
-def _run(symbols: [str], start_date, end_date, foldername, is_itm=True, is_weekly=True, num_of_strikes=1,
-         weekday="FRI"):
+def _run_config(config: OptionBacktestConfig, symbols, foldername):
+    _run_option(strategy_func=config.strategy, symbols=symbols, foldername=foldername,
+                start_date=config.start_date, end_date=config.end_date,
+                is_itm=config.is_itm, is_weekly=config.is_weekly,
+                num_of_strikes=config.num_of_strikes, weekday=config.weekday)
+
+
+def _run_option(strategy_func: Callable, symbols: [str], foldername, start_date, end_date, is_itm=True, is_weekly=True,
+                num_of_strikes=1,
+                weekday="FRI"):
     # output directory
     # option specification
     sub_folder = ""
+    sub_title = ""
     if is_itm:
         sub_folder += "itm_"
+        sub_title += "roll in-the-money side, "
     else:
         sub_folder += "otm_"
+        sub_title += "roll out-of-money side, "
     if is_weekly:
         sub_folder += "weekly_"
+        sub_title += "with weekly expiration, "
     else:
         sub_folder += "monthly_"
+        sub_title += "with monthly expiration, "
     sub_folder += "num-strikes-" + str(num_of_strikes)
+    sub_title += "number of strikes: " + str(num_of_strikes)
 
     strategies = dict()
     for s in symbols:
-        strategy_id = StrategyId("NAKED_PUT_" + s)
-        strategy = RollingShortPut(strategy_id, Symbol(s), is_itm, is_weekly, weekday, num_of_strikes)
+        strategy_id = StrategyId(f"{strategy_func.__name__}-{s}")
+        strategy = strategy_func(strategy_id, Symbol(s), is_itm, is_weekly, weekday, num_of_strikes)
         strategies[strategy_id] = strategy
 
     backtester = run_daily_market_replay(strategies, start_date, end_date)
@@ -74,28 +87,33 @@ def _run(symbols: [str], start_date, end_date, foldername, is_itm=True, is_weekl
     # write to csv
     if not os.path.exists(foldername):
         os.makedirs(foldername)
-    if not os.path.exists(f"{foldername}/{sub_folder}"):
-        os.makedirs(f"{foldername}/{sub_folder}")
+    # if not os.path.exists(f"{foldername}/{sub_folder}"):
+    #     os.makedirs(f"{foldername}/{sub_folder}")
 
     data = backtester.get_data()
+    # output results
     for strategy_id, df in data.items():
-        filename = f"{foldername}/{sub_folder}/{strategy_id.get_id()}"
+        filename = f"{foldername}/{strategy_id.get_id()}_{sub_folder}"
+
+        # profits
         df.to_csv(filename + ".csv")
 
+        # plots
         df['Cumulative'] = df['Cumulative'].apply(list)
         duplicated_df = pd.DataFrame(
             [[date, cumulative] for date, cumulatives in zip(df['Date'], df['Cumulative']) for cumulative in
              cumulatives], columns=['Date', 'Cumulative'])
-        # _plot(duplicated_df["Date"], duplicated_df["Cumulative"], strategy_id.get_id(), filename + ".png")
         symbol = strategies[strategy_id].symbol()
         stock_df = DataAccess().get_stock([symbol], start_date, end_date)
         stock_df["Date"] = stock_df["Date"].apply(lambda x: datetime.strptime(x, "%Y-%m-%d %H:%M:%S"))
         _plot_with_stock(duplicated_df, stock_df, symbol.symbol,
-                         title=strategy_id.get_id() + "_" + sub_folder, filename=filename + ".png")
+                         title=f"{strategy_id.get_id()}\n{sub_title}", filename=filename + ".png")
 
+        # transaction records
         txt = open(filename + ".txt", "w")
         txt.write(backtester.transactions(strategy_id).__str__())
         txt.close()
+
 
 def _plot_with_stock(profit_df, stock_df, symbol, title="", filename=""):
     plt.figure(figsize=(14, 8))
@@ -112,26 +130,6 @@ def _plot_with_stock(profit_df, stock_df, symbol, title="", filename=""):
         plt.show()
     plt.clf()
     plt.close()
-
-
-
-
-# def _plot(x, y, title="", filename=""):
-#     plt.figure(figsize=(12, 8))
-#     plt.plot(x, y, linestyle="-", label="Naked Put Profit")
-#     hist_data = DataAccess().get_stock([Symbol(title.split("_")[-1])], start_date, end_date)
-#     hist_data["Date"] = hist_data["Date"].apply(lambda x: datetime.strptime(x, "%Y-%m-%d %H:%M:%S"))
-#     plt.plot(hist_data["Date"], hist_data[title.split("_")[-1]], linestyle="-", label="Stock Price")
-#     plt.title(title)
-#     plt.xlabel("Date")
-#     plt.ylabel("Profit (USD)")
-#     plt.grid(True)
-#     plt.legend()
-#     if filename != "":
-#         plt.savefig(filename)
-#     else:
-#         plt.show()
-#     plt.clf()
 
 
 if __name__ == "__main__":
