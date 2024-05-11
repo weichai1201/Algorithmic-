@@ -1,5 +1,8 @@
 from datetime import datetime
+from typing import List
 
+from src.data_access.data_package import DataPackage
+from src.market.order import Order
 from src.trading_strategies.financial_asset.option import Option, CallOption
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.symbol import Symbol
@@ -36,3 +39,6 @@ class ShortCall(OptionStrategy):
         # strike = Price(strike_price, stock.get_price().time())
         # new_option = CallOption(stock.symbol, strike, new_expiration, premium)
         return strike_price, new_expiration
+
+    def update(self, new_data: DataPackage) -> List[Order]:
+        pass

@@ -28,8 +28,8 @@ class Straddle(OptionStrategy):
     def update(self, new_data: DataPackage) -> List[Order]:
         # unpack data package
         orders = list()
-        orders.append(self._strategy_put.update(new_data))
-        orders.append(self._strategy_call.update(new_data))
+        orders.append(self._strategy_put.update(new_data)[0])
+        orders.append(self._strategy_call.update(new_data)[0])
         return orders
 
     def update_order(self, orders: List[Order]):

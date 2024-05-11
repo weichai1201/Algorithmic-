@@ -38,5 +38,5 @@ class ShortPut(OptionStrategy):
     def roll_up(self, stock, option, premium):
         pass
 
-    def update(self, new_data: DataPackage):
+    def update(self, new_data: DataPackage) -> List[Order]:
         pass
