@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from datetime import datetime
+import numpy as np
 
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
 from src.trading_strategies.financial_asset.symbol import Symbol
@@ -85,6 +86,8 @@ class PutOption(Option):
     def option_payoff(self, stock: Stock | float) -> float:
         if isinstance(stock, Stock):
             stock = stock.get_price().price()
+        if isinstance(stock, Price):
+            stock = stock.price()
         payoff = max(self.get_strike().price() - stock, 0)
         return payoff
 
