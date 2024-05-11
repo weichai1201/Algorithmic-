@@ -6,6 +6,7 @@ from src.market.order import Order, EmptyOrder
 from src.trading_strategies.financial_asset.option import Option, EmptyOption, PutOption, CallOption
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.long_call import LongCall
+from src.trading_strategies.strategy.option_strategy.long_put import LongPut
 from src.trading_strategies.strategy.option_strategy.option_strategy import OptionStrategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
 
@@ -15,7 +16,7 @@ class Straddle(OptionStrategy):
                  weekday, num_of_strikes: int, scale=1):
         super().__init__(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes)
         self._strategy_call = LongCall(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale)
-        self._strategy_put = LongCall(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale)
+        self._strategy_put = LongPut(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale)
         self._option_call = EmptyOption()
         self._option_put = EmptyOption()
 
