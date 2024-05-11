@@ -51,22 +51,6 @@ def closest_expiration_date(date: datetime, calendar=nyse_calendar):
     if calendar.valid_days(start_date=date, end_date=date).size > 0:
         return date
     else:
-        return calendar.valid_days(start_date=date, end_date=date + timedelta(days=10))[0].replace(tzinfo=None).to_pydatetime()
-
-
-def trading_days(start: datetime, end: datetime):
-    return nyse_calendar.valid_days(start_date=start, end_date=end).size
-
-
-def next_nth_trading_day(current: datetime, n: int):
-    return nyse_calendar.valid_days(start_date=current, end_date=current+timedelta(days=365*3))[n-1].replace(tzinfo=None).to_pydatetime()
-
-
-
-def closest_expiration_date(date: datetime, calendar=nyse_calendar):
-    if calendar.valid_days(start_date=date, end_date=date).size > 0:
-        return date
-    else:
         return calendar.valid_days(start_date=date, end_date=date + timedelta(days=10))[0].replace(
             tzinfo=None).to_pydatetime()
 
@@ -76,8 +60,8 @@ def trading_days(start: datetime, end: datetime):
 
 
 def next_nth_trading_day(current: datetime, n: int):
-    return nyse_calendar.valid_days(start_date=current, end_date=current + timedelta(days=365 * 3))[
-        n - 1].replace(tzinfo=None).to_pydatetime()
+    return nyse_calendar.valid_days(start_date=current, end_date=current + timedelta(days=365 * 3))[n - 1].replace(
+        tzinfo=None).to_pydatetime()
 
 
 weekday_mapping = {
