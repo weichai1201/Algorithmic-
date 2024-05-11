@@ -6,7 +6,7 @@ from typing import Callable
 import pandas as pd
 
 from src.backtesting.backtesting import run_daily_market_replay
-from src.backtesting.backtesting_config import OptionBacktestingConfig
+from src.backtesting.backtesting_config import OptionBacktestConfigBundle
 from src.backtesting.stock_selection import StockSelection
 from src.data_access.data_access import DataAccess
 from src.trading_strategies.financial_asset.symbol import Symbol
@@ -24,18 +24,28 @@ import matplotlib.pyplot as plt
 def main():
     foldername = "backtesting_result"
 
-    symbols = StockSelection().simple
-    config = OptionBacktestingConfig(RollingShortPut)
+    symbols = StockSelection().full
+    naked_put_configs = OptionBacktestConfigBundle(RollingShortPut)
+    straddle_configs = OptionBacktestConfigBundle(Straddle)
+
     # beginning of run
     timers = [timeit.default_timer()]
-    # default setting
-    _run(config.strategy, symbols, config.start_date, config.end_date, foldername)
-    timers.append(timeit.default_timer())
+    for config in naked_put_configs.configs:
+        _run(config.strategy, symbols, config.start_date, config.end_date, foldername)
+        timers.append(timeit.default_timer())
+        t_diff = timers[len(timers) - 1] - timers[len(timers) - 2]
+        print(f"Finished running backtesing in {round(t_diff, 2)} seconds"
+              f" for {len(symbols)} companies with:"
+              f"\n{config}\n")
 
-    for i in range(len(timers))[1:]:
-        print(f"used time activity {i}: {timers[i] - timers[i - 1]} \n")
+    for config in straddle_configs.configs:
+        _run(config.strategy, symbols, config.start_date, config.end_date, foldername)
+        timers.append(timeit.default_timer())
+        t_diff = timers[len(timers) - 1] - timers[len(timers) - 2]
+        print(f"Finished running backtesing in {round(t_diff, 2)} seconds"
+              f" for {len(symbols)} companies with:"
+              f"\n{config}\n")
 
-    print(f"total time: {timers[len(timers) - 1] - timers[0]} ")
 
 
 def _run(strategy_func: Callable, symbols: [str], start_date, end_date, foldername, is_itm=True, is_weekly=True, num_of_strikes=1,
