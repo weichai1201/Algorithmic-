@@ -1,4 +1,5 @@
 import os.path
+import timeit
 from datetime import datetime
 
 import pandas as pd
@@ -19,19 +20,31 @@ def main():
     foldername = "backtesting_result"
 
     start_date = datetime(2006, 1, 1)
-    end_date = datetime(2010, 1, 1)
+    end_date = datetime(2022, 1, 1)
 
-    low_vol = ["KO", "JNJ", "MCD"]
-    high_vol = ["SMCI", "ENPH", "EPAM"]
-    high_market_cap = ["MSFT", "AAPL", "NVDA", "GOOG", "AMZN"]
-    low_market_cap = ["BEN", "NCLH", "IVZ"]  # https://www.slickcharts.com/sp500
+    low_vol = ["KO", "JNJ"]
+    high_vol = ["SMCI", "ENPH"]
+    high_market_cap = ["MSFT", "AAPL", "NVDA", "GOOG"]
+    low_market_cap = ["BEN", "NCLH"]  # https://www.slickcharts.com/sp500
     symbols = low_vol + high_vol + high_market_cap + low_market_cap
-    symbols = ["AAPL"]
+    timers = []
+    timers.append(timeit.default_timer())
     _run(symbols, start_date, end_date, foldername)
+    timers.append(timeit.default_timer())
     _run(symbols, start_date, end_date, foldername, is_itm=False)
+    timers.append(timeit.default_timer())
     _run(symbols, start_date, end_date, foldername, is_weekly=False)
+    timers.append(timeit.default_timer())
     _run(symbols, start_date, end_date, foldername, is_itm=False, is_weekly=False)
+    timers.append(timeit.default_timer())
+
     _run(symbols, start_date, end_date, foldername, num_of_strikes=2)
+    timers.append(timeit.default_timer())
+
+    for i in range(len(timers))[1:]:
+        print(f"used time activity {i}: {timers[i] - timers[i - 1]} \n")
+
+    print(f"total time: {timers[len(timers) - 1] - timers[0]} ")
 
 
 def _run(symbols: [str], start_date, end_date, foldername, is_itm=True, is_weekly=True, num_of_strikes=1,
