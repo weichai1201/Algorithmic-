@@ -1,6 +1,9 @@
 from abc import abstractmethod
 from datetime import datetime
+from typing import List
 
+from src.data_access.data_package import DataPackage
+from src.market.order import Order
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.strategy_id import StrategyId
 
@@ -22,10 +25,15 @@ class Strategy:
     def is_same_symbol(self, other: Symbol) -> bool:
         return self._symbol == other
 
-    # @abstractmethod
-    # def update(self, new_data) -> Order:
-    #     pass
+    @abstractmethod
+    def update(self, new_data: DataPackage) -> List[Order]:
+        pass
 
+    @abstractmethod
+    def update_order(self, orders: List[Order]):
+        pass
+
+    @abstractmethod
     def need_update(self, date: datetime):
         return True
 

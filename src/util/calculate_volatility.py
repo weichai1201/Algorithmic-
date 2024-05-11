@@ -1,16 +1,20 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import numpy as np
 from arch import arch_model
 
 from src.data_access.data_access import DataAccess
-from src.data_access.volatility import VolatilityType, Volatility
+from src.data_access.volatility import VolatilityType, Volatility, EmptyVolatility
 from src.trading_strategies.financial_asset.symbol import Symbol
 
 
-def calculate_vol(symbol: Symbol, volatility_type: VolatilityType, start: datetime, end: datetime) -> Volatility:
+def calculate_vol(symbol: Symbol, volatility_type: VolatilityType, end: datetime, days=182) -> Volatility:
+    start = end - timedelta(days=days)
     if volatility_type == VolatilityType.GARCH:
-        value = calculate_garch(symbol, start, end)
+        try:
+            value = calculate_garch(symbol, start, end)
+        except ValueError:
+            return EmptyVolatility()
     else:
         value = 0
     return Volatility(value, volatility_type)
@@ -20,7 +24,8 @@ def get_returns(symbol: Symbol, start_date: datetime, end_date: datetime):
     # TODO: timeframe might not in the data_access
     da = DataAccess()
     data = da.get_stock([symbol], start_date, end_date)
-    prices = [p for p in data[[symbol]] if not np.isnan(p)]
+    data = data[symbol.symbol].tolist()
+    prices = [p for p in data if not np.isnan(p)]
     return np.diff(prices) / prices[:-1]
 
 

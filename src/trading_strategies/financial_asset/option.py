@@ -6,6 +6,7 @@ from src.trading_strategies.financial_asset.financial_asset import FinancialAsse
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.price import Price
+from src.trading_strategies.strategy.option_strategy.calculators.option_strike import get_strike_gap
 
 
 class Option(FinancialAsset):
@@ -21,6 +22,9 @@ class Option(FinancialAsset):
     @abstractmethod
     def itm_amount(self, stock_price: float) -> float:
         pass
+
+    def deep_in_the_money(self, stock_price: float):
+        return self.itm_amount(stock_price) >= 5 * get_strike_gap(stock_price)
 
     def get_strike(self):
         return self._strike_price
@@ -47,7 +51,7 @@ class Option(FinancialAsset):
                 f" Premium: {self._price}")
 
     @abstractmethod
-    def option_payoff(self, stock: Stock):
+    def option_payoff(self, stock: Stock | float) -> float:
         pass
 
 
@@ -61,12 +65,12 @@ class CallOption(Option):
     def itm_amount(self, stock_price: float) -> float:
         return max(0, stock_price - self.get_strike().price())
 
-    def option_payoff(self, stock: Stock | float):
+    def option_payoff(self, stock: Stock | float) -> float:
         if isinstance(stock, Stock):
             stock = float(stock.get_price().price())
         if isinstance(stock, Price):
             stock = stock.price()
-        return np.maximum(stock - self.get_strike().price(), 0)
+        return max(stock - self.get_strike().price(), 0)
 
 
 class PutOption(Option):
@@ -79,10 +83,28 @@ class PutOption(Option):
     def itm_amount(self, stock_price: float) -> float:
         return max(0, self.get_strike().price() - stock_price)
 
-    def option_payoff(self, stock: Stock | float):
+    def option_payoff(self, stock: Stock | float) -> float:
         if isinstance(stock, Stock):
             stock = stock.get_price().price()
         if isinstance(stock, Price):
             stock = stock.price()
         payoff = max(self.get_strike().price() - stock, 0)
         return payoff
+
+
+class EmptyOption(Option):
+    def __init__(self):
+        symbol = Symbol("Empty")
+        premium = Price(0, datetime.now())
+        strike_price = Price(0, datetime.now())
+        expiration_date = datetime.now()
+        super().__init__(symbol, premium, strike_price, expiration_date)
+
+    def in_the_money(self, stock_price: float) -> bool:
+        pass
+
+    def itm_amount(self, stock_price: float) -> float:
+        pass
+
+    def option_payoff(self, stock: Stock):
+        pass

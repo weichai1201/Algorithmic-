@@ -1,7 +1,10 @@
 import datetime
+from typing import Set
 
 from src.agent.performance import calculate_option_payoff, calculate_option_profit, calculate_drawdowns
-from src.order.simulated_market import SimulatedMarket
+from src.agent.transactions.transaction import Transaction
+from src.data_access.data_package import DataPackage
+from src.market.simulated_market import SimulatedMarket
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.strategy import Strategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
@@ -19,27 +22,29 @@ class Agent:
         for strategy_id, strategy in strategies.items():
             self._all_transactions[strategy_id] = Transactions(strategy_id)
             strategy.register_agent(self)
+        self._market = SimulatedMarket()
 
-    def get_symbols(self):
-        result = set[Symbol]()
+    def get_symbols(self) -> Set:
+        result: Set[Symbol] = set()
         for strategy in self._strategies.values():
             result.add(strategy.symbol())
         return result
 
-    def update(self, symbol: Symbol, new_data, time: datetime, market=SimulatedMarket()):
+    def update(self, symbol: Symbol, new_data: DataPackage):
         for strategy_id, strategy in self._strategies.items():
-            if symbol == strategy.symbol():
-                transaction = strategy.update(new_data, time)
-                # market.submit_order(order)
-                # if order.is_successful():
-                #     positions: Positions
-                #     if order.is_ask:
-                #         positions = Positions(Position.SHORT, order.quantity)
-                #     else:
-                #         positions = Positions(Position.LONG, order.quantity)
-                #     transaction = Transaction(positions, order.asset, datetime.datetime.now())
-                if transaction is not None:
-                    self._all_transactions.get(strategy_id).add_transaction(transaction)
+            if symbol != strategy.symbol():
+                continue
+
+            orders = strategy.update(new_data)
+            self._market.submit_order(orders)
+
+            if any([not order.is_successful() for order in orders]):
+                continue
+
+            strategy.update_order(orders)
+            for order in orders:
+                transaction = Transaction(order.positions, order.asset, order.date, order.msg)
+                self._all_transactions[strategy_id].add_transaction(transaction)
 
     def get_all_transactions(self) -> dict[StrategyId, Transactions]:
         return self._all_transactions
@@ -58,7 +63,7 @@ class Agent:
         dates = dict[StrategyId, list[float]]()
         payoffs = dict[StrategyId, list[float]]()
         profits = dict[StrategyId, list[float]]()
-        cumulative_profits = dict[StrategyId, list[float]]()
+        cumulative_profits = dict[StrategyId, list[tuple[float, float]]]()
         drawdowns = dict[StrategyId, list[float]]()
 
         for strategy_id, transactions in self._all_transactions.items():
@@ -67,7 +72,7 @@ class Agent:
                 dates[strategy_id].append(transaction.get_time())
             payoffs[strategy_id] = calculate_option_payoff(transactions)[0]
             profits[strategy_id], cumulative_profits[strategy_id] = calculate_option_profit(transactions)
-            drawdowns[strategy_id] = calculate_drawdowns(cumulative_profits[strategy_id])
+            # drawdowns[strategy_id] = calculate_drawdowns(cumulative_profits[strategy_id])
         return (dates,
                 payoffs,
                 profits,

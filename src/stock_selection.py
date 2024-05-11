@@ -24,8 +24,8 @@ def main():
         except AttributeError:
             pass
     result = sorted(result)
-    print(result[0], result[1])
-    print(result[len(result) - 1], result[len(result) - 2])
+    print(result[0], result[1], result[2])
+    print(result[len(result) - 1], result[len(result) - 2], result[len(result) - 3])
 
 
 # (0.010615660972065292, 'KO') (0.010711019177999836, 'JNJ')

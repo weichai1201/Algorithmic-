@@ -23,7 +23,7 @@ class BacktestingSummary:
                 "Date": dates[strategy_id],
                 "Profit": profits[strategy_id],
                 "Cumulative": cumulative_profits[strategy_id],
-                "Drawdown": drawdowns[strategy_id]
+                # "Drawdown": drawdowns[strategy_id]
             })
 
         self._years = years
