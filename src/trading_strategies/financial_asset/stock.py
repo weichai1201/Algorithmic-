@@ -1,6 +1,7 @@
 import os
 import sys
 import warnings
+from datetime import datetime, timedelta
 
 import numpy as np
 import statistics
@@ -16,10 +17,8 @@ file_path = 'data/sp500_adj_close_prices.csv'
 
 
 class Stock(FinancialAsset):
-    def __init__(self, symbol: Symbol, current_price: Price):
-        super().__init__()
-        self._symbol = symbol
-        self.current_price = current_price
+    def __init__(self, symbol: Symbol, price: Price):
+        super().__init__(symbol, price)
         # self.historical_price = historical_price
         # self.volatility = self.calculate_volatility()
         self._garch_long_run = -1
@@ -40,30 +39,24 @@ class Stock(FinancialAsset):
 
     def get_returns(self):
         prices = [price for price in self.get_prices()]
+        prices = [p for p in prices if not np.isnan(p)]
         returns = np.diff(prices) / prices[:-1]
         return returns
 
-    def get_prices(self, start_date='2004-01-01', end_date='2024-03-31'):
-        return get_historical_values(self.symbol, file_path, start_date, end_date).iloc[:, 1]
+    def get_prices(self):
+        prev_date = self._price.time() - timedelta(days=182)
+        return get_historical_values(self._symbol, file_path, prev_date.strftime('%Y-%m-%d'),
+                                     self._price.time().strftime('%Y-%m-%d')).iloc[:, 1]
 
-    def calculate_garch(self, forecast_horizon=1000):
-        with warnings.catch_warnings(action="ignore"):
-            sys.stdout = open(os.devnull, 'w')
-            returns = self.get_returns()
-            model = arch_model(returns, vol='GARCH', p=1, q=1)
-            fit = model.fit(show_warning=False)
-            vol = np.sqrt(fit.forecast(horizon=forecast_horizon).variance).mean(axis=1).iloc[-1]
-            sys.stdout = sys.__stdout__
-            print("Run GARCH for {symbol} on the date {date}".
-                  format(symbol=self.symbol, date=self.current_price.time()))
-            return vol * np.sqrt(252)
+    def calculate_garch(self):
+        returns = self.get_returns()
+        model = arch_model(returns, vol='GARCH', p=1, q=1, rescale=False)
+        fit = model.fit(disp='off')
+        vol = np.sqrt(fit.forecast(horizon=100).variance).mean(axis=1).iloc[-1]
+        return vol * np.sqrt(252)
 
-    @property
-    def symbol(self):
-        return self._symbol
-
-    def price(self) -> float:
-        return self.current_price.price()
+    def update_price(self, price: Price):
+        self._price = price
 
     def __str__(self):
-        return f"Stock {self.symbol}: {self.current_price}"
+        return f"Stock {self.symbol}: {self._price}"

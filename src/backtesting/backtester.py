@@ -1,13 +1,11 @@
 from abc import abstractmethod
 from datetime import datetime, timedelta
 
+import pandas as pd
+
 from src.agent.agent import Agent
 from src.backtesting.backtesting_summary import BacktestingSummary
-from src.data_access.data_access import retrieve_stock
-from src.trading_strategies.financial_asset.stock import Stock
-from src.trading_strategies.financial_asset.symbol import Symbol
-from src.trading_strategies.option_pricing import bsm_pricing
-from src.trading_strategies.strategy.option_strategy.option_strike import simulate_strikes
+from src.data_access.data_access import DataAccess
 from src.trading_strategies.strategy.strategy_id import StrategyId
 
 
@@ -19,20 +17,19 @@ class Backtester:
         self._agents = agents
         self._has_tested = False
         self._summary = None
-
         # register stock symbols for both agents
-        self._symbols = set[Symbol]()
-        self._symbols.union(self_agent.get_symbols())
+        self._symbols = self_agent.get_symbols()
         if (agents is not None) & len(agents) != 0:
             for agent in agents:
                 self._symbols.add(agent.get_symbols())
+        DataAccess().get_stock(self._symbols, start_date - timedelta(days=190), end_date)
 
     @abstractmethod
     def run_back_testing(self):
         pass
 
     def transactions(self, strategy_id: StrategyId):
-        return self._self_agent.transactions()[strategy_id]
+        return self._self_agent.get_all_transactions()[strategy_id]
 
     # def get_profits(self):
     #     if not self._has_tested:
@@ -59,46 +56,21 @@ class Backtester:
     #         self.run_back_testing()
     #     return self._cagr
 
-    def summary(self):
+    def summary(self, to_print=False):
         if not self._has_tested:
             self.run_back_testing()
         dates, payoffs, profits, cumulative_profits, drawdowns = self._self_agent.evaluate()
         self._summary = BacktestingSummary(0, 0,
                                            dates, profits, cumulative_profits, drawdowns,
                                            (self._end_date - self._start_date).days / 365)
-        return self._summary.__str__()
+        if to_print:
+            return self._summary.__str__()
+        return ""
 
-
-class DailyMarketReplay(Backtester):
-    def run_back_testing(self):
-        self._has_tested = True
-        date = self._start_date
-        while date < self._end_date:
-            self._update_by_symbol(self._self_agent, date)
-            for agent in self._agents:
-                self._update_by_symbol(agent, date)
-            date += timedelta(days=1)
-
-    def _update_by_symbol(self, agent: Agent, date: datetime):
-        if not agent.need_update(date):
-            return
-        for symbol in self._self_agent.get_symbols():
-            da_result = retrieve_stock(symbol, date)
-            if da_result.is_successful:
-                stock: Stock
-                stock = da_result.data
-
-                new_data = (stock.current_price.price(), self._simulate_premiums(stock, date))
-                self._self_agent.update(symbol, new_data, date)
-
-    @staticmethod
-    def _simulate_premiums(stock: Stock, date: datetime, is_call=False):
-        strikes = simulate_strikes(stock.current_price.price())
-        result = dict[float, float]()
-        for strike in strikes:
-            premium = bsm_pricing(stock, strike, date + timedelta(days=30), [], 0.05, is_call)
-            result[strike] = round(premium, 2)
-        return result
+    def get_data(self) -> dict[StrategyId, pd.DataFrame]:
+        if self._summary is None:
+            self.summary()
+        return self._summary.get_data()
 
 
 class MultiAgent(Backtester):

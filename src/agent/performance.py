@@ -1,4 +1,4 @@
-from src.trading_strategies.transactions.transactions import Transactions
+from src.agent.transactions.transactions import Transactions
 
 
 def calculate_option_payoff(transactions: Transactions) -> tuple[list, list]:
@@ -21,14 +21,15 @@ def calculate_option_profit(transactions: Transactions) -> tuple[list, list]:
     prev_transaction = None
     for transaction in transactions.get_transactions():
         # assume short
-        gain = transaction.get_asset().price()
+        gain = transaction.get_asset().get_price_numeric()
+        payoff = 0
         if prev_transaction is not None:
-            gain -= prev_transaction.get_payoff()
+            payoff = -prev_transaction.get_payoff()
         if transaction.is_long():
             gain *= -1
         profits.append(gain)
-        c += gain
-        cumulative_profits.append(c)
+        c += gain + payoff
+        cumulative_profits.append((c - gain, c))
         prev_transaction = transaction
     return profits, cumulative_profits
 

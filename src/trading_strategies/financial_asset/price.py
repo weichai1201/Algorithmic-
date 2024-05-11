@@ -14,3 +14,11 @@ class Price:
 
     def __str__(self):
         return str(self._price)
+
+
+class EmptyPrice(Price):
+
+    def __init__(self):
+        price = .0
+        time_stamp = datetime.now()
+        super().__init__(price, time_stamp)
