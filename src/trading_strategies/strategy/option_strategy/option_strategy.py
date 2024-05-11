@@ -33,18 +33,6 @@ class OptionStrategy(Strategy):
     def update(self, new_data: DataPackage):
         pass
 
-    @abstractmethod
-    def roll_over(self, stock: Stock, expiration_date: datetime) -> (float, datetime):
-        pass
-
-    @abstractmethod
-    def roll_up(self, stock: Stock, option: Option, premium: float) -> (float, datetime):
-        pass
-
-    @abstractmethod
-    def roll_down(self, stock: Stock, option: Option, premium: float) -> (float, datetime):
-        pass
-
     def get_id(self) -> StrategyId:
         return self._id
 
@@ -56,6 +44,7 @@ class OptionStrategy(Strategy):
 
     def itm_amount(self, stock_price: float, option: Option) -> float:
         return option.itm_amount(stock_price)
+
 
     # def update2(self, stock_price: float, option: Option, date: datetime) -> Optional[Transaction]:
     #     if not option.is_expired(date):
@@ -74,16 +63,29 @@ class OptionStrategy(Strategy):
     #
     #     return Transaction(self._positions, new_option, date)
 
-    def _update_otm_option(self, stock: Stock) -> Option:
-        expiration_date = next_expiry_date(stock.get_price().time(), self._is_weekly, True, self._weekday)
-        return self.roll_over(stock, expiration_date)
+    # def _update_mod_itm_option(self, stock: Stock, option) -> Option:
+    #     premium = option.itm_amount(stock.get_price().price()) + get_strike_gap(stock.get_price().price())
+    #     if isinstance(option, CallOption):
+    #         return self.roll_up(stock, option, premium)
+    #     else:
+    #         return self.roll_down(stock, option, premium)
+    #
+    # def _update_deep_itm_option(self, new_stock, option) -> Option:
+    #     return self._update_otm_option(new_stock)
+    #
+    # def _update_otm_option(self, stock: Stock) -> Option:
+    #     expiration_date = next_expiry_date(stock.get_price().time(), self._is_weekly, True, self._weekday)
+    #     return self.roll_over(stock, expiration_date)
 
-    def _update_mod_itm_option(self, stock: Stock, option) -> Option:
-        premium = option.itm_amount(stock.get_price().price()) + get_strike_gap(stock.get_price().price())
-        if isinstance(option, CallOption):
-            return self.roll_up(stock, option, premium)
-        else:
-            return self.roll_down(stock, option, premium)
+    # @abstractmethod
+    # def roll_over(self, stock: Stock, expiration_date: datetime) -> (float, datetime):
+    #     pass
+    #
+    # @abstractmethod
+    # def roll_up(self, stock: Stock, option: Option, premium: float) -> (float, datetime):
+    #     pass
+    #
+    # @abstractmethod
+    # def roll_down(self, stock: Stock, option: Option, premium: float) -> (float, datetime):
+    #     pass
 
-    def _update_deep_itm_option(self, new_stock, option) -> Option:
-        return self._update_otm_option(new_stock)

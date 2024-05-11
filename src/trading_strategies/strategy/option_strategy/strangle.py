@@ -8,17 +8,15 @@ from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.long_call import LongCall
 from src.trading_strategies.strategy.option_strategy.long_put import LongPut
 from src.trading_strategies.strategy.option_strategy.option_strategy import OptionStrategy
-from src.trading_strategies.strategy.option_strategy.short_call import ShortCall
-from src.trading_strategies.strategy.option_strategy.short_put import ShortPut
 from src.trading_strategies.strategy.strategy_id import StrategyId
 
 
-class Straddle(OptionStrategy):
+class Strangle(OptionStrategy):
     def __init__(self, strategy_id: StrategyId, symbol: Symbol, is_itm: bool, is_weekly: bool,
                  weekday, num_of_strikes: int, scale=1):
         super().__init__(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes)
-        self._strategy_call = ShortCall(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale)
-        self._strategy_put = ShortPut(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale)
+        self._strategy_call = LongCall(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale)
+        self._strategy_put = LongPut(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale)
         self._option_call = EmptyOption()
         self._option_put = EmptyOption()
 

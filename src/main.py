@@ -6,8 +6,8 @@ from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.calculators.option_pricing import bsm_pricing
-from src.trading_strategies.strategy.option_strategy.naked_call import NakedCall
-from src.trading_strategies.strategy.option_strategy.naked_put import NakedPut
+from src.trading_strategies.strategy.option_strategy.short_call import ShortCall
+from src.trading_strategies.strategy.option_strategy.short_put import ShortPut
 from src.trading_strategies.strategy.option_strategy.calculators.option_strike import calculate_strike
 from src.trading_strategies.strategy.strategy_id import StrategyId
 from src.agent.transactions.position import Position
@@ -41,7 +41,7 @@ def main():
 
     if is_put:
         put_option = PutOption(symbol, strike_price, expiry_date, premium)
-        naked_put = NakedPut(StrategyId("1"), symbol, is_itm, Position.SHORT, is_weekly, weekday, num_strike)
+        naked_put = ShortPut(StrategyId("1"), symbol, is_itm, Position.SHORT, is_weekly, weekday, num_strike)
 
         transaction = naked_put.update2(price, put_option, date)
 
@@ -60,7 +60,7 @@ def main():
 
     else:
         call_option = CallOption(symbol, strike_price, expiry_date, premium)
-        naked_call = NakedCall(StrategyId("1"), symbol, is_itm, Position.SHORT, is_weekly, weekday, num_strike)
+        naked_call = ShortCall(StrategyId("1"), symbol, is_itm, Position.SHORT, is_weekly, weekday, num_strike)
 
         transaction = naked_call.update2(price, call_option, date)
 

@@ -12,7 +12,7 @@ from src.util.expiry_date import closest_expiration_date, nyse_calendar
 risk_free_rate = 0.03
 
 
-class NakedPut(OptionStrategy):
+class ShortPut(OptionStrategy):
 
     def __init__(self, strategy_id: StrategyId, symbol: Symbol, is_itm: bool,
                  is_weekly: bool, weekday, num_of_strikes, scale=1):
@@ -38,5 +38,5 @@ class NakedPut(OptionStrategy):
     def roll_up(self, stock, option, premium):
         pass
 
-    def update(self, new_data: DataPackage):
+    def update(self, new_data: DataPackage) -> List[Order]:
         pass

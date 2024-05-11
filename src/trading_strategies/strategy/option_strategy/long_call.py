@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 
 from src.agent.transactions.positions import Positions
 from src.data_access.data_package import DataPackage
@@ -28,7 +29,7 @@ class LongCall(OptionStrategy):
         # CallOption(stock.symbol(), Price(strike_price, stock.get_price().time()), expiration_date, premium)
         return strike_price, expiration_date
 
-    def update(self, new_data: DataPackage) -> Order:
+    def update(self, new_data: DataPackage) -> List[Order]:
         stock_price = new_data.stock.get_price().price()
         date = new_data.date
         expiry = next_expiry_date(date, self._is_weekly)
@@ -36,4 +37,4 @@ class LongCall(OptionStrategy):
         next_option = CallOption(self.symbol(), Price(strike_price, date), expiry, EmptyPrice())
         msg = f"Roll over long call. Stock price at {stock_price}."
         order = Order(next_option, date, Positions(Position.LONG, self._scale), msg)
-        return order
+        return [order]
