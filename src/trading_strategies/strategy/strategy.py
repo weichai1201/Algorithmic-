@@ -26,7 +26,7 @@ class Strategy:
         return self._symbol == other
 
     @abstractmethod
-    def update(self, new_data: DataPackage) -> Order:
+    def update(self, new_data: DataPackage) -> List[Order]:
         pass
 
     @abstractmethod

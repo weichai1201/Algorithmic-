@@ -1,5 +1,7 @@
 from datetime import timedelta, datetime
 
+import numpy as np
+
 from src.agent.agent import Agent
 from src.backtesting.backtester import Backtester
 from src.data_access.data_access import DataAccess
@@ -30,5 +32,7 @@ class DailyMarketReplay(Backtester):
             if not agent.need_update_for(date, symbol):
                 continue
             stock_price = DataAccess().get_stock_price_at(symbol, date)
+            if np.isnan(stock_price):
+                continue
             data = DataPackage(date, Stock(symbol, Price(stock_price, date)))
             agent.update(symbol, data)

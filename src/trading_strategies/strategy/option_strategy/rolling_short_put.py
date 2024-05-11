@@ -37,7 +37,7 @@ class RollingShortPut(OptionStrategy):
             return True
         return False
 
-    def update(self, new_data: DataPackage) -> Order:
+    def update(self, new_data: DataPackage) -> List[Order]:
         new_stock = new_data.stock
         date = new_data.date
         stock_price = new_stock.get_price().price()
@@ -49,7 +49,7 @@ class RollingShortPut(OptionStrategy):
             strike = self._naked_put.roll_over(new_stock, expiry)[0]
             msg = "Initiate first option."
         elif not self._option.is_expired(date):
-            return EmptyOrder(EmptyAsset())
+            return [EmptyOrder(EmptyAsset())]
         else:
             self.notify_agent((self.id(), self._option.option_payoff(stock_price)))
             if self._require_roll_over(stock_price):
@@ -64,7 +64,7 @@ class RollingShortPut(OptionStrategy):
         next_option = PutOption(self._symbol, strike_price, expiry, EmptyPrice())
         msg = msg + f" Stock price at {stock_price}."
         order = Order(next_option, date, Positions(Position.SHORT, self._scale), msg)
-        return order
+        return [order]
 
     def update_order(self, orders: List[Order]):
         if len(orders) == 0 or not all([x.is_successful() for x in orders]):

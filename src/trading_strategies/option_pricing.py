@@ -6,7 +6,7 @@ import math
 from scipy.optimize import newton, fmin, minimize
 
 from src.data_access.data_access import DataAccess
-from src.data_access.volatility import VolatilityType
+from src.data_access.volatility import VolatilityType, EmptyVolatility
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.stock import Stock
 import src.util.util as util
@@ -22,7 +22,11 @@ def bsm_pricing2(stock: Stock, strike: float, expiry: datetime,
                  dividends: list[Price], risk_free_rate, is_put: bool):
     t0 = stock.get_t0()
     time_to_maturity = (expiry - t0) / timedelta(days=365)
-    volatility = DataAccess().get_volaitlity(stock.symbol(), VolatilityType.GARCH, t0).value
+    volatility = DataAccess().get_volaitlity(stock.symbol(), VolatilityType.GARCH, t0)
+    if isinstance(volatility, EmptyVolatility):
+        return -1
+    else:
+        volatility = volatility.value
     adjusted_price = adjust_dividends(stock, dividends, risk_free_rate)
     if is_put:
         return calculate_put_price(adjusted_price, strike, volatility, time_to_maturity, risk_free_rate)

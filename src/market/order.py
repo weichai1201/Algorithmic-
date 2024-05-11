@@ -25,7 +25,7 @@ class Order:
         self._task.complete()
 
     def reject_order(self):
-        self._task.complete(False)
+        self._task.complete(result=False)
 
     def symbol(self):
         return self.asset.symbol()

@@ -32,13 +32,19 @@ class Agent:
 
     def update(self, symbol: Symbol, new_data: DataPackage):
         for strategy_id, strategy in self._strategies.items():
-            if symbol == strategy.symbol():
-                order = strategy.update(new_data)
-                self._market.submit_order(order)
-                if order.is_successful():
-                    strategy.update_order([order])
-                    transaction = Transaction(order.positions, order.asset, order.date, order.msg)
-                    self._all_transactions[strategy_id].add_transaction(transaction)
+            if symbol != strategy.symbol():
+                continue
+
+            orders = strategy.update(new_data)
+            self._market.submit_order(orders)
+
+            if any([not order.is_successful() for order in orders]):
+                continue
+
+            strategy.update_order(orders)
+            for order in orders:
+                transaction = Transaction(order.positions, order.asset, order.date, order.msg)
+                self._all_transactions[strategy_id].add_transaction(transaction)
 
     def get_all_transactions(self) -> dict[StrategyId, Transactions]:
         return self._all_transactions

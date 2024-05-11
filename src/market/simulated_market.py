@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 
 from src.data_access.data_access import DataAccess
 from src.data_access.risk_free_rate import RatePeriod
@@ -25,22 +26,28 @@ class SimulatedMarket(metaclass=MarketSingletonMeta):
     def __init__(self):
         self._order_book = []
 
-    def submit_order(self, order: Order):
-        symbol = order.asset.symbol()
-        date = order.date
-        if isinstance(order.asset, Option):
-            target_strike = order.asset.get_strike().price()
-            expiry = order.asset.get_expiry()
-            stock_price = DataAccess().get_stock_price_at(symbol, date)
-            is_put = isinstance(order.asset, PutOption)
-            strike_price, premium = self._simulate_option_price(
-                symbol, stock_price, target_strike, date, expiry, is_put)
-            if is_put:
-                new_option = PutOption(symbol, Price(strike_price, date), expiry, Price(premium, date))
-            else:
-                new_option = CallOption(symbol, Price(strike_price, date), expiry, Price(premium, date))
-            order.asset = new_option
-        order.accept_order()
+    def submit_order(self, orders: List[Order]):
+        for order in orders:
+            symbol = order.asset.symbol()
+            date = order.date
+            if isinstance(order.asset, Option):
+                target_strike = order.asset.get_strike().price()
+                expiry = order.asset.get_expiry()
+                stock_price = DataAccess().get_stock_price_at(symbol, date)
+                is_put = isinstance(order.asset, PutOption)
+                strike_price, premium = self._simulate_option_price(
+                    symbol, stock_price, target_strike, date, expiry, is_put)
+                if premium <= 0 or strike_price <= 0:
+                    # cannot simulate the premium due to not enough data in calculating vol.
+                    order.reject_order()
+                    return
+
+                if is_put:
+                    new_option = PutOption(symbol, Price(strike_price, date), expiry, Price(premium, date))
+                else:
+                    new_option = CallOption(symbol, Price(strike_price, date), expiry, Price(premium, date))
+                order.asset = new_option
+            order.accept_order()
 
     @staticmethod
     def _simulate_option_price(symbol: Symbol, stock_price: float, target_strike: float,

@@ -7,7 +7,7 @@ import pandas as pd
 
 from src.data_access.data_access_meta import DataSingletonMeta
 from src.data_access.risk_free_rate import RatePeriod, RiskFree
-from src.data_access.volatility import Volatility, VolatilityType
+from src.data_access.volatility import Volatility, VolatilityType, EmptyVolatility
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
@@ -39,6 +39,9 @@ class DataAccess(metaclass=DataSingletonMeta):
         entry = tuple((symbol, volatility_type, date))
         if entry not in self._volatilities.keys():
             from src.util.calculate_volatility import calculate_vol
+            tmp = calculate_vol(symbol, volatility_type, date)
+            if isinstance(tmp, EmptyVolatility):
+                return tmp
             self._volatilities[entry] = calculate_vol(symbol, volatility_type, date)
         return self._volatilities[entry]
 
