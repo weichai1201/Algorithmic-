@@ -24,6 +24,14 @@ class OptionBacktestConfig(BacktestConfig):
         self.num_of_strikes = num_of_strikes
         self.weekday = weekday
 
+    def __str__(self):
+        return (f"Configuration for {self.strategy.__name__}: "
+                f"itm={self.is_itm}, "
+                f"weekly={self.is_weekly}, "
+                f"num_of_strikes={self.num_of_strikes}, "
+                f"weekday={self.weekday}."
+                )
+
 
 class ShortBacktestConfig(OptionBacktestConfig):
     def __init__(self, strategy: Callable,  start_date=datetime(year=2008, month=1, day=1),
