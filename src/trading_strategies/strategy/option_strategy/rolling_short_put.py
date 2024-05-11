@@ -8,7 +8,7 @@ from src.trading_strategies.financial_asset.financial_asset import EmptyAsset
 from src.trading_strategies.financial_asset.option import Option, EmptyOption, PutOption
 from src.trading_strategies.financial_asset.price import Price, EmptyPrice
 from src.trading_strategies.financial_asset.symbol import Symbol
-from src.trading_strategies.strategy.option_strategy.naked_put import NakedPut
+from src.trading_strategies.strategy.option_strategy.short_put import ShortPut
 from src.trading_strategies.strategy.option_strategy.option_strategy import OptionStrategy
 from src.trading_strategies.strategy.option_strategy.calculators.option_strike import get_strike_gap
 from src.trading_strategies.strategy.strategy_id import StrategyId
@@ -20,7 +20,7 @@ class RollingShortPut(OptionStrategy):
     def __init__(self, strategy_id: StrategyId, symbol: Symbol, is_itm: bool, is_weekly: bool,
                  weekday, num_of_strikes: int, scale=1):
         super().__init__(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes)
-        self._naked_put = NakedPut(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale)
+        self._naked_put = ShortPut(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale)
         self._option: Option = EmptyOption()
 
     def need_update(self, date: datetime):
