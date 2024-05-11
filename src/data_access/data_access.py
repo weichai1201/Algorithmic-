@@ -87,7 +87,7 @@ class DataAccess(metaclass=DataSingletonMeta):
         tmp = self.get_stock([symbol], date, date)
         return tmp[symbol.symbol].tolist()[0]
 
-    def get_stock(self, symbols, start_date: datetime, end_date: datetime = None, refresh=False):
+    def get_stock(self, symbols: [Symbol], start_date: datetime, end_date: datetime = None, refresh=False):
         symbols = [x.symbol for x in symbols]
         if refresh:
             self.refresh()

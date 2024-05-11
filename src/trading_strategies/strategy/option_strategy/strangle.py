@@ -11,7 +11,7 @@ from src.trading_strategies.strategy.option_strategy.option_strategy import Opti
 from src.trading_strategies.strategy.strategy_id import StrategyId
 
 
-class Straddle(OptionStrategy):
+class Strangle(OptionStrategy):
     def __init__(self, strategy_id: StrategyId, symbol: Symbol, is_itm: bool, is_weekly: bool,
                  weekday, num_of_strikes: int, scale=1):
         super().__init__(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes)
