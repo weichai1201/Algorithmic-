@@ -6,6 +6,7 @@ from typing import Callable
 import pandas as pd
 
 from src.backtesting.backtesting import run_daily_market_replay
+from src.backtesting.backtesting_config import OptionBacktestingConfig
 from src.backtesting.stock_selection import StockSelection
 from src.data_access.data_access import DataAccess
 from src.trading_strategies.financial_asset.symbol import Symbol
@@ -23,27 +24,13 @@ import matplotlib.pyplot as plt
 def main():
     foldername = "backtesting_result"
 
-    start_date = datetime(2006, 1, 1)
-    end_date = datetime(2022, 1, 1)
-
     symbols = StockSelection().simple
+    config = OptionBacktestingConfig(RollingShortPut)
     # beginning of run
     timers = [timeit.default_timer()]
     # default setting
-    _run(Straddle, symbols, start_date, end_date, foldername)
+    _run(config.strategy, symbols, config.start_date, config.end_date, foldername)
     timers.append(timeit.default_timer())
-    # out-of-money
-    # _run(RollingShortPut, symbols, start_date, end_date, foldername, is_itm=False)
-    # timers.append(timeit.default_timer())
-    # # monthly expiration
-    # _run(RollingShortPut, symbols, start_date, end_date, foldername, is_weekly=False)
-    # timers.append(timeit.default_timer())
-    # # out-of-money and monthly
-    # _run(RollingShortPut, symbols, start_date, end_date, foldername, is_itm=False, is_weekly=False)
-    # timers.append(timeit.default_timer())
-    # # number of strike gaps is 2
-    # _run(RollingShortPut, symbols, start_date, end_date, foldername, num_of_strikes=2)
-    # timers.append(timeit.default_timer())
 
     for i in range(len(timers))[1:]:
         print(f"used time activity {i}: {timers[i] - timers[i - 1]} \n")
