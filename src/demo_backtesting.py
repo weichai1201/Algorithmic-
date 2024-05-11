@@ -1,6 +1,7 @@
 import os.path
 import timeit
 from datetime import datetime
+from typing import Callable
 
 import pandas as pd
 
@@ -9,6 +10,7 @@ from src.backtesting.stock_selection import StockSelection
 from src.data_access.data_access import DataAccess
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.rolling_short_put import RollingShortPut
+from src.trading_strategies.strategy.option_strategy.straddle import Straddle
 from src.trading_strategies.strategy.strategy_id import StrategyId
 import matplotlib.pyplot as plt
 
@@ -28,20 +30,20 @@ def main():
     # beginning of run
     timers = [timeit.default_timer()]
     # default setting
-    _run(symbols, start_date, end_date, foldername)
+    _run(Straddle, symbols, start_date, end_date, foldername)
     timers.append(timeit.default_timer())
     # out-of-money
-    _run(symbols, start_date, end_date, foldername, is_itm=False)
-    timers.append(timeit.default_timer())
-    # monthly expiration
-    _run(symbols, start_date, end_date, foldername, is_weekly=False)
-    timers.append(timeit.default_timer())
-    # out-of-money and monthly
-    _run(symbols, start_date, end_date, foldername, is_itm=False, is_weekly=False)
-    timers.append(timeit.default_timer())
-    # number of strike gaps is 2
-    _run(symbols, start_date, end_date, foldername, num_of_strikes=2)
-    timers.append(timeit.default_timer())
+    # _run(RollingShortPut, symbols, start_date, end_date, foldername, is_itm=False)
+    # timers.append(timeit.default_timer())
+    # # monthly expiration
+    # _run(RollingShortPut, symbols, start_date, end_date, foldername, is_weekly=False)
+    # timers.append(timeit.default_timer())
+    # # out-of-money and monthly
+    # _run(RollingShortPut, symbols, start_date, end_date, foldername, is_itm=False, is_weekly=False)
+    # timers.append(timeit.default_timer())
+    # # number of strike gaps is 2
+    # _run(RollingShortPut, symbols, start_date, end_date, foldername, num_of_strikes=2)
+    # timers.append(timeit.default_timer())
 
     for i in range(len(timers))[1:]:
         print(f"used time activity {i}: {timers[i] - timers[i - 1]} \n")
@@ -49,7 +51,7 @@ def main():
     print(f"total time: {timers[len(timers) - 1] - timers[0]} ")
 
 
-def _run(symbols: [str], start_date, end_date, foldername, is_itm=True, is_weekly=True, num_of_strikes=1,
+def _run(strategy_func: Callable, symbols: [str], start_date, end_date, foldername, is_itm=True, is_weekly=True, num_of_strikes=1,
          weekday="FRI"):
     # output directory
     # option specification
@@ -73,7 +75,7 @@ def _run(symbols: [str], start_date, end_date, foldername, is_itm=True, is_weekl
     strategies = dict()
     for s in symbols:
         strategy_id = StrategyId("NAKED_PUT_" + s)
-        strategy = RollingShortPut(strategy_id, Symbol(s), is_itm, is_weekly, weekday, num_of_strikes)
+        strategy = strategy_func(strategy_id, Symbol(s), is_itm, is_weekly, weekday, num_of_strikes)
         strategies[strategy_id] = strategy
 
     backtester = run_daily_market_replay(strategies, start_date, end_date)
