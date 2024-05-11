@@ -14,8 +14,7 @@ class StockSelection:
         high_market_cap = ["MSFT", "AAPL", "NVDA", "GOOG"]
         low_market_cap = ["CMA", "MHK"]
         # https://medium.com/@businessandbooks/10-smallest-companies-in-the-s-p500-index-df72498a788b
-        negative_beta = ["WDFC"]
-        # https://www.suredividend.com/negative-beta-stocks/#:~:text=A%20beta%20of%201.0%20means,precisely%20opposite%20the%20S%26P%20500
+        negative_beta = []
         dividends_paying_10years = ["GIS"]
         self.full = low_vol + high_vol + low_market_cap + high_market_cap + negative_beta + dividends_paying_10years
         self.simple = ["AAPL"]
