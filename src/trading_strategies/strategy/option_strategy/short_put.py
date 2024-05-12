@@ -36,7 +36,7 @@ class ShortPut(OptionStrategy):
         # strike
         strike_price = roll_down_strike(stock_price, prev_strike, self._num_of_strikes)
         # expiration
-        sigma = DataAccess().get_volaitlity(symbol, VolatilityType.GARCH, date)
+        sigma = DataAccess().get_volaitlity(symbol, VolatilityType.GARCH, date).value
         risk_free_rate = DataAccess().get_risk_free(date).value
         premium = prev_option.itm_amount(stock_price) + get_strike_gap(stock_price)
         new_expiration = implied_date(stock_price, date, strike_price, risk_free_rate, premium, sigma, True)
