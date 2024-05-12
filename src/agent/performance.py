@@ -7,6 +7,8 @@ def calculate_option_payoff(transactions: Transactions) -> tuple[list, list]:
     c = 0
     for transaction in transactions.get_transactions():
         p = transaction.get_payoff()
+        if transaction.is_short():
+            p *= -1
         payoffs.append(p)
         c += p
         cumulative_payoffs.append(p)
