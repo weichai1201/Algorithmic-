@@ -48,24 +48,3 @@ class Strangle(OptionStrategy):
         call = CallOption(self.symbol(), Price(strike, date), expiration, EmptyPrice())
         return [Order(put, date, Positions(self._position, self._scale)),
                 Order(call, date, Positions(self._position, self._scale), msg)]
-
-    def update_order(self, orders: List[Order]):
-        if len(orders) == 0 or not all([x.is_successful() for x in orders]):
-            return
-        if len(orders) != 2:
-            print("Expect to have exactly 2 orders.")
-            return
-        call_updated = False
-        put_updated = False
-        for order in orders:
-            option = order.asset
-            if not isinstance(option, Option):
-                print(f"Expect to receive option in straddle {self.id()}.\n")
-            if isinstance(option, CallOption):
-                self._option_call = option
-                call_updated = True
-            if isinstance(option, PutOption):
-                self._option_put = option
-                put_updated = True
-        if not all([call_updated, put_updated]):
-            print(f"Some option(s) is not updated in straddle {self.id()}.\n")

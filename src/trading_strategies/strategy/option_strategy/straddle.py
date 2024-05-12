@@ -24,7 +24,7 @@ class Straddle(OptionStrategy):
         self._strategy_call = LongCall(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale)
         self._strategy_put = LongPut(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale)
         self._take_max = True
-        self._position = Position.LONG
+        self._position = Position.SHORT
 
     def need_update(self, date: datetime):
         options = self.current_option()
