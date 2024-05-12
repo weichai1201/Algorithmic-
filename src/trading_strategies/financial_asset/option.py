@@ -78,6 +78,12 @@ class CallOption(Option):
         payoff = self.itm_amount(price_t)
         return [payoff]
 
+    def __str__(self):
+        return (f"CallOption: {self._symbol}, "
+                f"Strike Price: {self._strike_price},"
+                f" Expiration Date: {self._expiration_date},"
+                f" Premium: {self._price}")
+
 class PutOption(Option):
     def __init__(self, symbol: Symbol, strike_price: Price, expiration_date: datetime, premium: Price):
         super().__init__(symbol, premium, strike_price, expiration_date)
@@ -95,6 +101,12 @@ class PutOption(Option):
             stock = stock.price()
         payoff = max(self.get_strike().price() - stock, 0)
         return payoff
+
+    def __str__(self):
+        return (f"PutOption: {self._symbol}, "
+                f"Strike Price: {self._strike_price},"
+                f" Expiration Date: {self._expiration_date},"
+                f" Premium: {self._price}")
 
 
 class EmptyOption(Option):
