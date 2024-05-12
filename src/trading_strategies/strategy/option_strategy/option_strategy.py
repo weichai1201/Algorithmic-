@@ -64,15 +64,13 @@ class OptionStrategy(Strategy):
 
         return Transaction(self._positions, new_option, date)
 
-    def _update_mod_itm_option(self, stock_price: float, date: datetime, option) -> Option:
-        premium = option.itm_amount(stock_price) + get_strike_gap(stock.get_price().price())
-        if isinstance(option, CallOption):
-            return self.roll_up(stock_price, option, premium)
+    def _update_mod_itm_option(self, stock_price: float, date: datetime, prev_option: Option) -> Option:
+        if isinstance(prev_option, CallOption):
+            return self.roll_up(stock_price, date, prev_option)
         else:
-            return self.roll_down(stock_price, option, premium)
+            return self.roll_down(stock_price, date, prev_option)
 
     def _update_deep_itm_option(self, stock_price: float, date: datetime) -> Option:
-
         return self._update_otm_option(stock_price, date)
 
     def _update_otm_option(self, stock_price: float, date: datetime) -> Option:
@@ -84,7 +82,7 @@ class OptionStrategy(Strategy):
         pass
 
     @abstractmethod
-    def roll_up(self,  stock_price: float, option: Option, premium: float) -> (float, datetime):
+    def roll_up(self, stock_price: float, date: datetime, prev_option: Option) -> (float, datetime):
         pass
 
     @abstractmethod
