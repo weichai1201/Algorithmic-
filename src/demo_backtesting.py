@@ -121,14 +121,14 @@ def _run_option(strategy_func: Callable, symbols: [str], foldername, start_date,
         df.to_csv(filename + ".csv")
 
         # plots
-        df['Cumulative'] = df['Cumulative'].apply(list)
-        duplicated_df = pd.DataFrame(
-            [[date, cumulative] for date, cumulatives in zip(df['Date'], df['Cumulative']) for cumulative in
-             cumulatives], columns=['Date', 'Cumulative'])
+        # df['Cumulative'] = df['Cumulative'].apply(list)
+        # duplicated_df = pd.DataFrame(
+        #     [[date, cumulative] for date, cumulatives in zip(df['Date'], df['Cumulative']) for cumulative in
+        #      cumulatives], columns=['Date', 'Cumulative'])
         symbol = strategies[strategy_id].symbol()
         stock_df = DataAccess().get_stock([symbol], start_date, end_date)
         stock_df["Date"] = stock_df["Date"].apply(lambda x: datetime.strptime(x, "%Y-%m-%d %H:%M:%S"))
-        _plot_with_stock(duplicated_df, stock_df, symbol.symbol,
+        _plot_with_stock(df, stock_df, symbol.symbol,
                          title=f"{strategy_id.get_id()}\n{sub_title}", filename=filename + ".png")
 
         # transaction records

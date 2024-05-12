@@ -23,15 +23,18 @@ def calculate_option_profit(transactions: Transactions) -> tuple[list, list]:
     prev_transaction = None
     for transaction in transactions.get_transactions():
         # assume short
-        gain = transaction.get_asset().get_price_numeric()
+        cost = - transaction.get_asset().get_price_numeric()
         payoff = 0
         if prev_transaction is not None:
-            payoff = -prev_transaction.get_payoff()
-        if transaction.is_long():
-            gain *= -1
-        profits.append(gain)
-        c += gain + payoff
-        cumulative_profits.append((c - gain, c))
+            payoff = prev_transaction.get_payoff()
+        if transaction.is_short():
+            cost *= -1
+            payoff *= -1
+        profits.append(payoff)
+        profits.append(cost)
+        c += payoff
+        cumulative_profits.append(c)
+        cumulative_profits.append(c + cost)
         prev_transaction = transaction
     return profits, cumulative_profits
 
