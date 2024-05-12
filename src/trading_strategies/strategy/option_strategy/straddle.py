@@ -44,9 +44,12 @@ class Straddle(OptionStrategy):
             if isinstance(order.asset, Option):
                 strikes.append(order.asset.get_strike().price())
                 expirations.append(order.asset.get_expiry())
+
         strike = max(strikes)
         expiration = max(expirations)
+        msg = "\n".join([o.msg for o in orders])
         put = PutOption(self.symbol(), Price(strike, date), expiration, EmptyPrice())
         call = CallOption(self.symbol(), Price(strike, date), expiration, EmptyPrice())
+
         return [Order(put, date, Positions(self._position, self._scale)),
-                Order(call, date, Positions(self._position, self._scale))]
+                Order(call, date, Positions(self._position, self._scale), msg)]

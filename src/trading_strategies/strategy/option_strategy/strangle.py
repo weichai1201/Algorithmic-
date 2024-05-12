@@ -43,10 +43,11 @@ class Strangle(OptionStrategy):
                 expirations.append(order.asset.get_expiry())
         strike = max(strikes)
         expiration = max(expirations)
+        msg = "\n".join([o.msg for o in orders])
         put = PutOption(self.symbol(), Price(strike, date), expiration, EmptyPrice())
         call = CallOption(self.symbol(), Price(strike, date), expiration, EmptyPrice())
         return [Order(put, date, Positions(self._position, self._scale)),
-                Order(call, date, Positions(self._position, self._scale))]
+                Order(call, date, Positions(self._position, self._scale), msg)]
 
     def update_order(self, orders: List[Order]):
         if len(orders) == 0 or not all([x.is_successful() for x in orders]):
