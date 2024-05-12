@@ -24,7 +24,7 @@ class Strangle(OptionStrategy):
         self._position = Position.SHORT
 
     def need_update(self, date: datetime):
-        options = self.current_option()
+        options = self.current_options()
         if any([isinstance(option, EmptyOption) or isinstance(option, EmptyAsset) for option in options]):
             return True
         return any([option.is_expired(date) for option in options])

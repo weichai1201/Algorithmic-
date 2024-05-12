@@ -20,10 +20,17 @@ from src.util.expiry_date import closest_expiration_date, nyse_calendar, next_ex
 class ShortCall(OptionStrategy):
 
     def __init__(self, strategy_id: StrategyId, symbol: Symbol, is_itm: bool,
-                 is_weekly: bool, weekday, num_of_strikes, scale=1):
+                 is_weekly: bool, weekday, num_of_strikes, scale=1, parent=None):
         super().__init__(strategy_id, symbol, is_itm, is_weekly,
                          weekday, num_of_strikes, scale)
         self._position = Position.SHORT
+        self._parent = parent
+
+    def current_options(self) -> [Option]:
+        if self._parent is not None:
+            return [self._parent.get_option_down(self)]
+        else:
+            return super().current_options()
 
     def roll_over(self, stock_price: float, date: datetime, prev_option=None) -> (float, datetime):
         strike_price = calculate_strike(stock_price, self._is_itm, self._num_of_strikes, False)

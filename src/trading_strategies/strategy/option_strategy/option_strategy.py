@@ -40,7 +40,7 @@ class OptionStrategy(Strategy):
     def notify_agent(self, information: (StrategyId, float)):
         self._agent.realise_payoff(information)
 
-    def current_option(self) -> [Option]:
+    def current_options(self) -> [Option]:
         if self._agent is None:
             return [EmptyOption()]
         return self._agent.get_asset(self._id)
@@ -60,7 +60,7 @@ class OptionStrategy(Strategy):
         # unpack information
         date = new_data.date
         stock_price = new_data.stock.get_price().price()
-        current_option = self.current_option()[0]
+        current_option = self.current_options()[0]
         symbol = self.symbol()
         action: Callable
         msg = ""

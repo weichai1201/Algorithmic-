@@ -9,8 +9,6 @@ from src.trading_strategies.financial_asset.financial_asset import EmptyAsset
 from src.trading_strategies.financial_asset.option import Option, EmptyOption, PutOption, CallOption
 from src.trading_strategies.financial_asset.price import Price, EmptyPrice
 from src.trading_strategies.financial_asset.symbol import Symbol
-from src.trading_strategies.strategy.option_strategy.long_call import LongCall
-from src.trading_strategies.strategy.option_strategy.long_put import LongPut
 from src.trading_strategies.strategy.option_strategy.option_strategy import OptionStrategy
 from src.trading_strategies.strategy.option_strategy.short_call import ShortCall
 from src.trading_strategies.strategy.option_strategy.short_put import ShortPut
@@ -21,13 +19,25 @@ class Straddle(OptionStrategy):
     def __init__(self, strategy_id: StrategyId, symbol: Symbol, is_itm: bool, is_weekly: bool,
                  weekday, num_of_strikes: int, scale=1):
         super().__init__(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes)
-        self._strategy_call = LongCall(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale)
-        self._strategy_put = LongPut(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale)
+        self._strategy_call = ShortCall(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale, self)
+        self._strategy_put = ShortPut(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale, self)
         self._take_max = True
         self._position = Position.SHORT
 
+    def get_option_down(self, child: OptionStrategy):
+        options = self.current_options()
+        if id(child) == id(self._strategy_put):
+            for option in options:
+                if isinstance(option, PutOption):
+                    return option
+        if id(child) == id(self._strategy_call):
+            for option in options:
+                if isinstance(option, CallOption):
+                    return option
+        return EmptyOption()
+
     def need_update(self, date: datetime):
-        options = self.current_option()
+        options = self.current_options()
         if any([isinstance(option, EmptyOption) or isinstance(option, EmptyAsset) for option in options]):
             return True
         return any([option.is_expired(date) for option in options])
