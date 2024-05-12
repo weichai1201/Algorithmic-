@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List
 
+from src.agent.transactions.position import Position
 from src.data_access.data_access import DataAccess
 from src.data_access.data_package import DataPackage
 from src.data_access.volatility import VolatilityType, Volatility
@@ -23,8 +24,9 @@ class ShortPut(OptionStrategy):
                  is_weekly: bool, weekday, num_of_strikes, scale=1):
         super().__init__(strategy_id, symbol, is_itm, is_weekly,
                          weekday, num_of_strikes, scale)
+        self._position = Position.SHORT
 
-    def roll_over(self, stock: Stock, date: datetime) -> (float, datetime):
+    def roll_over(self, stock: Stock, date: datetime, prev_option=None) -> (float, datetime):
         strike_price = calculate_strike(stock.get_price().price(), self._is_itm, self._num_of_strikes, True)
         expiration_date = next_expiry_date(date, is_weekly=self._is_weekly, weekday=self._weekday)
         return strike_price, expiration_date

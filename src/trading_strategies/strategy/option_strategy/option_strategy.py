@@ -1,9 +1,15 @@
 from abc import abstractmethod
 from datetime import datetime
+from typing import List, Callable
 
+from src.agent.transactions.position import Position
+from src.agent.transactions.positions import Positions
 from src.data_access.data_package import DataPackage
 from src.data_access.volatility import Volatility
-from src.trading_strategies.financial_asset.option import Option, CallOption
+from src.market.order import Order
+from src.trading_strategies.financial_asset.financial_asset import EmptyAsset, FinancialAsset
+from src.trading_strategies.financial_asset.option import Option, CallOption, EmptyOption, PutOption
+from src.trading_strategies.financial_asset.price import EmptyPrice, Price
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.calculators.option_strike import get_strike_gap
@@ -26,59 +32,74 @@ class OptionStrategy(Strategy):
         self._is_weekly = is_weekly
         self._weekday = weekday
         self._is_itm = is_itm
-
-    def notify_agent(self, information: (StrategyId, float)):
-        self._agent.realise_payoff(information)
-
-    @abstractmethod
-    def update(self, new_data: DataPackage):
-        pass
+        self._position = Position.EMPTY
 
     def get_id(self) -> StrategyId:
         return self._id
 
-    def in_the_money(self, stock_price: float, option: Option) -> bool:
+    def notify_agent(self, information: (StrategyId, float)):
+        self._agent.realise_payoff(information)
+
+    def current_option(self) -> Option:
+        if self._agent is None:
+            return EmptyOption()
+        return self._agent.get_asset(self._id)
+
+    @staticmethod
+    def in_the_money(stock_price: float, option: Option) -> bool:
         return option.in_the_money(stock_price)
 
     def deep_in_the_money(self, stock_price: float, option: Option) -> bool:
         return self.itm_amount(stock_price, option) > 5 * get_strike_gap(stock_price)
 
-    def itm_amount(self, stock_price: float, option: Option) -> float:
+    @staticmethod
+    def itm_amount(stock_price: float, option: Option) -> float:
         return option.itm_amount(stock_price)
 
-
-    def update2(self, stock_price: float, option: Option, date: datetime) -> Optional[Transaction]:
-        if not option.is_expired(date):
-            if option.get_strike().time() == date:
-                return Transaction(self._positions, option, date)
-            else:
-                return None
-        new_stock = Stock(self.symbol(), Price(stock_price, date))
-        if self.in_the_money(stock_price, option):
+    def update(self, new_data: DataPackage) -> List[Order]:
+        # unpack information
+        date = new_data.date
+        stock_price = new_data.stock.get_price().price()
+        option = self.current_option()
+        symbol = option.symbol()
+        action: Callable
+        msg = ""
+        if isinstance(option, EmptyOption):
+            action = self.roll_over
+            msg = "Instantiate first option by rolling over."
+        elif self.in_the_money(stock_price, option):
             if self.deep_in_the_money(stock_price, option):
-                new_option = self._update_deep_itm_option(new_stock, option)
+                action = self._update_deep_itm_option
+                msg = "Roll over as deep in the money."
             else:
-                new_option = self._update_mod_itm_option(new_stock, option)
+                action = self._update_mod_itm_option
+                msg = "roll up/down as in the money."
         else:
-            new_option = self._update_otm_option(new_stock)
+            action = self._update_otm_option
+            msg = "Roll over as out of moeny."
+        strike, expiry = action(stock_price, date, option)
+        if isinstance(option, CallOption):
+            next_option = CallOption(symbol, Price(strike, date), expiry, EmptyPrice())
+        else:   # put option
+            next_option = PutOption(symbol, Price(strike, date), expiry, EmptyPrice())
+        order = Order(next_option, date, Positions(self._position, self._scale), msg)
+        return [order]
 
-        return Transaction(self._positions, new_option, date)
-
-    def _update_mod_itm_option(self, stock_price: float, date: datetime, prev_option: Option) -> Option:
+    def _update_mod_itm_option(self, stock_price: float, date: datetime, prev_option: Option) -> (float, datetime):
         if isinstance(prev_option, CallOption):
             return self.roll_up(stock_price, date, prev_option)
         else:
             return self.roll_down(stock_price, date, prev_option)
 
-    def _update_deep_itm_option(self, stock_price: float, date: datetime) -> Option:
+    def _update_deep_itm_option(self, stock_price: float, date: datetime, prev_option=None) -> (float, datetime):
         return self._update_otm_option(stock_price, date)
 
-    def _update_otm_option(self, stock_price: float, date: datetime) -> Option:
+    def _update_otm_option(self, stock_price: float, date: datetime, prev_option=None) -> (float, datetime):
         expiration_date = next_expiry_date(date, self._is_weekly, True, self._weekday)
         return self.roll_over(stock_price, expiration_date)
 
     @abstractmethod
-    def roll_over(self, stock_price: float, expiration_date: datetime) -> (float, datetime):
+    def roll_over(self, stock_price: float, date: datetime, prev_option=None) -> (float, datetime):
         pass
 
     @abstractmethod
@@ -88,4 +109,3 @@ class OptionStrategy(Strategy):
     @abstractmethod
     def roll_down(self, stock_price: float, date: datetime, prev_option: Option) -> (float, datetime):
         pass
-

@@ -1,10 +1,11 @@
 import datetime
-from typing import Set
+from typing import Set, Dict
 
 from src.agent.performance import calculate_option_payoff, calculate_option_profit, calculate_drawdowns
 from src.agent.transactions.transaction import Transaction
 from src.data_access.data_package import DataPackage
 from src.market.simulated_market import SimulatedMarket
+from src.trading_strategies.financial_asset.financial_asset import FinancialAsset, EmptyAsset
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.strategy import Strategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
@@ -23,6 +24,15 @@ class Agent:
             self._all_transactions[strategy_id] = Transactions(strategy_id)
             strategy.register_agent(self)
         self._market = SimulatedMarket()
+        self._assets: Dict[StrategyId, FinancialAsset] = dict()
+
+    def get_asset(self, strategy_id: StrategyId):
+        if strategy_id not in self._assets.keys():
+            return EmptyAsset()
+        return self._assets[strategy_id]
+
+    def update_asset(self, strategy_id: StrategyId, asset: FinancialAsset):
+        self._assets[strategy_id] = asset
 
     def get_symbols(self) -> Set:
         result: Set[Symbol] = set()

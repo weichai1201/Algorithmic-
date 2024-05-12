@@ -23,8 +23,9 @@ class ShortCall(OptionStrategy):
                  is_weekly: bool, weekday, num_of_strikes, scale=1):
         super().__init__(strategy_id, symbol, is_itm, is_weekly,
                          weekday, num_of_strikes, scale)
+        self._position = Position.SHORT
 
-    def roll_over(self, stock, date: datetime) -> (float, datetime):
+    def roll_over(self, stock, date: datetime, prev_option=None) -> (float, datetime):
         strike_price = calculate_strike(stock.get_price().price(), self._is_itm, self._num_of_strikes, False)
         expiration_date = next_expiry_date(date, is_weekly=self._is_weekly, weekday=self._weekday)
         return strike_price, expiration_date
