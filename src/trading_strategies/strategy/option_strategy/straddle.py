@@ -24,6 +24,11 @@ class Straddle(OptionStrategy):
         self._take_max = True
         self._position = Position.SHORT
 
+    def register_agent(self, agent):
+        self._strategy_call.register_agent(agent)
+        self._strategy_put.register_agent(agent)
+        super().register_agent(agent)
+
     def get_option_down(self, child: OptionStrategy):
         options = self.current_options()
         if id(child) == id(self._strategy_put):

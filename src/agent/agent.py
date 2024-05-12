@@ -93,8 +93,6 @@ class Agent:
 
     def realise_payoff(self, information: (StrategyId, float)):
         strategy_id, payoff = information
-        if strategy_id not in self._all_transactions:
-            return
         t = self._all_transactions[strategy_id].peak_last()
         if t is not None:
             t.realise_payoff(payoff)
