@@ -17,8 +17,6 @@ from src.trading_strategies.strategy.strategy import Strategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
 from src.util.expiry_date import next_expiry_date
 
-risk_free_rate = 0.03
-
 
 class OptionStrategy(Strategy):
 
@@ -83,7 +81,9 @@ class OptionStrategy(Strategy):
         # get new strike price and expiration date
         strike, expiry = action(stock_price, date, current_option)
         # construct order
-        if isinstance(current_option, CallOption):
+        from src.trading_strategies.strategy.option_strategy.long_call import LongCall
+        from src.trading_strategies.strategy.option_strategy.short_call import ShortCall
+        if isinstance(current_option, CallOption) or isinstance(self, LongCall) or isinstance(self, ShortCall):
             next_option = CallOption(symbol, Price(strike, date), expiry, EmptyPrice())
         else:   # put option
             next_option = PutOption(symbol, Price(strike, date), expiry, EmptyPrice())
