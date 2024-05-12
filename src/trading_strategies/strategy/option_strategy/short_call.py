@@ -6,7 +6,7 @@ from src.market.order import Order
 from src.trading_strategies.financial_asset.option import Option, CallOption
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.symbol import Symbol
-from src.trading_strategies.strategy.option_strategy.calculators.option_pricing import bsm_pricing, implied_date
+from src.trading_strategies.strategy.option_strategy.calculators.option_pricing import implied_date
 from src.trading_strategies.strategy.option_strategy.option_strategy import OptionStrategy
 from src.trading_strategies.strategy.option_strategy.calculators.option_strike import calculate_strike, \
     roll_up_strike
@@ -26,8 +26,6 @@ class ShortCall(OptionStrategy):
 
     def roll_over(self, stock, expiration_date) -> (float, datetime):
         strike_price = calculate_strike(stock.get_price().price(), self._is_itm, self._num_of_strikes, False)
-        # premium = bsm_pricing(stock, strike_price, expiration_date, [], risk_free_rate, False)
-        # new_option = CallOption(stock.symbol, Price(strike_price, stock.get_price().time()), expiration_date, premium)
         return strike_price, expiration_date
 
     def roll_up(self, stock, option, premium) -> (float, datetime):

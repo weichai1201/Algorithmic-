@@ -9,7 +9,7 @@ from src.data_access.data_access_meta import DataSingletonMeta
 from src.data_access.risk_free_rate import RatePeriod, RiskFree
 from src.data_access.volatility import Volatility, VolatilityType, EmptyVolatility
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
-from src.trading_strategies.financial_asset.stock import Stock
+
 from src.trading_strategies.financial_asset.symbol import Symbol
 
 stock_filename = "data/sp500_adj_close_prices.csv"
@@ -154,12 +154,6 @@ class DataAccess(metaclass=DataSingletonMeta):
                 date = date + timedelta(days=offset)
             else:
                 return date
-
-
-class DataAccessResult:
-    def __init__(self, data: float | Stock | FinancialAsset | None, is_successful: bool = False):
-        self.data = data
-        self.is_successful = is_successful
 
 
 # def retrieve_stock(symbol: Symbol, date: datetime) -> DataAccessResult:

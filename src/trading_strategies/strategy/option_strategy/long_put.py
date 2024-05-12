@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 from src.agent.transactions.positions import Positions
@@ -22,10 +23,8 @@ class LongPut(OptionStrategy):
         super().__init__(strategy_id, symbol, is_itm, is_weekly,
                          weekday, num_of_strikes, scale)
 
-    def roll_over(self, stock_price: float, expiration_date):
+    def roll_over(self, stock_price: float, expiration_date)  -> (float, datetime):
         strike_price = calculate_strike(stock_price, self._is_itm, self._num_of_strikes, True)
-        # premium = bsm_pricing(stock, strike_price, expiration_date, [], risk_free_rate, True)
-        # new_option = PutOption(stock.symbol(), Price(strike_price, stock.get_price().time()), expiration_date, premium)
         return strike_price, expiration_date
 
     def update(self, new_data: DataPackage) -> List[Order]:
