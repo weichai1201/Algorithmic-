@@ -6,7 +6,7 @@ from src.agent.transactions.position import Position
 from src.agent.transactions.positions import Positions
 from src.data_access.data_package import DataPackage
 from src.data_access.volatility import Volatility
-from src.market.order import Order
+from src.market.order import Order, EmptyOrder
 from src.trading_strategies.financial_asset.financial_asset import EmptyAsset, FinancialAsset
 from src.trading_strategies.financial_asset.option import Option, CallOption, EmptyOption, PutOption
 from src.trading_strategies.financial_asset.price import EmptyPrice, Price
@@ -60,15 +60,18 @@ class OptionStrategy(Strategy):
         # unpack information
         date = new_data.date
         stock_price = new_data.stock.get_price().price()
-        option = self.current_option()
-        symbol = option.symbol()
+        current_option = self.current_option()
+        symbol = self.symbol()
         action: Callable
         msg = ""
-        if isinstance(option, EmptyOption):
+        if isinstance(current_option, EmptyOption) or isinstance(current_option, EmptyAsset):
             action = self.roll_over
             msg = "Instantiate first option by rolling over."
-        elif self.in_the_money(stock_price, option):
-            if self.deep_in_the_money(stock_price, option):
+        elif not current_option.is_expired(date):
+            # not expired, do not update
+            return [EmptyOrder(EmptyAsset())]
+        elif self.in_the_money(stock_price, current_option):
+            if self.deep_in_the_money(stock_price, current_option):
                 action = self._update_deep_itm_option
                 msg = "Roll over as deep in the money."
             else:
@@ -77,12 +80,19 @@ class OptionStrategy(Strategy):
         else:
             action = self._update_otm_option
             msg = "Roll over as out of moeny."
-        strike, expiry = action(stock_price, date, option)
-        if isinstance(option, CallOption):
+        # get new strike price and expiration date
+        strike, expiry = action(stock_price, date, current_option)
+        # construct order
+        if isinstance(current_option, CallOption):
             next_option = CallOption(symbol, Price(strike, date), expiry, EmptyPrice())
         else:   # put option
             next_option = PutOption(symbol, Price(strike, date), expiry, EmptyPrice())
         order = Order(next_option, date, Positions(self._position, self._scale), msg)
+
+        # update payoff
+        if not (isinstance(current_option, EmptyAsset) or isinstance(current_option, EmptyOption)):
+            payoff = current_option.option_payoff(stock_price)
+            self.notify_agent((self.id(), payoff))
         return [order]
 
     def _update_mod_itm_option(self, stock_price: float, date: datetime, prev_option: Option) -> (float, datetime):

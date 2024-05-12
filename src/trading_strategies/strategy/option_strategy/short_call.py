@@ -25,8 +25,8 @@ class ShortCall(OptionStrategy):
                          weekday, num_of_strikes, scale)
         self._position = Position.SHORT
 
-    def roll_over(self, stock, date: datetime, prev_option=None) -> (float, datetime):
-        strike_price = calculate_strike(stock.get_price().price(), self._is_itm, self._num_of_strikes, False)
+    def roll_over(self, stock_price: float, date: datetime, prev_option=None) -> (float, datetime):
+        strike_price = calculate_strike(stock_price, self._is_itm, self._num_of_strikes, False)
         expiration_date = next_expiry_date(date, is_weekly=self._is_weekly, weekday=self._weekday)
         return strike_price, expiration_date
 
@@ -44,5 +44,6 @@ class ShortCall(OptionStrategy):
         new_expiration = closest_expiration_date(new_expiration, nyse_calendar)
         return strike_price, new_expiration
 
-    def update(self, new_data: DataPackage) -> List[Order]:
-        pass
+    def roll_down(self, stock_price: float, date: datetime, prev_option: Option) -> (float, datetime):
+        return self.roll_over(stock_price, date, prev_option)
+

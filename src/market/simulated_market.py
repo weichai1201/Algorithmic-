@@ -3,7 +3,7 @@ from typing import List
 
 from src.data_access.data_access import DataAccess
 from src.data_access.risk_free_rate import RatePeriod
-from src.market.order import Order
+from src.market.order import Order, EmptyOrder
 from src.trading_strategies.financial_asset.option import Option, PutOption, CallOption
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.stock import Stock
@@ -28,6 +28,8 @@ class SimulatedMarket(metaclass=MarketSingletonMeta):
 
     def submit_order(self, orders: List[Order]):
         for order in orders:
+            if isinstance(order, EmptyOrder):
+                continue
             symbol = order.asset.symbol()
             date = order.date
             if isinstance(order.asset, Option):

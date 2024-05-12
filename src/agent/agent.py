@@ -51,8 +51,10 @@ class Agent:
             if any([not order.is_successful() for order in orders]):
                 continue
 
-            strategy.update_order(orders)
+            # order is successful
+
             for order in orders:
+                self.update_asset(strategy_id, order.asset)
                 transaction = Transaction(order.positions, order.asset, order.date, order.msg)
                 self._all_transactions[strategy_id].add_transaction(transaction)
 
