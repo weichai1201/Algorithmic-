@@ -1,7 +1,7 @@
 import datetime
 from typing import Set, Dict, List
 
-from src.agent.performance import calculate_option_payoff, calculate_option_profit, calculate_drawdowns
+from src.agent.performance import calculate_option_profit
 from src.agent.transactions.transaction import Transaction
 from src.data_access.data_package import DataPackage
 from src.market.simulated_market import SimulatedMarket

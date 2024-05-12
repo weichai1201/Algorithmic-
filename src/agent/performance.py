@@ -41,7 +41,8 @@ def calculate_option_profit(transactions: Transactions):
 
         c_profit += payoff
         cumulative_profits.append(c_profit)
-        cumulative_profits.append(c_profit + cost)
+        c_profit += cost
+        cumulative_profits.append(c_profit)
         dates.append(transaction.get_time())
         dates.append(transaction.get_time())
 
