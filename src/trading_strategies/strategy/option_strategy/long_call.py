@@ -23,8 +23,9 @@ class LongCall(OptionStrategy):
         super().__init__(strategy_id, symbol, is_itm, is_weekly,
                          weekday, num_of_strikes, scale)
 
-    def roll_over(self, stock_price: float, expiration_date: datetime) -> (float, datetime):
+    def roll_over(self, stock_price: float, date: datetime) -> (float, datetime):
         strike_price = calculate_strike(stock_price, self._is_itm, self._num_of_strikes, False)
+        expiration_date = next_expiry_date(date, is_weekly=self._is_weekly, weekday=self._weekday)
         return strike_price, expiration_date
 
     def update(self, new_data: DataPackage) -> List[Order]:

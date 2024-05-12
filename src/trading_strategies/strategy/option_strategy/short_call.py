@@ -14,7 +14,8 @@ from src.trading_strategies.strategy.option_strategy.calculators.option_strike i
     roll_up_strike, get_strike_gap
 from src.trading_strategies.strategy.strategy_id import StrategyId
 from src.agent.transactions.position import Position
-from src.util.expiry_date import closest_expiration_date, nyse_calendar
+from src.util.expiry_date import closest_expiration_date, nyse_calendar, next_expiry_date
+
 
 class ShortCall(OptionStrategy):
 
@@ -23,8 +24,9 @@ class ShortCall(OptionStrategy):
         super().__init__(strategy_id, symbol, is_itm, is_weekly,
                          weekday, num_of_strikes, scale)
 
-    def roll_over(self, stock, expiration_date) -> (float, datetime):
+    def roll_over(self, stock, date: datetime) -> (float, datetime):
         strike_price = calculate_strike(stock.get_price().price(), self._is_itm, self._num_of_strikes, False)
+        expiration_date = next_expiry_date(date, is_weekly=self._is_weekly, weekday=self._weekday)
         return strike_price, expiration_date
 
     def roll_up(self, stock_price: float, date: datetime, prev_option: Option) -> (float, datetime):
