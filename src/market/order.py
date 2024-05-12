@@ -3,7 +3,7 @@ from datetime import datetime
 from src.agent.transactions.position import Position
 from src.agent.transactions.positions import Positions
 from src.market.order_task import OrderTask
-from src.trading_strategies.financial_asset.financial_asset import FinancialAsset
+from src.trading_strategies.financial_asset.financial_asset import FinancialAsset, EmptyAsset
 
 
 class Order:
@@ -32,5 +32,5 @@ class Order:
 
 
 class EmptyOrder(Order):
-    def __init__(self, asset: FinancialAsset):
+    def __init__(self, asset=EmptyAsset()):
         super().__init__(asset, datetime.now(), Positions(Position.LONG, 0))
