@@ -1,5 +1,5 @@
 import datetime
-from typing import Set, Dict
+from typing import Set, Dict, List
 
 from src.agent.performance import calculate_option_payoff, calculate_option_profit, calculate_drawdowns
 from src.agent.transactions.transaction import Transaction
@@ -24,15 +24,15 @@ class Agent:
             self._all_transactions[strategy_id] = Transactions(strategy_id)
             strategy.register_agent(self)
         self._market = SimulatedMarket()
-        self._assets: Dict[StrategyId, FinancialAsset] = dict()
+        self._assets: Dict[StrategyId, List[FinancialAsset]] = dict()
 
-    def get_asset(self, strategy_id: StrategyId):
+    def get_asset(self, strategy_id: StrategyId) -> List[FinancialAsset]:
         if strategy_id not in self._assets.keys():
-            return EmptyAsset()
+            return [EmptyAsset()]
         return self._assets[strategy_id]
 
-    def update_asset(self, strategy_id: StrategyId, asset: FinancialAsset):
-        self._assets[strategy_id] = asset
+    def update_asset(self, strategy_id: StrategyId, assets: List[FinancialAsset]):
+        self._assets[strategy_id] = assets
 
     def get_symbols(self) -> Set:
         result: Set[Symbol] = set()
@@ -52,11 +52,12 @@ class Agent:
                 continue
 
             # order is successful
-
+            assets = []
             for order in orders:
-                self.update_asset(strategy_id, order.asset)
+                assets.append(order.asset)
                 transaction = Transaction(order.positions, order.asset, order.date, order.msg)
                 self._all_transactions[strategy_id].add_transaction(transaction)
+            self.update_asset(strategy_id, assets)
 
     def get_all_transactions(self) -> dict[StrategyId, Transactions]:
         return self._all_transactions

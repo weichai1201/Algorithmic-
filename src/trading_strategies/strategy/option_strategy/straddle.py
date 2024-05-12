@@ -1,9 +1,13 @@
 from datetime import datetime
 from typing import List, Dict
 
+from src.agent.transactions.position import Position
+from src.agent.transactions.positions import Positions
 from src.data_access.data_package import DataPackage
 from src.market.order import Order, EmptyOrder
+from src.trading_strategies.financial_asset.financial_asset import EmptyAsset
 from src.trading_strategies.financial_asset.option import Option, EmptyOption, PutOption, CallOption
+from src.trading_strategies.financial_asset.price import Price, EmptyPrice
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.long_call import LongCall
 from src.trading_strategies.strategy.option_strategy.long_put import LongPut
@@ -19,38 +23,30 @@ class Straddle(OptionStrategy):
         super().__init__(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes)
         self._strategy_call = LongCall(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale)
         self._strategy_put = LongPut(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale)
-        self._option_call = EmptyOption()
-        self._option_put = EmptyOption()
+        self._take_max = True
+        self._position = Position.LONG
 
     def need_update(self, date: datetime):
-        if isinstance(self._option_call, EmptyOption) or isinstance(self._option_put, EmptyOption):
+        options = self.current_option()
+        if any([isinstance(option, EmptyOption) or isinstance(option, EmptyAsset) for option in options]):
             return True
-        return any([self._option_call.is_expired(date), self._option_put.is_expired(date)])
+        return any([option.is_expired(date) for option in options])
 
     def update(self, new_data: DataPackage) -> List[Order]:
         # unpack data package
-        orders = list()
-        orders.append(self._strategy_put.update(new_data)[0])
-        orders.append(self._strategy_call.update(new_data)[0])
-        return orders
-
-    def update_order(self, orders: List[Order]):
-        if len(orders) == 0 or not all([x.is_successful() for x in orders]):
-            return
-        if len(orders) != 2:
-            print("Expect to have exactly 2 orders.")
-            return
-        call_updated = False
-        put_updated = False
+        date = new_data.date
+        orders = self._strategy_put.update(new_data) + self._strategy_call.update(new_data)
+        strikes = []
+        expirations = []
         for order in orders:
-            option = order.asset
-            if not isinstance(option, Option):
-                print(f"Expect to receive option in straddle {self.id()}.\n")
-            if isinstance(option, CallOption):
-                self._option_call = option
-                call_updated = True
-            if isinstance(option, PutOption):
-                self._option_put = option
-                put_updated = True
-        if not all([call_updated, put_updated]):
-            print(f"Some option(s) is not updated in straddle {self.id()}.\n")
+            if isinstance(order, EmptyOrder):
+                return [EmptyOrder()]
+            if isinstance(order.asset, Option):
+                strikes.append(order.asset.get_strike().price())
+                expirations.append(order.asset.get_expiry())
+        strike = max(strikes)
+        expiration = max(expirations)
+        put = PutOption(self.symbol(), Price(strike, date), expiration, EmptyPrice())
+        call = CallOption(self.symbol(), Price(strike, date), expiration, EmptyPrice())
+        return [Order(put, date, Positions(self._position, self._scale)),
+                Order(call, date, Positions(self._position, self._scale))]
