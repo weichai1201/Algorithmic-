@@ -15,11 +15,13 @@ def calculate_option_payoff(transactions: Transactions) -> tuple[list, list]:
     return payoffs, cumulative_payoffs
 
 
-def calculate_option_profit(transactions: Transactions) -> tuple[list, list]:
+def calculate_option_profit(transactions: Transactions):
     # at the time of next transaction, previous option is closed
+    dates = []
     profits = []
     cumulative_profits = []
-    c = 0
+    payoffs = []
+    c_profit = 0
     prev_transaction = None
     for transaction in transactions.get_transactions():
         # assume short
@@ -30,13 +32,21 @@ def calculate_option_profit(transactions: Transactions) -> tuple[list, list]:
         if transaction.is_short():
             cost *= -1
             payoff *= -1
+        # profits
         profits.append(payoff)
         profits.append(cost)
-        c += payoff
-        cumulative_profits.append(c)
-        cumulative_profits.append(c + cost)
+        # payoffs
+        payoffs.append(payoff)
+        payoffs.append(0)
+
+        c_profit += payoff
+        cumulative_profits.append(c_profit)
+        cumulative_profits.append(c_profit + cost)
+        dates.append(transaction.get_time())
+        dates.append(transaction.get_time())
+
         prev_transaction = transaction
-    return profits, cumulative_profits
+    return dates, payoffs, profits, cumulative_profits
 
 
 def calculate_drawdowns(values: [float]) -> (float, [float]):

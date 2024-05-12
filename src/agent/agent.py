@@ -80,11 +80,10 @@ class Agent:
         drawdowns = dict[StrategyId, list[float]]()
 
         for strategy_id, transactions in self._all_transactions.items():
-            dates[strategy_id] = []
-            for transaction in transactions.get_transactions():
-                dates[strategy_id].append(transaction.get_time())
-            payoffs[strategy_id] = calculate_option_payoff(transactions)[0]
-            profits[strategy_id], cumulative_profits[strategy_id] = calculate_option_profit(transactions)
+            (dates[strategy_id],
+             payoffs[strategy_id],
+             profits[strategy_id],
+             cumulative_profits[strategy_id]) = calculate_option_profit(transactions)
             # drawdowns[strategy_id] = calculate_drawdowns(cumulative_profits[strategy_id])
         return (dates,
                 payoffs,
