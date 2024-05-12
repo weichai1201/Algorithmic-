@@ -59,7 +59,7 @@ class Backtester:
     def summary(self, to_print=False):
         if not self._has_tested:
             self.run_back_testing()
-        dates, payoffs, cumulative_payoffs, profits, cumulative_profits, drawdowns = self._self_agent.evaluate()
+        dates, payoffs, profits, cumulative_profits, drawdowns = self._self_agent.evaluate()
         self._summary = BacktestingSummary(0, 0,
                                            dates, profits, cumulative_profits, drawdowns,
                                            (self._end_date - self._start_date).days / 365)

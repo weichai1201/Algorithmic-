@@ -28,14 +28,14 @@ import matplotlib.pyplot as plt
 def main():
     foldername = "backtesting_result"
 
-    symbols = StockSelection().full
+    symbols = StockSelection().simple
     # long_call_configs = OptionBacktestConfigBundle(LongCall)
     # long_put_configs = OptionBacktestConfigBundle(LongPut)
-    # short_call_configs = OptionBacktestConfigBundle(ShortCall)
+    short_call_configs = OptionBacktestConfigBundle(ShortCall)
     short_put_configs = OptionBacktestConfigBundle(ShortPut)
     straddle_configs = OptionBacktestConfigBundle(Straddle)
-    strangle_configs = OptionBacktestConfigBundle(Strangle)
-    configs = short_put_configs.configs + straddle_configs.configs + strangle_configs.configs
+    # strangle_configs = OptionBacktestConfigBundle(Strangle)
+    configs = short_call_configs.configs + short_put_configs.configs + straddle_configs.configs
 
     # beginning of run
     timers = [timeit.default_timer()]
@@ -110,7 +110,9 @@ def _run_option(strategy_func: Callable, symbols: [str], foldername, start_date,
         stock_df = DataAccess().get_stock([symbol], start_date, end_date)
         stock_df["Date"] = stock_df["Date"].apply(lambda x: datetime.strptime(x, "%Y-%m-%d %H:%M:%S"))
         _plot_with_stock(df, stock_df, symbol.symbol,
-                         title=f"{strategy_id.get_id()}\n{sub_title}", filename=filename + ".png")
+                         title=f"{strategy_id.get_id()}\n{sub_title}",
+                         filename=filename + ".png",
+                         strategy_name=strategy_id.get_id())
 
         # transaction records
         txt = open(filename + ".txt", "w")
@@ -118,9 +120,9 @@ def _run_option(strategy_func: Callable, symbols: [str], foldername, start_date,
         txt.close()
 
 
-def _plot_with_stock(profit_df, stock_df, symbol, title="", filename=""):
+def _plot_with_stock(profit_df, stock_df, symbol, title="", filename="", strategy_name=""):
     plt.figure(figsize=(14, 8))
-    plt.plot(profit_df["Date"], profit_df["Cumulative"], linestyle="-", label="Naked Put Profit")
+    plt.plot(profit_df["Date"], profit_df["Cumulative"], linestyle="-", label=strategy_name)
     plt.plot(stock_df["Date"], stock_df[symbol], linestyle="-", label="Stock Price")
     plt.title(title)
     plt.xlabel("Date")
