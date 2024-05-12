@@ -46,11 +46,12 @@ class DataAccess(metaclass=DataSingletonMeta):
         return self._volatilities[entry]
 
     # ==== risk free
-    def get_risk_free(self, rate_period: RatePeriod, date: datetime):
-        entry = tuple((rate_period, date))
-        if entry not in self._risk_free.keys():
-            self._risk_free[entry] = RiskFree(0, rate_period, date)
-        return self._risk_free[entry]
+    def get_risk_free(self, date: datetime, rate_period=RatePeriod.TEN_YEAR):
+        return RiskFree(0.03, rate_period, date)
+        # entry = tuple((rate_period, date))
+        # if entry not in self._risk_free.keys():
+        #     self._risk_free[entry] = RiskFree(0, rate_period, date)
+        # return self._risk_free[entry]
 
     # def retrieve_rf(date: datetime):
     #     result = _retrieve_by_date(tbills_filename, tbills_date_column_name, date, tbills_date_format)
