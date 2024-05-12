@@ -2,6 +2,7 @@ from abc import abstractmethod
 from datetime import datetime
 
 from src.data_access.data_package import DataPackage
+from src.data_access.volatility import Volatility
 from src.trading_strategies.financial_asset.option import Option, CallOption
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
@@ -87,6 +88,6 @@ class OptionStrategy(Strategy):
         pass
 
     @abstractmethod
-    def roll_down(self,  stock_price: float, option: Option, premium: float) -> (float, datetime):
+    def roll_down(self, stock_price: float, date: datetime, prev_option: Option) -> (float, datetime):
         pass
 

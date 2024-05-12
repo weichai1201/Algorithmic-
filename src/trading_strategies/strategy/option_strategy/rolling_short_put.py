@@ -58,7 +58,7 @@ class RollingShortPut(OptionStrategy):
             else:
                 # moderately in the money
                 premium = self._option.itm_amount(stock_price) + get_strike_gap(stock_price)
-                strike, expiry = self._naked_put.roll_down(new_stock, self._option, premium)
+                # strike, expiry = self._naked_put.roll_down(new_stock, self._option, premium)
                 msg = "Roll down naked short put."
         strike_price = Price(strike, date)
         next_option = PutOption(self._symbol, strike_price, expiry, EmptyPrice())

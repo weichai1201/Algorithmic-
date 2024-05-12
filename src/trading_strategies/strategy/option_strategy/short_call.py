@@ -33,9 +33,6 @@ class ShortCall(OptionStrategy):
         new_expiration = implied_date(stock.get_price(), strike_price, risk_free_rate, premium,
                                       stock.calculate_garch(), False)
         new_expiration = closest_expiration_date(new_expiration, nyse_calendar)
-        # premium = bsm_pricing(stock, strike_price, new_expiration, [], risk_free_rate, False)
-        # strike = Price(strike_price, stock.get_price().time())
-        # new_option = CallOption(stock.symbol, strike, new_expiration, premium)
         return strike_price, new_expiration
 
     def update(self, new_data: DataPackage) -> List[Order]:

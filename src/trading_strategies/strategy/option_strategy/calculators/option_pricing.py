@@ -78,15 +78,15 @@ def adjust_dividends(stock: Stock, dividends: [float], risk_free: float):
     return stock_price
 
 
-def implied_date(stock_price: Price, strike_price: float, risk_free_rate: float, premium: float, volatility: float,
+def implied_date(stock_price: float, date: datetime, strike_price: float, risk_free_rate: float, premium: float, volatility: float,
                  is_put: bool):
     result = minimize(
-        lambda t: error_function(t, stock_price.price(), strike_price, premium, volatility, risk_free_rate, is_put),
+        lambda t: error_function(t, stock_price, strike_price, premium, volatility, risk_free_rate, is_put),
         x0=0.1,
         bounds=[(0.02, 2)],
         method='Nelder-Mead')
     implied_t = result.x[0]
-    return next_nth_trading_day(stock_price.time(), int(implied_t * 252))
+    return next_nth_trading_day(date, int(implied_t * 252))
 
 
 def error_function(t, s0: float, strike: float, premium: float, volatility: float, risk_free: float,
