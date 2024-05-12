@@ -10,7 +10,11 @@ from src.backtesting.backtesting_config import OptionBacktestConfigBundle, Optio
 from src.backtesting.stock_selection import StockSelection
 from src.data_access.data_access import DataAccess
 from src.trading_strategies.financial_asset.symbol import Symbol
+from src.trading_strategies.strategy.option_strategy.long_call import LongCall
+from src.trading_strategies.strategy.option_strategy.long_put import LongPut
 from src.trading_strategies.strategy.option_strategy.rolling_short_put import RollingShortPut
+from src.trading_strategies.strategy.option_strategy.short_call import ShortCall
+from src.trading_strategies.strategy.option_strategy.short_put import ShortPut
 from src.trading_strategies.strategy.option_strategy.straddle import Straddle
 from src.trading_strategies.strategy.strategy_id import StrategyId
 import matplotlib.pyplot as plt
@@ -24,13 +28,15 @@ import matplotlib.pyplot as plt
 def main():
     foldername = "backtesting_result"
 
-    symbols = StockSelection().full
-    naked_put_configs = OptionBacktestConfigBundle(RollingShortPut)
-    straddle_configs = OptionBacktestConfigBundle(Straddle)
+    symbols = StockSelection().simple
+    long_put_configs = OptionBacktestConfigBundle(LongPut)
+    long_call_configs = OptionBacktestConfigBundle(LongCall)
+    short_put_configs = OptionBacktestConfigBundle(ShortPut)
+    short_call_configs = OptionBacktestConfigBundle(ShortCall)
 
     # beginning of run
     timers = [timeit.default_timer()]
-    for config in naked_put_configs.configs:
+    for config in long_put_configs.configs:
         _run_config(config, symbols, foldername)
         timers.append(timeit.default_timer())
         t_diff = timers[len(timers) - 1] - timers[len(timers) - 2]
@@ -38,7 +44,23 @@ def main():
               f" for {len(symbols)} companies with:"
               f"\n{config}\n")
 
-    for config in straddle_configs.configs:
+    for config in long_call_configs.configs:
+        _run_config(config, symbols, foldername)
+        timers.append(timeit.default_timer())
+        t_diff = timers[len(timers) - 1] - timers[len(timers) - 2]
+        print(f"Finished running backtesing in {round(t_diff, 2)} seconds"
+              f" for {len(symbols)} companies with:"
+              f"\n{config}\n")
+
+    for config in short_call_configs.configs:
+        _run_config(config, symbols, foldername)
+        timers.append(timeit.default_timer())
+        t_diff = timers[len(timers) - 1] - timers[len(timers) - 2]
+        print(f"Finished running backtesing in {round(t_diff, 2)} seconds"
+              f" for {len(symbols)} companies with:"
+              f"\n{config}\n")
+
+    for config in short_put_configs.configs:
         _run_config(config, symbols, foldername)
         timers.append(timeit.default_timer())
         t_diff = timers[len(timers) - 1] - timers[len(timers) - 2]
