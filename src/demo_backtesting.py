@@ -36,7 +36,6 @@ def main():
     straddle_configs = OptionBacktestConfigBundle(Straddle)
     # strangle_configs = OptionBacktestConfigBundle(Strangle)
     configs = short_call_configs.configs + short_put_configs.configs + straddle_configs.configs
-
     # beginning of run
     timers = [timeit.default_timer()]
 
@@ -54,12 +53,14 @@ def _run_config(config: OptionBacktestConfig, symbols, foldername):
     _run_option(strategy_func=config.strategy, symbols=symbols, foldername=foldername,
                 start_date=config.start_date, end_date=config.end_date,
                 is_itm=config.is_itm, is_weekly=config.is_weekly,
-                num_of_strikes=config.num_of_strikes, weekday=config.weekday)
+                num_of_strikes=config.num_of_strikes, weekday=config.weekday,
+                max_strike=config.max_strike)
 
 
 def _run_option(strategy_func: Callable, symbols: [str], foldername, start_date, end_date, is_itm=True, is_weekly=True,
                 num_of_strikes=1,
-                weekday="FRI"):
+                weekday="FRI",
+                max_strike=True):
     # output directory
     # option specification
     sub_folder = ""
@@ -76,13 +77,16 @@ def _run_option(strategy_func: Callable, symbols: [str], foldername, start_date,
     else:
         sub_folder += "monthly_"
         sub_title += "with monthly expiration, "
+    if not max_strike:
+        sub_folder += "minStrike_"
+        sub_title += "resolve strikes with MIN, "
     sub_folder += "num-strikes-" + str(num_of_strikes)
     sub_title += "number of strikes: " + str(num_of_strikes)
 
     strategies = dict()
     for s in symbols:
         strategy_id = StrategyId(f"{strategy_func.__name__}-{s}")
-        strategy = strategy_func(strategy_id, Symbol(s), is_itm, is_weekly, weekday, num_of_strikes)
+        strategy = strategy_func(strategy_id, Symbol(s), is_itm, is_weekly, weekday, num_of_strikes, 1, max_strike)
         strategies[strategy_id] = strategy
 
     backtester = run_daily_market_replay(strategies, start_date, end_date)
