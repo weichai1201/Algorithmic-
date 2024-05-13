@@ -46,13 +46,14 @@ class Agent:
                 continue
 
             orders = strategy.update(new_data)
-            self._market.submit_order(orders)
+            self._market.submit_order(orders, agent=self, strategy_id=strategy_id)
 
             if any([not order.is_successful() for order in orders]):
                 continue
 
             # order is successful
             assets = []
+            # self.cal_payoff(strategy_id,  ,len(orders))
             for order in orders:
                 assets.append(order.asset)
                 transaction = Transaction(order.positions, order.asset, order.date, order.msg)
@@ -91,8 +92,8 @@ class Agent:
                 cumulative_profits,
                 drawdowns)
 
-    def realise_payoff(self, information: (StrategyId, float)):
-        strategy_id, payoff = information
-        t = self._all_transactions[strategy_id].peak_last()
-        if t is not None:
+    def cal_payoff(self, strategy_id: StrategyId, stock_price: float, num_t=1):
+        for t in self._all_transactions[strategy_id].last_n(num_t):
+            payoff = t.get_asset().option_payoff(stock_price)
             t.realise_payoff(payoff)
+

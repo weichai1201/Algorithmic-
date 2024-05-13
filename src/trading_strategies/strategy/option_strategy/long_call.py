@@ -19,7 +19,7 @@ risk_free_rate = 0.03
 class LongCall(OptionStrategy):
 
     def __init__(self, strategy_id: StrategyId, symbol: Symbol, is_itm: bool,
-                 is_weekly: bool, weekday, num_of_strikes, scale=1):
+                 is_weekly: bool, weekday, num_of_strikes, scale=1, max_strike=True, parent=None):
         super().__init__(strategy_id, symbol, is_itm, is_weekly,
                          weekday, num_of_strikes, scale)
         self._position = Position.LONG

@@ -11,6 +11,7 @@ class BacktestingSummary:
                  end_cash_value,
                  dates: dict[StrategyId, list[datetime]],
                  profits: dict[StrategyId, list[float]],
+                 payoffs: dict[StrategyId, list[float]],
                  cumulative_profits: dict[StrategyId, list[float]],
                  drawdowns: dict[StrategyId, list[float]],
                  years=1):  # , profits: float[], drawndowns: float[], cagr: float):

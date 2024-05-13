@@ -10,6 +10,7 @@ from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.calculators.option_pricing import bsm_pricing2
 from src.trading_strategies.strategy.option_strategy.calculators.option_strike import get_closest_strike
+from src.trading_strategies.strategy.strategy_id import StrategyId
 
 
 class MarketSingletonMeta(type):
@@ -26,16 +27,19 @@ class SimulatedMarket(metaclass=MarketSingletonMeta):
     def __init__(self):
         self._order_book = []
 
-    def submit_order(self, orders: List[Order]):
+    def submit_order(self, orders: List[Order], agent, strategy_id: StrategyId):
+        order_accepted = False
+        stock_price = 0
         for order in orders:
             if isinstance(order, EmptyOrder):
                 continue
             symbol = order.asset.symbol()
             date = order.date
+            # add premium to option in order
+            stock_price = DataAccess().get_stock_price_at(symbol, date)
             if isinstance(order.asset, Option):
                 target_strike = order.asset.get_strike().price()
                 expiry = order.asset.get_expiry()
-                stock_price = DataAccess().get_stock_price_at(symbol, date)
                 is_put = isinstance(order.asset, PutOption)
                 strike_price, premium = self._simulate_option_price(
                     symbol, stock_price, target_strike, date, expiry, is_put)
@@ -50,6 +54,11 @@ class SimulatedMarket(metaclass=MarketSingletonMeta):
                     new_option = CallOption(symbol, Price(strike_price, date), expiry, Price(premium, date))
                 order.asset = new_option
             order.accept_order()
+            order_accepted = True
+        # close the previous transactions
+        if order_accepted:
+            agent.cal_payoff(strategy_id, stock_price, len(orders))
+
 
     @staticmethod
     def _simulate_option_price(symbol: Symbol, stock_price: float, target_strike: float,

@@ -21,7 +21,7 @@ from src.util.expiry_date import closest_expiration_date, nyse_calendar, next_ex
 class ShortPut(OptionStrategy):
 
     def __init__(self, strategy_id: StrategyId, symbol: Symbol, is_itm: bool,
-                 is_weekly: bool, weekday, num_of_strikes, scale=1, parent=None):
+                 is_weekly: bool, weekday, num_of_strikes, scale=1, max_strike=True, parent=None):
         super().__init__(strategy_id, symbol, is_itm, is_weekly,
                          weekday, num_of_strikes, scale)
         self._position = Position.SHORT

@@ -17,12 +17,12 @@ from src.trading_strategies.strategy.strategy_id import StrategyId
 
 class Straddle(OptionStrategy):
     def __init__(self, strategy_id: StrategyId, symbol: Symbol, is_itm: bool, is_weekly: bool,
-                 weekday, num_of_strikes: int, scale=1):
+                 weekday, num_of_strikes: int, scale=1, max_strike=True):
         super().__init__(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes)
         self._strategy_call = ShortCall(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale, self)
         self._strategy_put = ShortPut(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale, self)
-        self._take_max = True
         self._position = Position.SHORT
+        self._max_strike = max_strike
 
     def register_agent(self, agent):
         self._strategy_call.register_agent(agent)
@@ -59,8 +59,10 @@ class Straddle(OptionStrategy):
             if isinstance(order.asset, Option):
                 strikes.append(order.asset.get_strike().price())
                 expirations.append(order.asset.get_expiry())
-
-        strike = max(strikes)
+        if self._max_strike:
+            strike = max(strikes)
+        else:
+            strike = min(strikes)
         expiration = max(expirations)
         msg = "\n".join([o.msg for o in orders])
         put = PutOption(self.symbol(), Price(strike, date), expiration, EmptyPrice())

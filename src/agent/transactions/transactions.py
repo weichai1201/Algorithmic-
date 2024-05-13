@@ -8,6 +8,14 @@ class Transactions:
         self._id = strategy_id
         self._transactions_list = list[Transaction]()
 
+    def last_n(self, n: int):
+        if n <= 0:
+            return []
+        l = len(self._transactions_list)
+        if l < n:
+            return []
+        return self._transactions_list[(l - n): l]
+
     def get_id(self):
         return self._id
 

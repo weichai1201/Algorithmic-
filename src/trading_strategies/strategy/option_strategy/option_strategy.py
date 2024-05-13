@@ -22,7 +22,7 @@ class OptionStrategy(Strategy):
 
     @abstractmethod
     def __init__(self, strategy_id: StrategyId, symbol: Symbol, is_itm: bool,
-                 is_weekly: bool, weekday, num_of_strikes, scale=1):
+                 is_weekly: bool, weekday, num_of_strikes, scale=1, max_strike=True):
         super().__init__(strategy_id, symbol)
         self._id = strategy_id
         self._scale = scale
@@ -36,7 +36,8 @@ class OptionStrategy(Strategy):
         return self._id
 
     def notify_agent(self, information: (StrategyId, float)):
-        self._agent.realise_payoff(information)
+        # self._agent.realise_payoff(information)
+        pass
 
     def current_options(self) -> [Option]:
         if self._agent is None:
