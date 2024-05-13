@@ -62,23 +62,23 @@ class OptionStrategy(Strategy):
         current_option = self.current_options()[0]
         symbol = self.symbol()
         action: Callable
-        msg = ""
+        msg = f"Current stock price: {stock_price}\n"
         if isinstance(current_option, EmptyOption) or isinstance(current_option, EmptyAsset):
             action = self.roll_over
-            msg = "Instantiate first option by rolling over."
+            msg += "Instantiate first option by rolling over.\n"
         elif not current_option.is_expired(date):
             # not expired, do not update
             return [EmptyOrder(EmptyAsset())]
         elif self.in_the_money(stock_price, current_option):
             if self.deep_in_the_money(stock_price, current_option):
                 action = self._update_deep_itm_option
-                msg = "Roll over as deep in the money."
+                msg += "Roll over as deep in the money.\n"
             else:
                 action = self._update_mod_itm_option
-                msg = "roll up/down as in the money."
+                msg += "roll up/down as in the money.\n"
         else:
             action = self._update_otm_option
-            msg = "Roll over as out of moeny."
+            msg += "Roll over as out of money.\n"
         # get new strike price and expiration date
         strike, expiry = action(stock_price, date, current_option)
         # construct order

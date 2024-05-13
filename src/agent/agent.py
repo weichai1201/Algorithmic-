@@ -96,4 +96,5 @@ class Agent:
         for t in self._all_transactions[strategy_id].last_n(num_t):
             payoff = t.get_asset().option_payoff(stock_price)
             t.realise_payoff(payoff)
+            t.append_msg(f"Realised payoff: {payoff}.\n")
 
