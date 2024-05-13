@@ -22,6 +22,7 @@ class BacktestingSummary:
         for strategy_id in dates.keys():
             self._data[strategy_id] = pd.DataFrame({
                 "Date": dates[strategy_id],
+                "Payoffs": payoffs[strategy_id],
                 "Profit": profits[strategy_id],
                 "Cumulative": cumulative_profits[strategy_id],
                 # "Drawdown": drawdowns[strategy_id]
