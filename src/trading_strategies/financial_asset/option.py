@@ -11,9 +11,11 @@ from src.trading_strategies.strategy.option_strategy.calculators.option_strike i
 
 class Option(FinancialAsset):
     def __init__(self, symbol: Symbol, premium: Price, strike_price: Price, expiration_date: datetime):
+        # premium is the price in `FinancialAsset
         super().__init__(symbol, premium)
         self._strike_price = strike_price
         self._expiration_date = expiration_date
+
 
     @abstractmethod
     def in_the_money(self, stock_price: float) -> bool:

@@ -1,23 +1,55 @@
+from enum import Enum
+from typing import Callable, List
+
+from src.trading_strategies.financial_asset.option import Option, CallOption, PutOption
 from src.trading_strategies.strategy.option_strategy.option_strategy import OptionStrategy
 from src.trading_strategies.strategy.option_strategy.rolling_short_put import RollingShortPut
 from src.trading_strategies.strategy.option_strategy.straddle import Straddle
 
 
+class MarginType(Enum):
+    SHORT_CALL = "short_call"
+    SHORT_PUT = "short_put"
+    STRADDLE = "straddle"
+
+
 class MarginCalculator:
+
     def __init__(self, margin_para1: float, margin_para2: float):
         self.margin_para1 = margin_para1
         self.margin_para2 = margin_para2
 
-    def calculate_margin(self, option_strategy: OptionStrategy, stock_price: float):
-        if isinstance(option_strategy, Straddle):
-            call_option = option_strategy.get_call_option()
-            put_option = option_strategy.get_put_option()
-            return self.straddle_margin(stock_price, call_option.get_strike().price(),
-                                        call_option.get_premium().price(),
-                                        put_option.get_strike().price(), put_option.get_premium().price())
-        elif isinstance(option_strategy, RollingShortPut):
-            return self.naked_put_margin(stock_price, option_strategy.get_option().get_strike().price(),
-                                         option_strategy.get_option().get_premium().price())
+    def calculate_margin(self, stock_price: float, options: [Option]):
+        margin_type = self._infer_margin_type(options)
+        calculator = self._choose_calculator(margin_type)
+        return self._calculator_proxy(calculator, stock_price, options)
+
+    @staticmethod
+    def _calculator_proxy(calculator: Callable, stock_price: float, options: List[Option]):
+        if len(options) == 1:
+            option = options[0]
+            return calculator(stock_price, option.get_strike().price(), option.get_price().price())
+        return calculator(stock_price,
+                          options[0].get_strike().price(), options[0].get_price().price(),
+                          options[1].get_strike().price(), options[1].get_price().price())
+
+    @staticmethod
+    def _infer_margin_type(options: List[Option]):
+        if len(options) == 2:
+            return MarginType.STRADDLE
+        option = options[0]
+        if isinstance(option, CallOption):
+            return MarginType.SHORT_CALL
+        if isinstance(option, PutOption):
+            return MarginType.SHORT_PUT
+
+    def _choose_calculator(self, margin_type: MarginType) -> Callable:
+        if margin_type == MarginType.SHORT_CALL:
+            return self.naked_call_margin
+        if margin_type == MarginType.SHORT_PUT:
+            return self.naked_put_margin
+        if margin_type == MarginType.STRADDLE:
+            return self.straddle_margin
 
     def _margin1(self, underlying_value: float, otm_amount: float, premium: float):
         return self.margin_para1 * underlying_value - otm_amount + premium
