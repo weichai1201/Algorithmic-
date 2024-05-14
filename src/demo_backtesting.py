@@ -97,9 +97,12 @@ def _run_option(strategy_func: Callable, symbols: [str], foldername, start_date,
     # if not os.path.exists(f"{foldername}/{sub_folder}"):
     #     os.makedirs(f"{foldername}/{sub_folder}")
 
-    data = backtester.get_data()
+    backtesting_summary = backtester.get_data()
+    profits_data = backtesting_summary.get_data()
+    margins = backtesting_summary.margins
+
     # output results
-    for strategy_id, df in data.items():
+    for strategy_id, df in profits_data.items():
         filename = f"{foldername}/{strategy_id.get_id()}_{sub_folder}"
 
         # profits
@@ -113,7 +116,8 @@ def _run_option(strategy_func: Callable, symbols: [str], foldername, start_date,
         symbol = strategies[strategy_id].symbol()
         stock_df = DataAccess().get_stock([symbol], start_date, end_date)
         stock_df["Date"] = stock_df["Date"].apply(lambda x: datetime.strptime(x, "%Y-%m-%d %H:%M:%S"))
-        _plot_with_stock(df, stock_df, symbol.symbol,
+        _plot_with_stock(profit_df=df, stock_df=stock_df, margin_df=margins[strategy_id].to_dataframe(),
+                         symbol=symbol.symbol,
                          title=f"{strategy_id.get_id()}\n{sub_title}",
                          filename=filename + ".png",
                          strategy_name=strategy_id.get_id())
@@ -124,10 +128,11 @@ def _run_option(strategy_func: Callable, symbols: [str], foldername, start_date,
         txt.close()
 
 
-def _plot_with_stock(profit_df, stock_df, symbol, title="", filename="", strategy_name=""):
+def _plot_with_stock(profit_df, stock_df, margin_df, symbol: str, title="", filename="", strategy_name=""):
     plt.figure(figsize=(14, 8))
     plt.plot(profit_df["Date"], profit_df["Cumulative"], linestyle="-", label=strategy_name)
     plt.plot(stock_df["Date"], stock_df[symbol], linestyle="-", label="Stock Price")
+    plt.plot(margin_df["Date"], margin_df["Margin"], linestyle="-", label="Margin")
     plt.title(title)
     plt.xlabel("Date")
     plt.ylabel("Profit (USD)")

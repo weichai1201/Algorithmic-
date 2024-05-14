@@ -47,12 +47,12 @@ class ShortBacktestConfig(OptionBacktestConfig):
 class OptionBacktestConfigBundle:
     def __init__(self, strategy: Callable):
         self.configs = [OptionBacktestConfig(strategy)]
-        self.configs.append(OptionBacktestConfig(strategy, is_itm=False))
-        self.configs.append(OptionBacktestConfig(strategy, is_weekly=False))
-        self.configs.append(OptionBacktestConfig(strategy, is_itm=False, is_weekly=False))
-        self.configs.append(OptionBacktestConfig(strategy, num_of_strikes=2))
-        if strategy == Straddle:
-            self.configs.append(OptionBacktestConfig(strategy, max_strike=False))
-            self.configs.append(OptionBacktestConfig(strategy, is_itm=False, max_strike=False))
-            self.configs.append(OptionBacktestConfig(strategy, is_weekly=False, max_strike=False))
+        # self.configs.append(OptionBacktestConfig(strategy, is_itm=False))
+        # self.configs.append(OptionBacktestConfig(strategy, is_weekly=False))
+        # self.configs.append(OptionBacktestConfig(strategy, is_itm=False, is_weekly=False))
+        # self.configs.append(OptionBacktestConfig(strategy, num_of_strikes=2))
+        # if strategy == Straddle:
+        #     self.configs.append(OptionBacktestConfig(strategy, max_strike=False))
+        #     self.configs.append(OptionBacktestConfig(strategy, is_itm=False, max_strike=False))
+        #     self.configs.append(OptionBacktestConfig(strategy, is_weekly=False, max_strike=False))
 

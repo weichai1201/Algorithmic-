@@ -56,7 +56,7 @@ class Backtester:
     #         self.run_back_testing()
     #     return self._cagr
 
-    def summary(self, to_print=False):
+    def summarise(self, to_print=False):
         if not self._has_tested:
             self.run_back_testing()
         dates, payoffs, profits, cumulative_profits, drawdowns = self._self_agent.evaluate()
@@ -70,10 +70,10 @@ class Backtester:
             return self._summary.__str__()
         return ""
 
-    def get_data(self) -> dict[StrategyId, pd.DataFrame]:
+    def get_data(self) -> BacktestingSummary:
         if self._summary is None:
-            self.summary()
-        return self._summary.get_data()
+            self.summarise()
+        return self._summary
 
 
 class MultiAgent(Backtester):

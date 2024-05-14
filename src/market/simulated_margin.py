@@ -1,18 +1,7 @@
 from datetime import datetime
 from typing import List, Tuple, Dict
 
-from src.agent.agent import Agent
-from src.trading_strategies.strategy.strategy_id import StrategyId
-
-
-class MarginSingletonMeta(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            instance = super().__call__(*args, **kwargs)
-            cls._instances[cls] = instance
-        return cls._instances[cls]
+import pandas as pd
 
 
 class Margins:
@@ -25,7 +14,6 @@ class Margins:
     def get_margins(self):
         return self._margins
 
+    def to_dataframe(self):
+        return pd.DataFrame(self._margins, columns=["Date", "Margin"])
 
-class SimulatedMarket(metaclass=MarginSingletonMeta):
-    def __init__(self):
-        self._margins: Dict[Agent, Dict[StrategyId, Margins]] = dict()
