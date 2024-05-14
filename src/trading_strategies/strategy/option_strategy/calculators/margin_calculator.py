@@ -12,16 +12,17 @@ class MarginCalculator:
         if isinstance(option_strategy, Straddle):
             call_option = option_strategy.get_call_option()
             put_option = option_strategy.get_put_option()
-            return self.straddle_margin(stock_price, call_option.get_strike().price(), call_option.get_premium().price(),
+            return self.straddle_margin(stock_price, call_option.get_strike().price(),
+                                        call_option.get_premium().price(),
                                         put_option.get_strike().price(), put_option.get_premium().price())
         elif isinstance(option_strategy, RollingShortPut):
             return self.naked_put_margin(stock_price, option_strategy.get_option().get_strike().price(),
                                          option_strategy.get_option().get_premium().price())
 
-    def _margin1(self, underlying_value, otm_amount, premium):
+    def _margin1(self, underlying_value: float, otm_amount: float, premium: float):
         return self.margin_para1 * underlying_value - otm_amount + premium
 
-    def _margin2(self, contract_value, premium):
+    def _margin2(self, contract_value: float, premium: float):
         return self.margin_para2 * (contract_value + premium)
 
     def naked_call_margin(self, underlying_value, strike_price, premium):
@@ -31,15 +32,15 @@ class MarginCalculator:
         margin3 = 1
         return max(margin1, margin2, margin3)
 
-    def naked_put_margin(self, underlying_value, strike_price, premium):
-        otm_amount = max(0, underlying_value - strike_price)
+    def naked_put_margin(self, underlying_value: float, strike_price: float, premium: float):
+        otm_amount = max(.0, underlying_value - strike_price)
         margin1 = self._margin1(underlying_value, otm_amount, premium)
         margin2 = self._margin2(strike_price, premium)
         margin3 = 1
         return max(margin1, margin2, margin3)
 
-    def straddle_margin(self, underlying_value, call_strike_price, call_premium,
-                              put_strike_price, put_premium):
+    def straddle_margin(self, underlying_value: float, call_strike_price: float, call_premium: float,
+                        put_strike_price: float, put_premium: float):
         naked_call_margin = self.naked_call_margin(underlying_value, call_strike_price, call_premium)
         naked_put_margin = self.naked_put_margin(underlying_value, put_strike_price, put_premium)
         if naked_call_margin > naked_put_margin:
@@ -59,5 +60,3 @@ class EquityMarginCalculator(MarginCalculator):
 class IndexMarginCalculator(MarginCalculator):
     def __init__(self):
         super().__init__(margin_para1=0.15, margin_para2=0.1)
-
-
