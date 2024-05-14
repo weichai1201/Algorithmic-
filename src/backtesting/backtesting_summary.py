@@ -2,9 +2,8 @@ from datetime import datetime
 
 import pandas as pd
 
-from src.market.simulated_margin import Margins
+from src.agent.margins import Margins
 from src.trading_strategies.strategy.strategy_id import StrategyId
-from tabulate import tabulate
 
 
 class BacktestingSummary:

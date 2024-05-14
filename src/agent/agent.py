@@ -1,10 +1,10 @@
 import datetime
-from typing import Set, Dict, List, Tuple
+from typing import Set, Dict, List
 
 from src.agent.performance import calculate_option_profit
 from src.agent.transactions.transaction import Transaction
 from src.data_access.data_package import DataPackage
-from src.market.simulated_margin import Margins
+from src.agent.margins import Margins
 from src.market.simulated_market import SimulatedMarket
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset, EmptyAsset
 from src.trading_strategies.financial_asset.symbol import Symbol
