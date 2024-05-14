@@ -54,3 +54,10 @@ class Straddle(OptionStrategy):
                 put_updated = True
         if not all([call_updated, put_updated]):
             print(f"Some option(s) is not updated in straddle {self.id()}.\n")
+
+    def get_call_option(self):
+        return self._option_call
+
+    def get_put_option(self):
+        return self._option_put
+

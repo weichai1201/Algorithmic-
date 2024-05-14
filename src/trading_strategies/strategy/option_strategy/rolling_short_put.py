@@ -86,3 +86,6 @@ class RollingShortPut(OptionStrategy):
 
     def roll_down(self, stock, option, premium) -> Option:
         return self._naked_put.roll_down(stock, option, premium)
+
+    def get_option(self):
+        return self._option
