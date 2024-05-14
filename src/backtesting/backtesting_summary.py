@@ -2,6 +2,7 @@ from datetime import datetime
 
 import pandas as pd
 
+from src.market.simulated_margin import Margins
 from src.trading_strategies.strategy.strategy_id import StrategyId
 from tabulate import tabulate
 
@@ -14,10 +15,12 @@ class BacktestingSummary:
                  payoffs: dict[StrategyId, list[float]],
                  cumulative_profits: dict[StrategyId, list[float]],
                  drawdowns: dict[StrategyId, list[float]],
+                 margins: dict[StrategyId, Margins],
                  years=1):  # , profits: float[], drawndowns: float[], cagr: float):
         self._initial_cash_value = initial_cash_value
         self._end_cash_value = end_cash_value
         self._data = dict[StrategyId, pd.DataFrame]()
+        self.margins = margins
         # convert to data frame
         for strategy_id in dates.keys():
             self._data[strategy_id] = pd.DataFrame({

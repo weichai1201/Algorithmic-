@@ -25,6 +25,7 @@ class Margins:
     def get_margins(self):
         return self._margins
 
+
 class SimulatedMarket(metaclass=MarginSingletonMeta):
     def __init__(self):
         self._margins: Dict[Agent, Dict[StrategyId, Margins]] = dict()

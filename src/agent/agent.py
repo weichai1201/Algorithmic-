@@ -111,3 +111,6 @@ class Agent:
                 if strategy_id not in self._margins.keys():
                     self._margins[strategy_id] = Margins()
                 self._margins[strategy_id].append_margin(date, margin)
+
+    def get_margins(self):
+        return self._margins
