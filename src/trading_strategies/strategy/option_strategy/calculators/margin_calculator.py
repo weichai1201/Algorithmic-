@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from enum import Enum
 from typing import Callable, List
 
@@ -11,10 +12,12 @@ class MarginType(Enum):
     SHORT_CALL = "short_call"
     SHORT_PUT = "short_put"
     STRADDLE = "straddle"
+    NOT_REQUIRED = "not_required"
 
 
 class MarginCalculator:
 
+    @abstractmethod
     def __init__(self, margin_para1: float, margin_para2: float):
         self.margin_para1 = margin_para1
         self.margin_para2 = margin_para2
@@ -42,6 +45,7 @@ class MarginCalculator:
             return MarginType.SHORT_CALL
         if isinstance(option, PutOption):
             return MarginType.SHORT_PUT
+        return MarginType.NOT_REQUIRED
 
     def _choose_calculator(self, margin_type: MarginType) -> Callable:
         if margin_type == MarginType.SHORT_CALL:
@@ -50,6 +54,11 @@ class MarginCalculator:
             return self.naked_put_margin
         if margin_type == MarginType.STRADDLE:
             return self.straddle_margin
+        return self.zero_margin
+
+    @staticmethod
+    def zero_margin(*args):
+        return 0
 
     def _margin1(self, underlying_value: float, otm_amount: float, premium: float):
         return self.margin_para1 * underlying_value - otm_amount + premium
