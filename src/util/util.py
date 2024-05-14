@@ -1,6 +1,8 @@
 import math
 import sys
+from typing import List
 
+from src.trading_strategies.financial_asset.symbol import Symbol
 from src.util.exception import ExceptionHandler
 
 
@@ -51,3 +53,7 @@ def match_strike(target_strike: float, premiums: dict[float, float], larger=True
     if strike == 0.0:
         return .0, .0
     return strike, premiums[strike]
+
+
+def to_string(symbols: List[Symbol]):
+    return [x.symbol for x in symbols]

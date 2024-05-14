@@ -1,10 +1,11 @@
 import datetime
-from typing import Set
+from typing import Set, Dict, List
 
-from src.agent.performance import calculate_option_payoff, calculate_option_profit, calculate_drawdowns
+from src.agent.performance import calculate_option_profit
 from src.agent.transactions.transaction import Transaction
 from src.data_access.data_package import DataPackage
 from src.market.simulated_market import SimulatedMarket
+from src.trading_strategies.financial_asset.financial_asset import FinancialAsset, EmptyAsset
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.strategy import Strategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
@@ -23,6 +24,15 @@ class Agent:
             self._all_transactions[strategy_id] = Transactions(strategy_id)
             strategy.register_agent(self)
         self._market = SimulatedMarket()
+        self._assets: Dict[StrategyId, List[FinancialAsset]] = dict()
+
+    def get_asset(self, strategy_id: StrategyId) -> List[FinancialAsset]:
+        if strategy_id not in self._assets.keys():
+            return [EmptyAsset()]
+        return self._assets[strategy_id]
+
+    def update_asset(self, strategy_id: StrategyId, assets: List[FinancialAsset]):
+        self._assets[strategy_id] = assets
 
     def get_symbols(self) -> Set:
         result: Set[Symbol] = set()
@@ -36,15 +46,19 @@ class Agent:
                 continue
 
             orders = strategy.update(new_data)
-            self._market.submit_order(orders)
+            self._market.submit_order(orders, agent=self, strategy_id=strategy_id)
 
             if any([not order.is_successful() for order in orders]):
                 continue
 
-            strategy.update_order(orders)
+            # order is successful
+            assets = []
+            # self.cal_payoff(strategy_id,  ,len(orders))
             for order in orders:
+                assets.append(order.asset)
                 transaction = Transaction(order.positions, order.asset, order.date, order.msg)
                 self._all_transactions[strategy_id].add_transaction(transaction)
+            self.update_asset(strategy_id, assets)
 
     def get_all_transactions(self) -> dict[StrategyId, Transactions]:
         return self._all_transactions
@@ -67,11 +81,10 @@ class Agent:
         drawdowns = dict[StrategyId, list[float]]()
 
         for strategy_id, transactions in self._all_transactions.items():
-            dates[strategy_id] = []
-            for transaction in transactions.get_transactions():
-                dates[strategy_id].append(transaction.get_time())
-            payoffs[strategy_id] = calculate_option_payoff(transactions)[0]
-            profits[strategy_id], cumulative_profits[strategy_id] = calculate_option_profit(transactions)
+            (dates[strategy_id],
+             payoffs[strategy_id],
+             profits[strategy_id],
+             cumulative_profits[strategy_id]) = calculate_option_profit(transactions)
             # drawdowns[strategy_id] = calculate_drawdowns(cumulative_profits[strategy_id])
         return (dates,
                 payoffs,
@@ -79,8 +92,9 @@ class Agent:
                 cumulative_profits,
                 drawdowns)
 
-    def realise_payoff(self, information: (StrategyId, float)):
-        strategy_id, payoff = information
-        t = self._all_transactions[strategy_id].peak_last()
-        if t is not None:
+    def cal_payoff(self, strategy_id: StrategyId, stock_price: float, num_t=1):
+        for t in self._all_transactions[strategy_id].last_n(num_t):
+            payoff = t.get_asset().option_payoff(stock_price)
             t.realise_payoff(payoff)
+            t.append_msg(f"Realised payoff: {payoff}.\n")
+
