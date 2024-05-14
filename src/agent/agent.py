@@ -1,12 +1,14 @@
 import datetime
-from typing import Set, Dict, List
+from typing import Set, Dict, List, Tuple
 
 from src.agent.performance import calculate_option_profit
 from src.agent.transactions.transaction import Transaction
 from src.data_access.data_package import DataPackage
+from src.market.simulated_margin import Margins
 from src.market.simulated_market import SimulatedMarket
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset, EmptyAsset
 from src.trading_strategies.financial_asset.symbol import Symbol
+from src.trading_strategies.strategy.option_strategy.calculators.margin_calculator import EquityMarginCalculator
 from src.trading_strategies.strategy.strategy import Strategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
 from src.agent.transactions.transactions import Transactions
@@ -25,6 +27,7 @@ class Agent:
             strategy.register_agent(self)
         self._market = SimulatedMarket()
         self._assets: Dict[StrategyId, List[FinancialAsset]] = dict()
+        self._margins: Dict[StrategyId, Margins] = dict()
 
     def get_asset(self, strategy_id: StrategyId) -> List[FinancialAsset]:
         if strategy_id not in self._assets.keys():
@@ -98,3 +101,13 @@ class Agent:
             t.realise_payoff(payoff)
             t.append_msg(f"Realised payoff: {payoff}.\n")
 
+    def notified_margin_update(self, symbol: Symbol, stock_price: float, date: datetime):
+        for strategy_id, strategy in self._strategies.items():
+            if strategy.is_same_symbol(symbol):
+                if strategy_id not in self._assets.keys():
+                    continue
+                assets = self._assets[strategy_id]
+                margin = EquityMarginCalculator().calculate_margin(stock_price, assets)
+                if strategy_id not in self._margins.keys():
+                    self._margins[strategy_id] = Margins()
+                self._margins[strategy_id].append_margin(date, margin)
