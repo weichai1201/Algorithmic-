@@ -6,7 +6,7 @@ import math
 from scipy.optimize import newton, fmin, minimize
 
 from src.data_access.data_access import DataAccess
-from src.data_access.volatility import VolatilityType, EmptyVolatility
+from src.data_access.volatility import VolatilityType, EmptyVolatility, Volatility
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.stock import Stock
 import src.util.util as util
@@ -44,14 +44,14 @@ def bsm_pricing(stock: Stock, strike: float, expiration_date, dividends: list[Pr
         return calculate_call_price(adjusted_price, strike, volatility, time_to_maturity, risk_free_rate)
 
 
-def calculate_call_price(stock_price, strike_price, volatility, time_to_maturity, risk_free_rate):
+def calculate_call_price(stock_price, strike_price, volatility: float, time_to_maturity, risk_free_rate):
     d1 = calculate_d1(stock_price, volatility, strike_price, time_to_maturity, risk_free_rate)
     d2 = calculate_d2(d1, volatility, time_to_maturity)
     call_price = stock_price * norm.cdf(d1) - strike_price * math.exp(-risk_free_rate * time_to_maturity) * norm.cdf(d2)
     return call_price
 
 
-def calculate_put_price(stock_price, strike_price, volatility, time_to_maturity, risk_free_rate):
+def calculate_put_price(stock_price, strike_price, volatility: float, time_to_maturity, risk_free_rate):
     d1 = calculate_d1(stock_price, volatility, strike_price, time_to_maturity, risk_free_rate)
     d2 = calculate_d2(d1, volatility, time_to_maturity)
     put_price = strike_price * math.exp(-risk_free_rate * time_to_maturity) * norm.cdf(-d2) - stock_price * norm.cdf(
@@ -59,13 +59,13 @@ def calculate_put_price(stock_price, strike_price, volatility, time_to_maturity,
     return put_price
 
 
-def calculate_d1(stock_price, volatility, strike_price, time_to_maturity, risk_free_rate):
+def calculate_d1(stock_price, volatility: float, strike_price, time_to_maturity, risk_free_rate):
     return (math.log(stock_price / strike_price) + (
             risk_free_rate + 0.5 * volatility ** 2) * time_to_maturity) / (
             volatility * np.sqrt(time_to_maturity))
 
 
-def calculate_d2(d1, volatility, time_to_maturity):
+def calculate_d2(d1, volatility: float, time_to_maturity):
     return d1 - volatility * np.sqrt(time_to_maturity)
 
 
@@ -78,15 +78,15 @@ def adjust_dividends(stock: Stock, dividends: [float], risk_free: float):
     return stock_price
 
 
-def implied_date(stock_price: Price, strike_price: float, risk_free_rate: float, premium: float, volatility: float,
+def implied_date(stock_price: float, date: datetime, strike_price: float, risk_free_rate: float, premium: float, volatility: float,
                  is_put: bool):
     result = minimize(
-        lambda t: error_function(t, stock_price.price(), strike_price, premium, volatility, risk_free_rate, is_put),
+        lambda t: error_function(t, stock_price, strike_price, premium, volatility, risk_free_rate, is_put),
         x0=0.1,
         bounds=[(0.02, 2)],
         method='Nelder-Mead')
     implied_t = result.x[0]
-    return next_nth_trading_day(stock_price.time(), int(implied_t * 252))
+    return next_nth_trading_day(date, int(implied_t * 252))
 
 
 def error_function(t, s0: float, strike: float, premium: float, volatility: float, risk_free: float,

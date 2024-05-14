@@ -14,6 +14,9 @@ class Transaction:
         self.__msg = msg
         self._realised_payoff = .0
 
+    def append_msg(self, msg=""):
+        self.__msg += msg
+
     def get_time(self):
         return self.__time
 
@@ -33,7 +36,7 @@ class Transaction:
         return self.__positions.position == Position.LONG
 
     def realise_payoff(self, amount: float):
-        self._realised_payoff = amount
+        self._realised_payoff += amount
 
     def get_payoff(self):
         return self._realised_payoff

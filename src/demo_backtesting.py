@@ -10,8 +10,12 @@ from src.backtesting.backtesting_config import OptionBacktestConfigBundle, Optio
 from src.backtesting.stock_selection import StockSelection
 from src.data_access.data_access import DataAccess
 from src.trading_strategies.financial_asset.symbol import Symbol
-from src.trading_strategies.strategy.option_strategy.rolling_short_put import RollingShortPut
+from src.trading_strategies.strategy.option_strategy.long_call import LongCall
+from src.trading_strategies.strategy.option_strategy.long_put import LongPut
+from src.trading_strategies.strategy.option_strategy.short_call import ShortCall
+from src.trading_strategies.strategy.option_strategy.short_put import ShortPut
 from src.trading_strategies.strategy.option_strategy.straddle import Straddle
+from src.trading_strategies.strategy.option_strategy.strangle import Strangle
 from src.trading_strategies.strategy.strategy_id import StrategyId
 import matplotlib.pyplot as plt
 
@@ -24,39 +28,39 @@ import matplotlib.pyplot as plt
 def main():
     foldername = "backtesting_result"
 
-    symbols = StockSelection().full
-    naked_put_configs = OptionBacktestConfigBundle(RollingShortPut)
+    symbols = StockSelection().simple
+    # long_call_configs = OptionBacktestConfigBundle(LongCall)
+    # long_put_configs = OptionBacktestConfigBundle(LongPut)
+    short_call_configs = OptionBacktestConfigBundle(ShortCall)
+    short_put_configs = OptionBacktestConfigBundle(ShortPut)
     straddle_configs = OptionBacktestConfigBundle(Straddle)
-
+    # strangle_configs = OptionBacktestConfigBundle(Strangle)
+    configs = short_call_configs.configs + short_put_configs.configs + straddle_configs.configs
     # beginning of run
     timers = [timeit.default_timer()]
-    for config in naked_put_configs.configs:
-        _run_config(config, symbols, foldername)
-        timers.append(timeit.default_timer())
-        t_diff = timers[len(timers) - 1] - timers[len(timers) - 2]
-        print(f"Finished running backtesing in {round(t_diff, 2)} seconds"
-              f" for {len(symbols)} companies with:"
-              f"\n{config}\n")
 
-    for config in straddle_configs.configs:
+    for config in configs:
         _run_config(config, symbols, foldername)
         timers.append(timeit.default_timer())
         t_diff = timers[len(timers) - 1] - timers[len(timers) - 2]
         print(f"Finished running backtesing in {round(t_diff, 2)} seconds"
               f" for {len(symbols)} companies with:"
               f"\n{config}\n")
+    #
 
 
 def _run_config(config: OptionBacktestConfig, symbols, foldername):
     _run_option(strategy_func=config.strategy, symbols=symbols, foldername=foldername,
                 start_date=config.start_date, end_date=config.end_date,
                 is_itm=config.is_itm, is_weekly=config.is_weekly,
-                num_of_strikes=config.num_of_strikes, weekday=config.weekday)
+                num_of_strikes=config.num_of_strikes, weekday=config.weekday,
+                max_strike=config.max_strike)
 
 
 def _run_option(strategy_func: Callable, symbols: [str], foldername, start_date, end_date, is_itm=True, is_weekly=True,
                 num_of_strikes=1,
-                weekday="FRI"):
+                weekday="FRI",
+                max_strike=True):
     # output directory
     # option specification
     sub_folder = ""
@@ -73,13 +77,16 @@ def _run_option(strategy_func: Callable, symbols: [str], foldername, start_date,
     else:
         sub_folder += "monthly_"
         sub_title += "with monthly expiration, "
+    if not max_strike:
+        sub_folder += "minStrike_"
+        sub_title += "resolve strikes with MIN, "
     sub_folder += "num-strikes-" + str(num_of_strikes)
     sub_title += "number of strikes: " + str(num_of_strikes)
 
     strategies = dict()
     for s in symbols:
         strategy_id = StrategyId(f"{strategy_func.__name__}-{s}")
-        strategy = strategy_func(strategy_id, Symbol(s), is_itm, is_weekly, weekday, num_of_strikes)
+        strategy = strategy_func(strategy_id, Symbol(s), is_itm, is_weekly, weekday, num_of_strikes, 1, max_strike)
         strategies[strategy_id] = strategy
 
     backtester = run_daily_market_replay(strategies, start_date, end_date)
@@ -99,15 +106,17 @@ def _run_option(strategy_func: Callable, symbols: [str], foldername, start_date,
         df.to_csv(filename + ".csv")
 
         # plots
-        df['Cumulative'] = df['Cumulative'].apply(list)
-        duplicated_df = pd.DataFrame(
-            [[date, cumulative] for date, cumulatives in zip(df['Date'], df['Cumulative']) for cumulative in
-             cumulatives], columns=['Date', 'Cumulative'])
+        # df['Cumulative'] = df['Cumulative'].apply(list)
+        # duplicated_df = pd.DataFrame(
+        #     [[date, cumulative] for date, cumulatives in zip(df['Date'], df['Cumulative']) for cumulative in
+        #      cumulatives], columns=['Date', 'Cumulative'])
         symbol = strategies[strategy_id].symbol()
         stock_df = DataAccess().get_stock([symbol], start_date, end_date)
         stock_df["Date"] = stock_df["Date"].apply(lambda x: datetime.strptime(x, "%Y-%m-%d %H:%M:%S"))
-        _plot_with_stock(duplicated_df, stock_df, symbol.symbol,
-                         title=f"{strategy_id.get_id()}\n{sub_title}", filename=filename + ".png")
+        _plot_with_stock(df, stock_df, symbol.symbol,
+                         title=f"{strategy_id.get_id()}\n{sub_title}",
+                         filename=filename + ".png",
+                         strategy_name=strategy_id.get_id())
 
         # transaction records
         txt = open(filename + ".txt", "w")
@@ -115,9 +124,9 @@ def _run_option(strategy_func: Callable, symbols: [str], foldername, start_date,
         txt.close()
 
 
-def _plot_with_stock(profit_df, stock_df, symbol, title="", filename=""):
+def _plot_with_stock(profit_df, stock_df, symbol, title="", filename="", strategy_name=""):
     plt.figure(figsize=(14, 8))
-    plt.plot(profit_df["Date"], profit_df["Cumulative"], linestyle="-", label="Naked Put Profit")
+    plt.plot(profit_df["Date"], profit_df["Cumulative"], linestyle="-", label=strategy_name)
     plt.plot(stock_df["Date"], stock_df[symbol], linestyle="-", label="Stock Price")
     plt.title(title)
     plt.xlabel("Date")

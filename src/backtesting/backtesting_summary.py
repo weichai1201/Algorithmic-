@@ -11,6 +11,7 @@ class BacktestingSummary:
                  end_cash_value,
                  dates: dict[StrategyId, list[datetime]],
                  profits: dict[StrategyId, list[float]],
+                 payoffs: dict[StrategyId, list[float]],
                  cumulative_profits: dict[StrategyId, list[float]],
                  drawdowns: dict[StrategyId, list[float]],
                  years=1):  # , profits: float[], drawndowns: float[], cagr: float):
@@ -21,6 +22,7 @@ class BacktestingSummary:
         for strategy_id in dates.keys():
             self._data[strategy_id] = pd.DataFrame({
                 "Date": dates[strategy_id],
+                "Payoffs": payoffs[strategy_id],
                 "Profit": profits[strategy_id],
                 "Cumulative": cumulative_profits[strategy_id],
                 # "Drawdown": drawdowns[strategy_id]
