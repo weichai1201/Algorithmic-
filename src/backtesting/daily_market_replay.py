@@ -28,10 +28,12 @@ class DailyMarketReplay(Backtester):
     def _update_by_symbol(agent: Agent, date: datetime):
         for symbol in agent.get_symbols():
             stock_price = DataAccess().get_stock_price_at(symbol, date)
-            agent.notified_margin_update(symbol, stock_price, date)
             if not agent.need_update_for(date, symbol):
+                agent.notified_margin_update(symbol, stock_price, date)
                 continue
             if np.isnan(stock_price):
                 continue
             data = DataPackage(date, Stock(symbol, Price(stock_price, date)))
-            agent.update(symbol, data)
+            successful = agent.update(symbol, data)
+            if successful:
+                agent.notified_margin_update(symbol, stock_price, date, new_transaction=True)

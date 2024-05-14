@@ -43,7 +43,9 @@ class Agent:
             result.add(strategy.symbol())
         return result
 
-    def update(self, symbol: Symbol, new_data: DataPackage):
+    def update(self, symbol: Symbol, new_data: DataPackage) -> bool:
+        # return update is successful or not
+        successful = True
         for strategy_id, strategy in self._strategies.items():
             if symbol != strategy.symbol():
                 continue
@@ -62,6 +64,8 @@ class Agent:
                 transaction = Transaction(order.positions, order.asset, order.date, order.msg)
                 self._all_transactions[strategy_id].add_transaction(transaction)
             self.update_asset(strategy_id, assets)
+            successful = successful & all([order.is_successful() for order in orders])
+        return successful
 
     def get_all_transactions(self) -> dict[StrategyId, Transactions]:
         return self._all_transactions
@@ -101,7 +105,7 @@ class Agent:
             t.realise_payoff(payoff)
             t.append_msg(f"Realised payoff: {payoff}.\n")
 
-    def notified_margin_update(self, symbol: Symbol, stock_price: float, date: datetime):
+    def notified_margin_update(self, symbol: Symbol, stock_price: float, date: datetime, new_transaction=False):
         for strategy_id, strategy in self._strategies.items():
             if strategy.is_same_symbol(symbol):
                 if strategy_id not in self._assets.keys():
@@ -110,7 +114,7 @@ class Agent:
                 margin = EquityMarginCalculator().calculate_margin(stock_price, assets)
                 if strategy_id not in self._margins.keys():
                     self._margins[strategy_id] = Margins()
-                self._margins[strategy_id].append_margin(date, margin)
+                self._margins[strategy_id].append_margin(date, margin, new_transaction)
 
     def get_margins(self):
         return self._margins

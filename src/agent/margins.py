@@ -8,8 +8,9 @@ class Margins:
     def __init__(self):
         self._margins: List[Tuple[datetime, float]] = list()
 
-    def append_margin(self, date: datetime, margin: float):
-        margin = max(margin, self._get_last_margin())
+    def append_margin(self, date: datetime, margin: float, new_transaction=False):
+        if not new_transaction:
+            margin = max(margin, self._get_last_margin())
         self._margins.append(tuple((date, margin)))
 
     def _get_last_margin(self):
@@ -23,3 +24,5 @@ class Margins:
     def to_dataframe(self):
         return pd.DataFrame(self._margins, columns=["Date", "Margin"])
 
+    def max_margin(self):
+        return max(x[1] for x in self._margins)
