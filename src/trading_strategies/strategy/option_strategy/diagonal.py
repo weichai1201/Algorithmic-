@@ -47,7 +47,7 @@ class Diagonal(OptionStrategy):
             return True
         return any([option.is_expired(date) for option in options])
 
-    def update(self, new_data: DataPackage) -> List[Order]:
+    def update(self, new_data: DataPackage, options) -> List[Order]:
         # unpack data package
         date = new_data.date
         orders = self._short_put.update(new_data) + self._long_put.update(new_data)

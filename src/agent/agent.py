@@ -7,6 +7,7 @@ from src.data_access.data_package import DataPackage
 from src.agent.margins import Margins
 from src.market.simulated_market import SimulatedMarket
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset, EmptyAsset
+from src.trading_strategies.financial_asset.option import EmptyOption
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.calculators.margin_calculator import EquityMarginCalculator
 from src.trading_strategies.strategy.strategy import Strategy
@@ -49,7 +50,9 @@ class Agent:
         for strategy_id, strategy in self._strategies.items():
             if symbol != strategy.symbol():
                 continue
-            orders = strategy.update(new_data)
+            if len(self._assets) == 0:
+                self.update_asset(strategy_id, [EmptyOption()])
+            orders = strategy.update(new_data, self._assets[strategy_id])
             self._market.submit_order(orders, agent=self, strategy_id=strategy_id)
 
             if any([not order.is_successful() for order in orders]):

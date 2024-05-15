@@ -29,22 +29,22 @@ class Strangle(OptionStrategy):
             return True
         return any([option.is_expired(date) for option in options])
 
-    def update(self, new_data: DataPackage) -> List[Order]:
-        # unpack data package
-        date = new_data.date
-        orders = self._strategy_put.update(new_data) + self._strategy_call.update(new_data)
-        strikes = []
-        expirations = []
-        for order in orders:
-            if isinstance(order, EmptyOrder):
-                return [EmptyOrder()]
-            if isinstance(order.asset, Option):
-                strikes.append(order.asset.get_strike().price())
-                expirations.append(order.asset.get_expiry())
-        strike = max(strikes)
-        expiration = max(expirations)
-        msg = "\n".join([o.msg for o in orders])
-        put = PutOption(self.symbol(), Price(strike, date), expiration, EmptyPrice())
-        call = CallOption(self.symbol(), Price(strike, date), expiration, EmptyPrice())
-        return [Order(put, date, Positions(self._position, self._scale)),
-                Order(call, date, Positions(self._position, self._scale), msg)]
+    # def update(self, new_data: DataPackage) -> List[Order]:
+    #     # unpack data package
+    #     date = new_data.date
+    #     orders = self._strategy_put.update(new_data) + self._strategy_call.update(new_data)
+    #     strikes = []
+    #     expirations = []
+    #     for order in orders:
+    #         if isinstance(order, EmptyOrder):
+    #             return [EmptyOrder()]
+    #         if isinstance(order.asset, Option):
+    #             strikes.append(order.asset.get_strike().price())
+    #             expirations.append(order.asset.get_expiry())
+    #     strike = max(strikes)
+    #     expiration = max(expirations)
+    #     msg = "\n".join([o.msg for o in orders])
+    #     put = PutOption(self.symbol(), Price(strike, date), expiration, EmptyPrice())
+    #     call = CallOption(self.symbol(), Price(strike, date), expiration, EmptyPrice())
+    #     return [Order(put, date, Positions(self._position, self._scale)),
+    #             Order(call, date, Positions(self._position, self._scale), msg)]

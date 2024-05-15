@@ -49,26 +49,49 @@ class Straddle(OptionStrategy):
             return True
         return any([option.is_expired(date) for option in options])
 
-    def update(self, new_data: DataPackage) -> List[Order]:
+    def update(self, new_data: DataPackage, options) -> List[Order]:
         # unpack data package
         date = new_data.date
-        orders = self._strategy_put.update(new_data) + self._strategy_call.update(new_data)
-        strikes = []
-        expirations = []
+        orders = []
+
+        options = self.current_options()
+        for option in options:
+            if isinstance(option, EmptyOption) or isinstance(option, EmptyAsset):
+                orders = self._strategy_call.update(new_data, [option]) + self._strategy_put.update(new_data, [option])
+                break
+            elif option.is_expired(date):
+                if isinstance(option, CallOption):
+                    orders += self._strategy_call.update(new_data, [option])
+                else:
+                    orders += self._strategy_put.update(new_data, [option])
+
+        put_strike = 0
+        call_strike = 0
+        expirations = [datetime(2000, 1, 1), datetime(2000, 1, 1)]
         for order in orders:
             if isinstance(order, EmptyOrder):
                 return [EmptyOrder()]
-            if isinstance(order.asset, Option):
-                strikes.append(order.asset.get_strike().price())
-                expirations.append(order.asset.get_expiry())
-        if self._cross_over and strikes[0] > strikes[1]:
-            strikes[0] = strikes[1]
-        if self._same_expiration:
-            expirations[0] = max(expirations)
-            expirations[1] = max(expirations)
-        msg = "\n".join([o.msg for o in orders])
-        put = PutOption(self.symbol(), Price(strikes[0], date), expirations[0], EmptyPrice())
-        call = CallOption(self.symbol(), Price(strikes[1], date), expirations[1], EmptyPrice())
+            elif isinstance(order.asset, PutOption):
+                put_strike = order.asset.get_strike().price()
+                expirations[0] = order.asset.get_expiry()
+            elif isinstance(order.asset, CallOption):
+                call_strike = order.asset.get_strike().price()
+                expirations[1] = order.asset.get_expiry()
 
-        return [Order(put, date, Positions(self._position, self._scale)),
-                Order(call, date, Positions(self._position, self._scale), msg)]
+        if self._cross_over and put_strike > call_strike:
+            put_strike = call_strike
+        if self._same_expiration:
+            expirations = [max(expirations)] * len(expirations)
+        msg = "\n".join([o.msg for o in orders])
+
+        new_orders = []
+
+        for order in orders:
+            if isinstance(order.asset, PutOption):
+                put = PutOption(self.symbol(), Price(put_strike, date), expirations[0], EmptyPrice())
+                new_orders.append(Order(put, date, Positions(self._position, self._scale), msg))
+            elif isinstance(order.asset, CallOption):
+                call = CallOption(self.symbol(), Price(call_strike, date), expirations[1], EmptyPrice())
+                new_orders.append(Order(call, date, Positions(self._position, self._scale), msg))
+
+        return new_orders

@@ -55,14 +55,14 @@ class OptionStrategy(Strategy):
     def itm_amount(stock_price: float, option: Option) -> float:
         return option.itm_amount(stock_price)
 
-    def update(self, new_data: DataPackage) -> List[Order]:
+    def update(self, new_data: DataPackage, current_option) -> List[Order]:
         # unpack information
         date = new_data.date
         stock_price = round(new_data.stock.get_price().price(), 2)
-        current_option = self.current_options()[0]
         symbol = self.symbol()
         action: Callable
         msg = f"Current stock price: {stock_price}\n"
+        current_option = current_option[0]
         if isinstance(current_option, EmptyOption) or isinstance(current_option, EmptyAsset):
             action = self.roll_over
             msg += "Instantiate first option by rolling over.\n"
