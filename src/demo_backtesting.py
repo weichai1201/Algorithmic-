@@ -54,13 +54,14 @@ def _run_config(config: OptionBacktestConfig, symbols, foldername):
                 start_date=config.start_date, end_date=config.end_date,
                 is_itm=config.is_itm, is_weekly=config.is_weekly,
                 num_of_strikes=config.num_of_strikes, weekday=config.weekday,
-                max_strike=config.max_strike)
+                cross_over=config.cross_over, same_expiration=config.same_expiration)
 
 
 def _run_option(strategy_func: Callable, symbols: [str], foldername, start_date, end_date, is_itm=True, is_weekly=True,
                 num_of_strikes=1,
                 weekday="FRI",
-                max_strike=True):
+                cross_over=True,
+                same_expiration=True):
     # output directory
     # option specification
     sub_folder = ""
@@ -77,16 +78,19 @@ def _run_option(strategy_func: Callable, symbols: [str], foldername, start_date,
     else:
         sub_folder += "monthly_"
         sub_title += "with monthly expiration, "
-    if not max_strike:
-        sub_folder += "minStrike_"
-        sub_title += "resolve strikes with MIN, "
+    if not cross_over:
+        sub_folder += "no_crossover_"
+        sub_title += "no price cross over, "
+    if same_expiration:
+        sub_folder += "same_expiration_"
+        sub_title += "same expiration date, "
     sub_folder += "num-strikes-" + str(num_of_strikes)
     sub_title += "number of strikes: " + str(num_of_strikes)
 
     strategies = dict()
     for s in symbols:
         strategy_id = StrategyId(f"{strategy_func.__name__}-{s}")
-        strategy = strategy_func(strategy_id, Symbol(s), is_itm, is_weekly, weekday, num_of_strikes, 1, max_strike)
+        strategy = strategy_func(strategy_id, Symbol(s), is_itm, is_weekly, weekday, num_of_strikes, 1, cross_over, same_expiration)
         strategies[strategy_id] = strategy
 
     backtester = run_daily_market_replay(strategies, start_date, end_date)

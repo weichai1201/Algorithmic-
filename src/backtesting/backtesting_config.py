@@ -20,13 +20,15 @@ class OptionBacktestConfig(BacktestConfig):
                  is_weekly=True,
                  num_of_strikes=1,
                  weekday="FRI",
-                 max_strike=True):
+                 cross_over=True,
+                 same_expiration=True):
         super().__init__(strategy, start_date, end_date)
         self.is_itm = is_itm
         self.is_weekly = is_weekly
         self.num_of_strikes = num_of_strikes
         self.weekday = weekday
-        self.max_strike=max_strike
+        self.cross_over=cross_over
+        self.same_expiration = same_expiration
 
     def __str__(self):
         return (f"Configuration for {self.strategy.__name__}: "
@@ -34,7 +36,7 @@ class OptionBacktestConfig(BacktestConfig):
                 f"weekly={self.is_weekly}, "
                 f"num_of_strikes={self.num_of_strikes}, "
                 f"weekday={self.weekday}, "
-                f"max_strike={self.max_strike}."
+                f"cross_over={self.cross_over}."
                 )
 
 
@@ -48,11 +50,11 @@ class OptionBacktestConfigBundle:
     def __init__(self, strategy: Callable):
         self.configs = [OptionBacktestConfig(strategy)]
         # self.configs.append(OptionBacktestConfig(strategy, is_itm=False))
-        self.configs.append(OptionBacktestConfig(strategy, is_weekly=False))
+        # self.configs.append(OptionBacktestConfig(strategy, is_weekly=False))
         # self.configs.append(OptionBacktestConfig(strategy, is_itm=False, is_weekly=False))
         # self.configs.append(OptionBacktestConfig(strategy, num_of_strikes=2))
-        # if strategy == Straddle:
-        #     self.configs.append(OptionBacktestConfig(strategy, max_strike=False))
-        #     self.configs.append(OptionBacktestConfig(strategy, is_itm=False, max_strike=False))
-        #     self.configs.append(OptionBacktestConfig(strategy, is_weekly=False, max_strike=False))
+        if strategy == Straddle:
+            self.configs.append(OptionBacktestConfig(strategy, cross_over=True))
+            self.configs.append(OptionBacktestConfig(strategy, is_itm=False, cross_over=False, same_expiration=False))
+            self.configs.append(OptionBacktestConfig(strategy, is_weekly=False, cross_over=False, same_expiration=True))
 

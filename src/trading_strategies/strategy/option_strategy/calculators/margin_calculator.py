@@ -12,6 +12,7 @@ class MarginType(Enum):
     SHORT_CALL = "short_call"
     SHORT_PUT = "short_put"
     STRADDLE = "straddle"
+    SPREAD = "diagonal"
     NOT_REQUIRED = "not_required"
 
 
@@ -39,7 +40,10 @@ class MarginCalculator:
     @staticmethod
     def _infer_margin_type(options: List[Option]):
         if len(options) == 2:
-            return MarginType.STRADDLE
+            if type(options[0]) != type(options[1]):
+                return MarginType.STRADDLE
+            else:
+                return MarginType.SPREAD
         option = options[0]
         if isinstance(option, CallOption):
             return MarginType.SHORT_CALL
