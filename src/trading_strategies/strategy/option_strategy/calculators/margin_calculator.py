@@ -2,10 +2,7 @@ from abc import abstractmethod
 from enum import Enum
 from typing import Callable, List
 
-from src.trading_strategies.financial_asset.option import Option, CallOption, PutOption
-from src.trading_strategies.strategy.option_strategy.option_strategy import OptionStrategy
-from src.trading_strategies.strategy.option_strategy.rolling_short_put import RollingShortPut
-from src.trading_strategies.strategy.option_strategy.straddle import Straddle
+from src.trading_strategies.financial_asset.option import Option, CallOption, PutOption, EmptyOption
 
 
 class MarginType(Enum):
@@ -23,22 +20,32 @@ class MarginCalculator:
         self.margin_para1 = margin_para1
         self.margin_para2 = margin_para2
 
-    def calculate_margin(self, stock_price: float, options: [Option]):
-        margin_type = self._infer_margin_type(options)
+    def calculate_margin(self, margin_type: MarginType, stock_price: float, options: [Option]):
+        if margin_type == MarginType.SPREAD:
+            return self.spread_margin(options[0].get_strike().price(), options[1].get_strike().price())
+        if margin_type == MarginType.STRADDLE:
+            call = EmptyOption()
+            put = EmptyOption()
+            for option in options:
+                if isinstance(option, CallOption):
+                    call = option
+                elif isinstance(option, PutOption):
+                    put = option
+            return self.straddle_margin(stock_price, call.get_strike().price(), call.get_price().price(),
+            put.get_strike().price(), put.get_price().price())
         calculator = self._choose_calculator(margin_type)
-        return self._calculator_proxy(calculator, stock_price, options)
+        return self._calculator_proxy(calculator, margin_type, stock_price, options)
 
     @staticmethod
-    def _calculator_proxy(calculator: Callable, stock_price: float, options: List[Option]):
+    def _calculator_proxy(calculator: Callable, margin_type: MarginType, stock_price: float, options: List[Option]):
         if len(options) == 1:
             option = options[0]
             return calculator(stock_price, option.get_strike().price(), option.get_price().price())
         if type(options[0]) != type(options[1]):
             return calculator(stock_price,
-                          options[0].get_strike().price(), options[0].get_price().price(),
-                          options[1].get_strike().price(), options[1].get_price().price())
-        else:
-            return calculator(options[0].get_strike().price(), options[1].get_strike().price())
+                              options[0].get_strike().price(), options[0].get_price().price(),
+                              options[1].get_strike().price(), options[1].get_price().price())
+
 
     @staticmethod
     def _infer_margin_type(options: List[Option]):
