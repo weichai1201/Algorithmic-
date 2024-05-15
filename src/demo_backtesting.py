@@ -10,6 +10,7 @@ from src.backtesting.backtesting_config import OptionBacktestConfigBundle, Optio
 from src.backtesting.stock_selection import StockSelection
 from src.data_access.data_access import DataAccess
 from src.trading_strategies.financial_asset.symbol import Symbol
+from src.trading_strategies.strategy.option_strategy.diagonal import Diagonal
 from src.trading_strategies.strategy.option_strategy.long_call import LongCall
 from src.trading_strategies.strategy.option_strategy.long_put import LongPut
 from src.trading_strategies.strategy.option_strategy.short_call import ShortCall
@@ -34,8 +35,10 @@ def main():
     short_call_configs = OptionBacktestConfigBundle(ShortCall)
     short_put_configs = OptionBacktestConfigBundle(ShortPut)
     straddle_configs = OptionBacktestConfigBundle(Straddle)
+    diagonal_configs = OptionBacktestConfigBundle(Diagonal)
     # strangle_configs = OptionBacktestConfigBundle(Strangle)
-    configs = short_call_configs.configs + short_put_configs.configs + straddle_configs.configs
+    # configs = short_call_configs.configs + short_put_configs.configs + straddle_configs.configs + diagonal_configs.configs
+    configs = diagonal_configs.configs
     # beginning of run
     timers = [timeit.default_timer()]
 
@@ -54,14 +57,18 @@ def _run_config(config: OptionBacktestConfig, symbols, foldername):
                 start_date=config.start_date, end_date=config.end_date,
                 is_itm=config.is_itm, is_weekly=config.is_weekly,
                 num_of_strikes=config.num_of_strikes, weekday=config.weekday,
-                cross_over=config.cross_over, same_expiration=config.same_expiration)
+                cross_over=config.cross_over, same_expiration=config.same_expiration,
+                is_itm2=config.is_itm2, is_weekly2=config.is_weekly2, num_of_strikes2=config.num_of_strikes2)
 
 
 def _run_option(strategy_func: Callable, symbols: [str], foldername, start_date, end_date, is_itm=True, is_weekly=True,
                 num_of_strikes=1,
                 weekday="FRI",
                 cross_over=True,
-                same_expiration=True):
+                same_expiration=True,
+                is_itm2=True,
+                is_weekly2=True,
+                num_of_strikes2=1):
     # output directory
     # option specification
     sub_folder = ""
@@ -90,7 +97,8 @@ def _run_option(strategy_func: Callable, symbols: [str], foldername, start_date,
     strategies = dict()
     for s in symbols:
         strategy_id = StrategyId(f"{strategy_func.__name__}-{s}")
-        strategy = strategy_func(strategy_id, Symbol(s), is_itm, is_weekly, weekday, num_of_strikes, 1, cross_over, same_expiration)
+        strategy = strategy_func(strategy_id, Symbol(s), is_itm, is_weekly, weekday, num_of_strikes, 1,
+                                 cross_over, same_expiration, is_itm2, is_weekly2, num_of_strikes2)
         strategies[strategy_id] = strategy
 
     backtester = run_daily_market_replay(strategies, start_date, end_date)

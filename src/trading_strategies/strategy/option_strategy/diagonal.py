@@ -6,7 +6,7 @@ from src.agent.transactions.positions import Positions
 from src.data_access.data_package import DataPackage
 from src.market.order import Order, EmptyOrder
 from src.trading_strategies.financial_asset.financial_asset import EmptyAsset
-from src.trading_strategies.financial_asset.option import EmptyOption, PutOption, CallOption, Option
+from src.trading_strategies.financial_asset.option import EmptyOption, PutOption, Option
 from src.trading_strategies.financial_asset.price import Price, EmptyPrice
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.long_put import LongPut
@@ -64,5 +64,5 @@ class Diagonal(OptionStrategy):
         short_put = PutOption(self.symbol(), Price(strikes[0], date), expirations[0], EmptyPrice())
         long_put = PutOption(self.symbol(), Price(strikes[1], date), expirations[1], EmptyPrice())
 
-        return [Order(short_put, date, Positions(self._position, self._scale)),
-                Order(long_put, date, Positions(self._position, self._scale), msg)]
+        return [Order(short_put, date, Positions(self._position_short, self._scale)),
+                Order(long_put, date, Positions(self._position_long, self._scale), msg)]

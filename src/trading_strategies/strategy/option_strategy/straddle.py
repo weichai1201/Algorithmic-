@@ -17,7 +17,8 @@ from src.trading_strategies.strategy.strategy_id import StrategyId
 
 class Straddle(OptionStrategy):
     def __init__(self, strategy_id: StrategyId, symbol: Symbol, is_itm: bool, is_weekly: bool,
-                 weekday, num_of_strikes: int, scale=1, cross_over=True, same_expiration=True):
+                 weekday, num_of_strikes: int, scale=1, cross_over=True, same_expiration=True,
+                 is_itm2=True, is_weekly2=True, num_of_strikes2=1):
         super().__init__(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes)
         self._strategy_call = ShortCall(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale, self)
         self._strategy_put = ShortPut(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale, self)

@@ -20,7 +20,8 @@ from src.util.expiry_date import closest_expiration_date, nyse_calendar, next_ex
 class ShortCall(OptionStrategy):
 
     def __init__(self, strategy_id: StrategyId, symbol: Symbol, is_itm: bool,
-                 is_weekly: bool, weekday, num_of_strikes, scale=1, cross_over=True, same_expiration=True, parent=None):
+                 is_weekly: bool, weekday, num_of_strikes, scale=1, cross_over=True, same_expiration=True,
+                 is_itm2=True, is_weekly2=True, num_of_strikes2=1, parent=None):
         super().__init__(strategy_id, symbol, is_itm, is_weekly,
                          weekday, num_of_strikes, scale)
         self._position = Position.SHORT
