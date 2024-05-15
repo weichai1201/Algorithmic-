@@ -40,7 +40,7 @@ class Transaction:
         s = (f"Transaction Entry:\n"
              f"  Positions: {self.__positions.__str__()}\n"
              f"  Asset: {self.__asset}\n"
-             f"  Time: {self.__time.strftime("%Y-%d-%m")}\n"
+             f"  Time: {self.__time.strftime("%Y-%m-%d")}\n"
              f"  Initial margin: {self._initial_margin}")
         if self.__msg != "":
             s += f"  Note: {self.__msg}\n"
