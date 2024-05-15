@@ -103,8 +103,7 @@ class DataAccess(metaclass=DataSingletonMeta):
         s = start_date.strftime(self._stock_price_file["date_format"])
         e = end_date.strftime(self._stock_price_file["date_format"])
         rows = (s <= dates) & (dates <= e)
-        result = self._historical_stock[rows][columns]
-        return [round(x, 2) for x in result]
+        return self._historical_stock[rows][columns]
 
     def has_stock_data(self, symbol):
         if isinstance(symbol, Symbol):
@@ -135,7 +134,8 @@ class DataAccess(metaclass=DataSingletonMeta):
             else:
                 columns.append(symbol)
 
-        data = data[(data[col_name] >= s) & (data[col_name] <= e)][columns]
+        data = data[(data[col_name] >= s) & (data[col_name] <= e)][columns].applymap(
+            lambda x: round(x, 2) if isinstance(x, (float, int)) else x)
         if len(self._historical_stock) == 0:
             self._historical_stock = data
         else:
