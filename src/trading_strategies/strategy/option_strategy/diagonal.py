@@ -47,22 +47,22 @@ class Diagonal(OptionStrategy):
         orders = self._short_put.update(new_data) + self._long_put.update(new_data)
         strikes = []
         expirations = []
+
+        any_empty_order = any(isinstance(o, EmptyOrder) for o in orders)
+        if any_empty_order:
+            for o in orders:
+                if not isinstance(o, EmptyOrder):
+                    return [o]
+
         for order in orders:
-            if isinstance(order, EmptyOrder):
-                return [EmptyOrder()]
             if isinstance(order.asset, Option):
                 strikes.append(order.asset.get_strike().price())
                 expirations.append(order.asset.get_expiry())
 
-        msg = "\n".join([o.msg for o in orders])
         short_put = PutOption(self.symbol(), Price(strikes[0], date), expirations[0], EmptyPrice())
         long_put = PutOption(self.symbol(), Price(strikes[1], date), expirations[1], EmptyPrice())
 
-        new_orders = [Order(short_put, date, Positions(self._position_short, self._scale), self._short_put.asset_name),
-                      Order(long_put, date, Positions(self._position_long, self._scale), self._long_put.asset_name, msg)]
-        if isinstance(orders[0], EmptyOrder):
-            new_orders[0] = EmptyOrder()
-        if isinstance(orders[1], EmptyOrder):
-            new_orders[1] = EmptyOrder()
+        new_orders = [Order(short_put, date, Positions(self._position_short, self._scale), self._short_put.asset_name, orders[0].msg),
+                      Order(long_put, date, Positions(self._position_long, self._scale), self._long_put.asset_name, orders[1].msg)]
         return new_orders
 
