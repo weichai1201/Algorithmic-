@@ -75,14 +75,16 @@ class Agent:
             date = new_data.date
             # update assets
             for order in orders:
-                self._update_asset(strategy_id, order.asset, order.asset_name)
+                if order.is_successful():
+                    self._update_asset(strategy_id, order.asset, order.asset_name)
             # update margin
             self._update_initial_margin(strategy_id, stock_price, date)
             margin = self._margins[strategy_id].peak_last()[1]
             for order in orders:
-                transaction = Transaction(positions=order.positions, asset=order.asset, time=order.date,
-                                          initial_margin=margin, msg=order.msg)
-                self._all_transactions[strategy_id].add_transaction(transaction)
+                if order.is_successful():
+                    transaction = Transaction(positions=order.positions, asset=order.asset, time=order.date,
+                                              initial_margin=margin, msg=order.msg)
+                    self._all_transactions[strategy_id].add_transaction(transaction)
         return True
 
     def need_update(self, date: datetime) -> bool:

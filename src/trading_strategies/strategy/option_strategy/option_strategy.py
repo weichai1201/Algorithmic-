@@ -69,7 +69,7 @@ class OptionStrategy(Strategy):
             msg += "Instantiate first option by rolling over.\n"
         elif not current_option.is_expired(date):
             # not expired, do not update
-            return [EmptyOrder(EmptyAsset())]
+            return [EmptyOrder()]
         elif self.in_the_money(stock_price, current_option):
             if self.deep_in_the_money(stock_price, current_option):
                 action = self._update_deep_itm_option

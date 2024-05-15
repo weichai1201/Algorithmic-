@@ -47,20 +47,24 @@ class Straddle(OptionStrategy):
         orders = self._strategy_put.update(new_data) + self._strategy_call.update(new_data)
         strikes = []
         expirations = []
+
+        # short circuit return the sole updated order
+        any_empty_order = any(isinstance(o, EmptyOrder) for o in orders)
+        if any_empty_order:
+            for o in orders:
+                if not isinstance(o, EmptyOrder):
+                    return [o]
+
         for order in orders:
-            if isinstance(order, EmptyOrder):
-                return [EmptyOrder()]
             if isinstance(order.asset, Option):
                 strikes.append(order.asset.get_strike().price())
                 expirations.append(order.asset.get_expiry())
-        if self._cross_over and strikes[0] > strikes[1]:
+        if not self._cross_over and strikes[0] > strikes[1]:
             strikes[0] = strikes[1]
         if self._same_expiration:
             expirations[0] = max(expirations)
             expirations[1] = max(expirations)
-        msg = "\n".join([o.msg for o in orders])
         put = PutOption(self.symbol(), Price(strikes[0], date), expirations[0], EmptyPrice())
         call = CallOption(self.symbol(), Price(strikes[1], date), expirations[1], EmptyPrice())
-
-        return [Order(put, date, Positions(self._position, self._scale), self._strategy_put.asset_name),
-                Order(call, date, Positions(self._position, self._scale), self._strategy_put.asset_name, msg)]
+        return [Order(put, date, Positions(self._position, self._scale), self._strategy_put.asset_name, orders[0].msg),
+                Order(call, date, Positions(self._position, self._scale), self._strategy_put.asset_name, orders[1].msg)]

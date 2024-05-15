@@ -58,5 +58,11 @@ class Diagonal(OptionStrategy):
         short_put = PutOption(self.symbol(), Price(strikes[0], date), expirations[0], EmptyPrice())
         long_put = PutOption(self.symbol(), Price(strikes[1], date), expirations[1], EmptyPrice())
 
-        return [Order(short_put, date, Positions(self._position_short, self._scale), self._short_put.asset_name),
-                Order(long_put, date, Positions(self._position_long, self._scale), self._long_put.asset_name, msg)]
+        new_orders = [Order(short_put, date, Positions(self._position_short, self._scale), self._short_put.asset_name),
+                      Order(long_put, date, Positions(self._position_long, self._scale), self._long_put.asset_name, msg)]
+        if isinstance(orders[0], EmptyOrder):
+            new_orders[0] = EmptyOrder()
+        if isinstance(orders[1], EmptyOrder):
+            new_orders[1] = EmptyOrder()
+        return new_orders
+
