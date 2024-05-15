@@ -58,6 +58,8 @@ class MarginCalculator:
             return self.naked_put_margin
         if margin_type == MarginType.STRADDLE:
             return self.straddle_margin
+        if margin_type == MarginType.SPREAD:
+            return self.spread_margin
         return self.zero_margin
 
     @staticmethod
