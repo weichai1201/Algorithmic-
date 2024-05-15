@@ -11,8 +11,6 @@ from src.backtesting.stock_selection import StockSelection
 from src.data_access.data_access import DataAccess
 from src.trading_strategies.financial_asset.symbol import Symbol
 from src.trading_strategies.strategy.option_strategy.diagonal import Diagonal
-from src.trading_strategies.strategy.option_strategy.long_call import LongCall
-from src.trading_strategies.strategy.option_strategy.long_put import LongPut
 from src.trading_strategies.strategy.option_strategy.short_call import ShortCall
 from src.trading_strategies.strategy.option_strategy.short_put import ShortPut
 from src.trading_strategies.strategy.option_strategy.straddle import Straddle
@@ -128,10 +126,17 @@ def _run_option(strategy_func: Callable, symbols: [str], foldername, start_date,
         #      cumulatives], columns=['Date', 'Cumulative'])
         symbol = strategies[strategy_id].symbol()
         stock_df = DataAccess().get_stock([symbol], start_date, end_date)
+        s0 = stock_df[symbol.symbol].iloc[0]
+        st = stock_df[symbol.symbol].iloc[len(stock_df) - 1]
+        stock_growth = round(st / s0 * 100, 2)
+        max_margin = round(margins[strategy_id].max_margin(), 2)
+        profit_ratio = round(df["Cumulative"].iloc[len(df) - 1] / max_margin * 100, 2)
+
+        result_summary = f"stock growth: {stock_growth}%, max margin: {max_margin}, profit(T) over max margin: {profit_ratio}%."
         stock_df["Date"] = stock_df["Date"].apply(lambda x: datetime.strptime(x, "%Y-%m-%d %H:%M:%S"))
         _plot_with_stock(profit_df=df, stock_df=stock_df, margin_df=margins[strategy_id].to_dataframe(),
                          symbol=symbol.symbol,
-                         title=f"{strategy_id.get_id()}\n{sub_title}",
+                         title=f"{strategy_id.get_id()}\n{sub_title}\n{result_summary}",
                          filename=filename + ".png",
                          strategy_name=strategy_id.get_id())
 
