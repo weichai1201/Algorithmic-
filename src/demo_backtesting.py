@@ -6,7 +6,7 @@ from typing import Callable
 import pandas as pd
 
 from src.backtesting.backtesting import run_daily_market_replay
-from src.backtesting.backtesting_config import OptionBacktestConfigBundle, OptionBacktestConfig
+from src.backtesting.backtesting_config import OptionBacktestConfigBundle, OptionBacktestConfig, ShortBacktestConfig
 from src.backtesting.stock_selection import StockSelection
 from src.data_access.data_access import DataAccess
 from src.trading_strategies.financial_asset.symbol import Symbol
@@ -35,10 +35,8 @@ def main():
     short_call_configs = OptionBacktestConfigBundle(ShortCall)
     short_put_configs = OptionBacktestConfigBundle(ShortPut)
     straddle_configs = OptionBacktestConfigBundle(Straddle)
-    diagonal_configs = OptionBacktestConfigBundle(Diagonal)
     # strangle_configs = OptionBacktestConfigBundle(Strangle)
-    # configs = short_call_configs.configs + short_put_configs.configs + straddle_configs.configs + diagonal_configs.configs
-    configs = diagonal_configs.configs
+    configs = short_call_configs.configs + short_put_configs.configs + straddle_configs.configs
     # beginning of run
     timers = [timeit.default_timer()]
 

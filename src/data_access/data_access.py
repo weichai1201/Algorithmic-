@@ -3,6 +3,7 @@ import os
 from datetime import datetime, timedelta
 from typing import Dict, Tuple
 
+import numpy as np
 import pandas as pd
 
 from src.data_access.data_access_meta import DataSingletonMeta
@@ -86,7 +87,9 @@ class DataAccess(metaclass=DataSingletonMeta):
     def get_stock_price_at(self, symbol: Symbol, date: datetime) -> float:
         # use case: has already store all necessary data
         tmp = self.get_stock([symbol], date, date)
-        return tmp[symbol.symbol].tolist()[0]
+        if len(tmp) > 0:
+            return tmp[0]
+        return np.nan
 
     def get_stock(self, symbols: [Symbol], start_date: datetime, end_date: datetime = None, refresh=False):
         symbols = [x.symbol for x in symbols]
@@ -100,7 +103,8 @@ class DataAccess(metaclass=DataSingletonMeta):
         s = start_date.strftime(self._stock_price_file["date_format"])
         e = end_date.strftime(self._stock_price_file["date_format"])
         rows = (s <= dates) & (dates <= e)
-        return self._historical_stock[rows][columns]
+        result = self._historical_stock[rows][columns]
+        return [round(x, 2) for x in result]
 
     def has_stock_data(self, symbol):
         if isinstance(symbol, Symbol):
