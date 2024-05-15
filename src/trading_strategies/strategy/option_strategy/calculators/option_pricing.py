@@ -29,9 +29,9 @@ def bsm_pricing2(stock: Stock, strike: float, expiry: datetime,
         volatility = volatility.value
     adjusted_price = adjust_dividends(stock, dividends, risk_free_rate)
     if is_put:
-        return calculate_put_price(adjusted_price, strike, volatility, time_to_maturity, risk_free_rate)
+        return round(calculate_put_price(adjusted_price, strike, volatility, time_to_maturity, risk_free_rate), 2)
     else:
-        return calculate_call_price(adjusted_price, strike, volatility, time_to_maturity, risk_free_rate)
+        return round(calculate_call_price(adjusted_price, strike, volatility, time_to_maturity, risk_free_rate), 2)
 
 
 def bsm_pricing(stock: Stock, strike: float, expiration_date, dividends: list[Price], risk_free_rate, is_put: bool):

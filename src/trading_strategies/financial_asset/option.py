@@ -72,7 +72,7 @@ class CallOption(Option):
             stock = float(stock.get_price().price())
         if isinstance(stock, Price):
             stock = stock.price()
-        return max(stock - self.get_strike().price(), 0)
+        return round(max(stock - self.get_strike().price(), 0), 2)
 
     def close_at_price(self, price_t: Price | float) -> [float]:
         if isinstance(price_t, Price):
@@ -102,7 +102,7 @@ class PutOption(Option):
         if isinstance(stock, Price):
             stock = stock.price()
         payoff = max(self.get_strike().price() - stock, 0)
-        return payoff
+        return round(payoff, 2)
 
     def __str__(self):
         return (f"PutOption: {self._symbol}, "

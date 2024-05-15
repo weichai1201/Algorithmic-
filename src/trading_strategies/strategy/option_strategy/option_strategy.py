@@ -58,7 +58,7 @@ class OptionStrategy(Strategy):
     def update(self, new_data: DataPackage) -> List[Order]:
         # unpack information
         date = new_data.date
-        stock_price = new_data.stock.get_price().price()
+        stock_price = round(new_data.stock.get_price().price(), 2)
         current_option = self.current_options()[0]
         symbol = self.symbol()
         action: Callable
