@@ -8,6 +8,7 @@ from src.market.order import Order
 from src.trading_strategies.financial_asset.option import Option, CallOption
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.symbol import Symbol
+from src.trading_strategies.strategy.option_strategy.calculators.margin_calculator import MarginType
 from src.trading_strategies.strategy.option_strategy.calculators.option_pricing import implied_date
 from src.trading_strategies.strategy.option_strategy.option_strategy import OptionStrategy
 from src.trading_strategies.strategy.option_strategy.calculators.option_strike import calculate_strike, \
@@ -26,12 +27,8 @@ class ShortCall(OptionStrategy):
                          weekday, num_of_strikes, scale)
         self._position = Position.SHORT
         self._parent = parent
-
-    def current_options(self) -> [Option]:
-        if self._parent is not None:
-            return [self._parent.get_option_down(self)]
-        else:
-            return super().current_options()
+        self.asset_name = "short_call"
+        self.margin_type = MarginType.SHORT_CALL
 
     def roll_over(self, stock_price: float, date: datetime, prev_option=None) -> (float, datetime):
         strike_price = calculate_strike(stock_price, self._is_itm, self._num_of_strikes, False)
@@ -54,4 +51,3 @@ class ShortCall(OptionStrategy):
 
     def roll_down(self, stock_price: float, date: datetime, prev_option: Option) -> (float, datetime):
         return self.roll_over(stock_price, date, prev_option)
-

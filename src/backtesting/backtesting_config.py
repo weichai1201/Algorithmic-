@@ -16,7 +16,7 @@ class OptionBacktestConfig(BacktestConfig):
 
     def __init__(self, strategy: Callable,
                  start_date=datetime(year=2006, month=1, day=1),
-                 end_date=datetime(year=2022, month=1, day=1),
+                 end_date=datetime(year=2010, month=1, day=1),
                  is_itm=True,
                  is_weekly=True,
                  num_of_strikes=1,

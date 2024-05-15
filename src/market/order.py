@@ -8,10 +8,11 @@ from src.trading_strategies.financial_asset.financial_asset import FinancialAsse
 
 class Order:
 
-    def __init__(self, asset: FinancialAsset, date: datetime, positions: Positions, msg=""):
+    def __init__(self, asset: FinancialAsset, date: datetime, positions: Positions, asset_name="", msg=""):
         self.asset = asset
         self.date = date
         self.positions = positions
+        self.asset_name = asset_name
         self.msg = msg
         self._task = OrderTask()
 

@@ -1,5 +1,5 @@
 import datetime
-from typing import Set, Dict, List
+from typing import Set, Dict, List, Tuple
 
 from src.agent.performance import calculate_option_profit
 from src.agent.transactions.transaction import Transaction
@@ -26,16 +26,32 @@ class Agent:
             self._all_transactions[strategy_id] = Transactions(strategy_id)
             strategy.register_agent(self)
         self._market = SimulatedMarket()
-        self._assets: Dict[StrategyId, List[FinancialAsset]] = dict()
+        self._assets: Dict[StrategyId, List[Tuple[FinancialAsset, str]]] = dict()
         self._margins: Dict[StrategyId, Margins] = dict()
 
-    def get_asset(self, strategy_id: StrategyId) -> List[FinancialAsset]:
+    def get_asset(self, strategy_id: StrategyId) -> List[Tuple[FinancialAsset, str]]:
         if strategy_id not in self._assets.keys():
-            return [EmptyAsset()]
+            return [(EmptyAsset(), "Empty")]
         return self._assets[strategy_id]
 
-    def update_asset(self, strategy_id: StrategyId, assets: List[FinancialAsset]):
-        self._assets[strategy_id] = assets
+    def get_asset_by_name(self, strategy_id: StrategyId, target: str) -> FinancialAsset:
+        if strategy_id not in self._assets.keys():
+            return EmptyAsset()
+        assets = self._assets[strategy_id]
+        for asset, asset_name in assets:
+            if asset_name == target:
+                return asset
+        return EmptyAsset()
+
+    def _update_asset(self, strategy_id: StrategyId, asset: FinancialAsset, name: str):
+        if strategy_id not in self._assets.keys():
+            self._assets[strategy_id] = list()
+        assets_list = self._assets[strategy_id]
+        for i in range(len(assets_list)):
+            if assets_list[i][1] == name:
+                assets_list[i] = (asset, name)
+                return
+        assets_list.append((asset, name))
 
     def get_symbols(self) -> Set:
         result: Set[Symbol] = set()
@@ -55,18 +71,13 @@ class Agent:
             if any([not order.is_successful() for order in orders]):
                 continue
             # order is successful
-            assets = []
             # self.cal_payoff(strategy_id,  ,len(orders))
             for order in orders:
-                assets.append(order.asset)
                 transaction = Transaction(order.positions, order.asset, order.date, order.msg)
                 self._all_transactions[strategy_id].add_transaction(transaction)
-            self.update_asset(strategy_id, assets)
+                self._update_asset(strategy_id, order.asset, order.asset_name)
             any_successful = any_successful or all([order.is_successful() for order in orders])
         return any_successful
-
-    def get_all_transactions(self) -> dict[StrategyId, Transactions]:
-        return self._all_transactions
 
     def need_update(self, date: datetime) -> bool:
         return any([strategy.need_update(date) for strategy in self._strategies.values()])
@@ -77,6 +88,9 @@ class Agent:
                 if strategy.need_update(date):
                     return True
         return False
+
+    def get_all_transactions(self) -> dict[StrategyId, Transactions]:
+        return self._all_transactions
 
     def evaluate(self):
         dates = dict[StrategyId, list[float]]()
@@ -97,19 +111,22 @@ class Agent:
                 cumulative_profits,
                 drawdowns)
 
+    # ====== payoffs
     def cal_payoff(self, strategy_id: StrategyId, stock_price: float, num_t=1):
         for t in self._all_transactions[strategy_id].last_n(num_t):
             payoff = t.get_asset().option_payoff(stock_price)
             t.realise_payoff(payoff)
             t.append_msg(f"Realised payoff: {payoff}.\n")
 
+    # ===== margins
     def notified_margin_update(self, symbol: Symbol, stock_price: float, date: datetime, new_transaction=False):
         for strategy_id, strategy in self._strategies.items():
             if strategy.is_same_symbol(symbol):
                 if strategy_id not in self._assets.keys():
                     continue
                 assets = self._assets[strategy_id]
-                margin = EquityMarginCalculator().calculate_margin(stock_price, assets)
+                assets = [x[0] for x in assets]
+                margin = EquityMarginCalculator().calculate_margin(strategy.margin_type, stock_price, assets)
                 if strategy_id not in self._margins.keys():
                     self._margins[strategy_id] = Margins()
                 self._margins[strategy_id].append_margin(date, margin, new_transaction)

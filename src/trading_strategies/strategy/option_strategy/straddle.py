@@ -9,6 +9,7 @@ from src.trading_strategies.financial_asset.financial_asset import EmptyAsset
 from src.trading_strategies.financial_asset.option import Option, EmptyOption, PutOption, CallOption
 from src.trading_strategies.financial_asset.price import Price, EmptyPrice
 from src.trading_strategies.financial_asset.symbol import Symbol
+from src.trading_strategies.strategy.option_strategy.calculators.margin_calculator import MarginType
 from src.trading_strategies.strategy.option_strategy.option_strategy import OptionStrategy
 from src.trading_strategies.strategy.option_strategy.short_call import ShortCall
 from src.trading_strategies.strategy.option_strategy.short_put import ShortPut
@@ -25,29 +26,20 @@ class Straddle(OptionStrategy):
         self._position = Position.SHORT
         self._cross_over = cross_over
         self._same_expiration = same_expiration
+        self.margin_type = MarginType.STRADDLE
 
     def register_agent(self, agent):
         self._strategy_call.register_agent(agent)
         self._strategy_put.register_agent(agent)
         super().register_agent(agent)
 
-    def get_option_down(self, child: OptionStrategy):
-        options = self.current_options()
-        if id(child) == id(self._strategy_put):
-            for option in options:
-                if isinstance(option, PutOption):
-                    return option
-        if id(child) == id(self._strategy_call):
-            for option in options:
-                if isinstance(option, CallOption):
-                    return option
-        return EmptyOption()
-
     def need_update(self, date: datetime):
-        options = self.current_options()
-        if any([isinstance(option, EmptyOption) or isinstance(option, EmptyAsset) for option in options]):
+        put_option = self._strategy_put.current_option()
+        call_option = self._strategy_call.current_option()
+        if (isinstance(put_option, EmptyOption) or isinstance(put_option, EmptyAsset) or
+                isinstance(call_option, EmptyOption) or isinstance(call_option, EmptyAsset)):
             return True
-        return any([option.is_expired(date) for option in options])
+        return any([option.is_expired(date) for option in (put_option, call_option)])
 
     def update(self, new_data: DataPackage) -> List[Order]:
         # unpack data package

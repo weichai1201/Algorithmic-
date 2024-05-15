@@ -23,6 +23,7 @@ class LongCall(OptionStrategy):
         super().__init__(strategy_id, symbol, is_itm, is_weekly,
                          weekday, num_of_strikes, scale)
         self._position = Position.LONG
+        self.asset_name = "long_call"
 
     def roll_over(self, stock_price: float, date: datetime, prev_option=None) -> (float, datetime):
         strike_price = calculate_strike(stock_price, self._is_itm, self._num_of_strikes, False)

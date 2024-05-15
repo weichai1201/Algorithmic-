@@ -12,6 +12,7 @@ from src.trading_strategies.financial_asset.option import Option, CallOption, Em
 from src.trading_strategies.financial_asset.price import EmptyPrice, Price
 from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
+from src.trading_strategies.strategy.option_strategy.calculators.margin_calculator import MarginType
 from src.trading_strategies.strategy.option_strategy.calculators.option_strike import get_strike_gap
 from src.trading_strategies.strategy.strategy import Strategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
@@ -31,6 +32,8 @@ class OptionStrategy(Strategy):
         self._weekday = weekday
         self._is_itm = is_itm
         self._position = Position.EMPTY
+        self.asset_name = "abstract"
+        self.margin_type = MarginType.NOT_REQUIRED
 
     def get_id(self) -> StrategyId:
         return self._id
@@ -39,10 +42,10 @@ class OptionStrategy(Strategy):
         # self._agent.realise_payoff(information)
         pass
 
-    def current_options(self) -> [Option]:
+    def current_option(self) -> Option:
         if self._agent is None:
-            return [EmptyOption()]
-        return self._agent.get_asset(self._id)
+            return EmptyOption()
+        return self._agent.get_asset_by_name(self._id, self.asset_name)
 
     @staticmethod
     def in_the_money(stock_price: float, option: Option) -> bool:
@@ -59,7 +62,7 @@ class OptionStrategy(Strategy):
         # unpack information
         date = new_data.date
         stock_price = round(new_data.stock.get_price().price(), 2)
-        current_option = self.current_options()[0]
+        current_option = self.current_option()
         symbol = self.symbol()
         action: Callable
         msg = f"Current stock price: {stock_price}\n"
@@ -88,7 +91,7 @@ class OptionStrategy(Strategy):
             next_option = CallOption(symbol, Price(strike, date), expiry, EmptyPrice())
         else:   # put option
             next_option = PutOption(symbol, Price(strike, date), expiry, EmptyPrice())
-        order = Order(next_option, date, Positions(self._position, self._scale), msg)
+        order = Order(next_option, date, Positions(self._position, self._scale), self.asset_name, msg)
 
         # update payoff
         if not (isinstance(current_option, EmptyAsset) or isinstance(current_option, EmptyOption)):

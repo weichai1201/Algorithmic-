@@ -5,6 +5,7 @@ from typing import List
 from src.data_access.data_package import DataPackage
 from src.market.order import Order
 from src.trading_strategies.financial_asset.symbol import Symbol
+from src.trading_strategies.strategy.option_strategy.calculators.margin_calculator import MarginType
 from src.trading_strategies.strategy.strategy_id import StrategyId
 
 
@@ -15,6 +16,7 @@ class Strategy:
         self._symbol = symbol
         from src.agent.empty_agent import EmptyAgent
         self._agent = EmptyAgent()
+        self.margin_type = MarginType .NOT_REQUIRED
 
     def id(self):
         return self._id

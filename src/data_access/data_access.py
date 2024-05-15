@@ -88,7 +88,7 @@ class DataAccess(metaclass=DataSingletonMeta):
         # use case: has already store all necessary data
         tmp = self.get_stock([symbol], date, date)
         if len(tmp) > 0:
-            return tmp[0]
+            return tmp[symbol.symbol].iloc[0]
         return np.nan
 
     def get_stock(self, symbols: [Symbol], start_date: datetime, end_date: datetime = None, refresh=False):
@@ -134,7 +134,7 @@ class DataAccess(metaclass=DataSingletonMeta):
             else:
                 columns.append(symbol)
 
-        data = data[(data[col_name] >= s) & (data[col_name] <= e)][columns].applymap(
+        data = data[(data[col_name] >= s) & (data[col_name] <= e)][columns].map(
             lambda x: round(x, 2) if isinstance(x, (float, int)) else x)
         if len(self._historical_stock) == 0:
             self._historical_stock = data

@@ -16,7 +16,6 @@ from src.trading_strategies.strategy.option_strategy.long_put import LongPut
 from src.trading_strategies.strategy.option_strategy.short_call import ShortCall
 from src.trading_strategies.strategy.option_strategy.short_put import ShortPut
 from src.trading_strategies.strategy.option_strategy.straddle import Straddle
-from src.trading_strategies.strategy.option_strategy.strangle import Strangle
 from src.trading_strategies.strategy.strategy_id import StrategyId
 import matplotlib.pyplot as plt
 
@@ -35,8 +34,11 @@ def main():
     short_call_configs = OptionBacktestConfigBundle(ShortCall)
     short_put_configs = OptionBacktestConfigBundle(ShortPut)
     straddle_configs = OptionBacktestConfigBundle(Straddle)
-    # strangle_configs = OptionBacktestConfigBundle(Strangle)
-    configs = short_call_configs.configs + short_put_configs.configs + straddle_configs.configs
+    diagonal_configs = OptionBacktestConfigBundle(Diagonal)
+    # configs = (short_call_configs.configs + short_put_configs.configs +
+    #            straddle_configs.configs + diagonal_configs.configs)
+    configs = diagonal_configs.configs
+
     # beginning of run
     timers = [timeit.default_timer()]
 
