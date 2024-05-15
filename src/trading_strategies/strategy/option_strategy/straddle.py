@@ -21,8 +21,8 @@ class Straddle(OptionStrategy):
                  weekday, num_of_strikes: int, scale=1, cross_over=True, same_expiration=True,
                  is_itm2=True, is_weekly2=True, num_of_strikes2=1):
         super().__init__(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes)
-        self._strategy_call = ShortCall(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale, self)
-        self._strategy_put = ShortPut(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale, self)
+        self._strategy_call = ShortCall(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale, parent=self)
+        self._strategy_put = ShortPut(strategy_id, symbol, is_itm, is_weekly, weekday, num_of_strikes, scale, parent=self)
         self._position = Position.SHORT
         self._cross_over = cross_over
         self._same_expiration = same_expiration
