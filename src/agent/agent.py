@@ -45,17 +45,15 @@ class Agent:
 
     def update(self, symbol: Symbol, new_data: DataPackage) -> bool:
         # return update is successful or not
-        successful = True
+        any_successful = False
         for strategy_id, strategy in self._strategies.items():
             if symbol != strategy.symbol():
                 continue
-
             orders = strategy.update(new_data)
             self._market.submit_order(orders, agent=self, strategy_id=strategy_id)
 
             if any([not order.is_successful() for order in orders]):
                 continue
-
             # order is successful
             assets = []
             # self.cal_payoff(strategy_id,  ,len(orders))
@@ -64,8 +62,8 @@ class Agent:
                 transaction = Transaction(order.positions, order.asset, order.date, order.msg)
                 self._all_transactions[strategy_id].add_transaction(transaction)
             self.update_asset(strategy_id, assets)
-            successful = successful & all([order.is_successful() for order in orders])
-        return successful
+            any_successful = any_successful or all([order.is_successful() for order in orders])
+        return any_successful
 
     def get_all_transactions(self) -> dict[StrategyId, Transactions]:
         return self._all_transactions

@@ -8,6 +8,7 @@ from src.data_access.data_access import DataAccess
 from src.data_access.data_package import DataPackage
 from src.trading_strategies.financial_asset.price import Price
 from src.trading_strategies.financial_asset.stock import Stock
+from src.trading_strategies.financial_asset.symbol import Symbol
 
 
 class DailyMarketReplay(Backtester):
@@ -19,21 +20,27 @@ class DailyMarketReplay(Backtester):
         date = self._start_date
         while date <= self._end_date:
             if DataAccess().is_trading_in_historical(date):
-                self._update_by_symbol(self._self_agent, date)
+                self._update(self._self_agent, date)
                 for agent in self._agents:
-                    self._update_by_symbol(agent, date)
+                    self._update(agent, date)
             date += timedelta(days=1)
 
-    @staticmethod
-    def _update_by_symbol(agent: Agent, date: datetime):
+    def _update(self, agent: Agent, date: datetime):
         for symbol in agent.get_symbols():
             stock_price = DataAccess().get_stock_price_at(symbol, date)
-            if not agent.need_update_for(date, symbol):
-                agent.notified_margin_update(symbol, stock_price, date)
-                continue
             if np.isnan(stock_price):
                 continue
-            data = DataPackage(date, Stock(symbol, Price(stock_price, date)))
-            successful = agent.update(symbol, data)
-            if successful:
-                agent.notified_margin_update(symbol, stock_price, date, new_transaction=True)
+            updated = False
+            updated = self._update_strategy(agent, date, stock_price, symbol)
+            self._update_margin(agent, date, stock_price, symbol, updated)
+
+    @staticmethod
+    def _update_strategy(agent: Agent, date: datetime, stock_price: float, symbol: Symbol):
+        if not agent.need_update_for(date, symbol):
+            return False
+        data = DataPackage(date, Stock(symbol, Price(stock_price, date)))
+        return agent.update(symbol, data)
+
+    @staticmethod
+    def _update_margin(agent: Agent, date: datetime, stock_price: float, symbol: Symbol, new_transaction=False):
+        agent.notified_margin_update(symbol, stock_price, date, new_transaction=new_transaction)
