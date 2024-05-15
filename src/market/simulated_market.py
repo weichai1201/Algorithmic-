@@ -54,12 +54,6 @@ class SimulatedMarket(metaclass=MarketSingletonMeta):
                     new_option = CallOption(symbol, Price(strike_price, date), expiry, Price(premium, date))
                 order.asset = new_option
             order.accept_order()
-            order_accepted = True
-        # close the previous transactions
-        if order_accepted:
-            agent.cal_payoff(strategy_id, stock_price, len(orders))
-
-
 
     @staticmethod
     def _simulate_option_price(symbol: Symbol, stock_price: float, target_strike: float,

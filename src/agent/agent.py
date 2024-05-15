@@ -70,7 +70,6 @@ class Agent:
             if any([not order.is_successful() for order in orders]):
                 continue
             # order is successful
-            # self.cal_payoff(strategy_id,  ,len(orders))
             stock_price = new_data.stock.get_price().price()
             date = new_data.date
             # update assets
@@ -82,7 +81,11 @@ class Agent:
             margin = self._margins[strategy_id].peak_last()[1]
             for order in orders:
                 if order.is_successful():
-                    transaction = Transaction(positions=order.positions, asset=order.asset, time=order.date,
+                    self._update_payoff(strategy_id, order.asset_name, stock_price)
+                    transaction = Transaction(positions=order.positions,
+                                              asset=order.asset,
+                                              asset_name=order.asset_name,
+                                              time=order.date,
                                               initial_margin=margin, msg=order.msg)
                     self._all_transactions[strategy_id].add_transaction(transaction)
         return True
@@ -125,6 +128,18 @@ class Agent:
             payoff = t.get_asset().option_payoff(stock_price)
             t.realise_payoff(payoff)
             t.append_msg(f"Realised payoff: {payoff}.\n")
+
+    def _update_payoff(self, strategy_id: StrategyId, asset_name: str, stock_price: float):
+        transactions = self._all_transactions[strategy_id].get_transactions()
+        if len(transactions) == 0:
+            return
+        for i in range(len(transactions) - 1, -1, -1):
+            if transactions[i].get_asset_name() == asset_name:
+                payoff = transactions[i].get_asset().option_payoff(stock_price)
+                transactions[i].realise_payoff(payoff)
+                transactions[i].append_msg(f"Realised payoff: {payoff}.\n")
+                return
+
 
     # ===== margins
     def _update_initial_margin(self, strategy_id: StrategyId, stock_price: float, date: datetime):
