@@ -33,9 +33,12 @@ class MarginCalculator:
         if len(options) == 1:
             option = options[0]
             return calculator(stock_price, option.get_strike().price(), option.get_price().price())
-        return calculator(stock_price,
+        if type(options[0]) != type(options[1]):
+            return calculator(stock_price,
                           options[0].get_strike().price(), options[0].get_price().price(),
                           options[1].get_strike().price(), options[1].get_price().price())
+        else:
+            return calculator(options[0].get_strike().price(), options[1].get_strike().price())
 
     @staticmethod
     def _infer_margin_type(options: List[Option]):
@@ -95,7 +98,7 @@ class MarginCalculator:
         else:
             return naked_put_margin + call_premium
 
-    def spread_margin(self, strike_long, strike_short):
+    def spread_margin(self, strike_short, strike_long):
         return abs(strike_long - strike_short)
 
 

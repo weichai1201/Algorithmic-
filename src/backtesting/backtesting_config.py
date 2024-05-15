@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Callable
 
+from src.trading_strategies.strategy.option_strategy.diagonal import Diagonal
 from src.trading_strategies.strategy.option_strategy.straddle import Straddle
 
 
@@ -21,7 +22,10 @@ class OptionBacktestConfig(BacktestConfig):
                  num_of_strikes=1,
                  weekday="FRI",
                  cross_over=True,
-                 same_expiration=True):
+                 same_expiration=True,
+                 is_itm2=True,
+                 is_weekly2=True,
+                 num_of_strikes2=1):
         super().__init__(strategy, start_date, end_date)
         self.is_itm = is_itm
         self.is_weekly = is_weekly
@@ -29,6 +33,9 @@ class OptionBacktestConfig(BacktestConfig):
         self.weekday = weekday
         self.cross_over=cross_over
         self.same_expiration = same_expiration
+        self.is_itm2 = is_itm2
+        self.is_weekly2 = is_weekly2
+        self.num_of_strikes2 = num_of_strikes2
 
     def __str__(self):
         return (f"Configuration for {self.strategy.__name__}: "
@@ -57,4 +64,6 @@ class OptionBacktestConfigBundle:
             self.configs.append(OptionBacktestConfig(strategy, cross_over=True))
             self.configs.append(OptionBacktestConfig(strategy, is_itm=False, cross_over=False, same_expiration=False))
             self.configs.append(OptionBacktestConfig(strategy, is_weekly=False, cross_over=False, same_expiration=True))
+        if strategy == Diagonal:
+            self.configs.append(OptionBacktestConfig(strategy, is_itm2=False, is_weekly2=False, num_of_strikes2=2))
 
