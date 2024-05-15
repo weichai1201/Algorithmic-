@@ -37,7 +37,7 @@ def main():
     diagonal_configs = OptionBacktestConfigBundle(Diagonal)
     # configs = (short_call_configs.configs + short_put_configs.configs +
     #            straddle_configs.configs + diagonal_configs.configs)
-    configs = diagonal_configs.configs
+    configs = straddle_configs.configs
 
     # beginning of run
     timers = [timeit.default_timer()]

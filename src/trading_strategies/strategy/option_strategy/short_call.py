@@ -1,14 +1,10 @@
 from datetime import datetime
-from typing import List
 
 from src.data_access.data_access import DataAccess
-from src.data_access.data_package import DataPackage
 from src.data_access.volatility import VolatilityType
-from src.market.order import Order
-from src.trading_strategies.financial_asset.option import Option, CallOption
-from src.trading_strategies.financial_asset.price import Price
+from src.trading_strategies.financial_asset.option import Option
 from src.trading_strategies.financial_asset.symbol import Symbol
-from src.trading_strategies.strategy.option_strategy.calculators.margin_calculator import MarginType
+from src.agent.margin_calculator import MarginType
 from src.trading_strategies.strategy.option_strategy.calculators.option_pricing import implied_date
 from src.trading_strategies.strategy.option_strategy.option_strategy import OptionStrategy
 from src.trading_strategies.strategy.option_strategy.calculators.option_strike import calculate_strike, \

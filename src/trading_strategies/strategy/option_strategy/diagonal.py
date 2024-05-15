@@ -9,7 +9,7 @@ from src.trading_strategies.financial_asset.financial_asset import EmptyAsset
 from src.trading_strategies.financial_asset.option import EmptyOption, PutOption, Option
 from src.trading_strategies.financial_asset.price import Price, EmptyPrice
 from src.trading_strategies.financial_asset.symbol import Symbol
-from src.trading_strategies.strategy.option_strategy.calculators.margin_calculator import MarginType
+from src.agent.margin_calculator import MarginType
 from src.trading_strategies.strategy.option_strategy.long_put import LongPut
 from src.trading_strategies.strategy.option_strategy.option_strategy import OptionStrategy
 from src.trading_strategies.strategy.option_strategy.short_put import ShortPut

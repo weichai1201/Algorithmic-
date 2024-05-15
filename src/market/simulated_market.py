@@ -60,6 +60,7 @@ class SimulatedMarket(metaclass=MarketSingletonMeta):
             agent.cal_payoff(strategy_id, stock_price, len(orders))
 
 
+
     @staticmethod
     def _simulate_option_price(symbol: Symbol, stock_price: float, target_strike: float,
                                date: datetime, expiry: datetime, is_put=True):

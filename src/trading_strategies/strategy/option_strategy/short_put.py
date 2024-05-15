@@ -1,21 +1,16 @@
 from datetime import datetime
-from typing import List
 
 from src.agent.transactions.position import Position
 from src.data_access.data_access import DataAccess
-from src.data_access.data_package import DataPackage
-from src.data_access.volatility import VolatilityType, Volatility
-from src.market.order import Order
+from src.data_access.volatility import VolatilityType
 from src.trading_strategies.financial_asset.option import Option
-from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
-from src.trading_strategies.strategy.option_strategy.calculators.margin_calculator import MarginType
+from src.agent.margin_calculator import MarginType
 from src.trading_strategies.strategy.option_strategy.calculators.option_pricing import implied_date
 from src.trading_strategies.strategy.option_strategy.option_strategy import OptionStrategy
 from src.trading_strategies.strategy.option_strategy.calculators.option_strike import calculate_strike, \
     roll_down_strike, get_strike_gap
 from src.trading_strategies.strategy.strategy_id import StrategyId
-from src.util.calculate_volatility import calculate_vol
 from src.util.expiry_date import closest_expiration_date, nyse_calendar, next_expiry_date
 
 

@@ -41,7 +41,7 @@ class Transaction:
              f"  Positions: {self.__positions.__str__()}\n"
              f"  Asset: {self.__asset}\n"
              f"  Time: {self.__time.strftime("%Y-%d-%m")}\n"
-             f"  Initial margin: {self._initial_margin}")
+             f"  Initial margin: {self._initial_margin}\n")
         if self.__msg != "":
             s += f"  Note: {self.__msg}\n"
         return s

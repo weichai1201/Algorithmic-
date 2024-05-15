@@ -30,9 +30,9 @@ class DailyMarketReplay(Backtester):
             stock_price = DataAccess().get_stock_price_at(symbol, date)
             if np.isnan(stock_price):
                 continue
-            updated = False
-            updated = self._update_strategy(agent, date, stock_price, symbol)
-            self._update_margin(agent, date, stock_price, symbol, updated)
+            self._update_strategy(agent, date, stock_price, symbol)
+
+
 
     @staticmethod
     def _update_strategy(agent: Agent, date: datetime, stock_price: float, symbol: Symbol):
@@ -41,6 +41,3 @@ class DailyMarketReplay(Backtester):
         data = DataPackage(date, Stock(symbol, Price(stock_price, date)))
         return agent.update(symbol, data)
 
-    @staticmethod
-    def _update_margin(agent: Agent, date: datetime, stock_price: float, symbol: Symbol, new_transaction=False):
-        agent.notified_margin_update(symbol, stock_price, date, new_transaction=new_transaction)

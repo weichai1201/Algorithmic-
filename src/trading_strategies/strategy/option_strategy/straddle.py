@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Dict
+from typing import List
 
 from src.agent.transactions.position import Position
 from src.agent.transactions.positions import Positions
@@ -9,7 +9,7 @@ from src.trading_strategies.financial_asset.financial_asset import EmptyAsset
 from src.trading_strategies.financial_asset.option import Option, EmptyOption, PutOption, CallOption
 from src.trading_strategies.financial_asset.price import Price, EmptyPrice
 from src.trading_strategies.financial_asset.symbol import Symbol
-from src.trading_strategies.strategy.option_strategy.calculators.margin_calculator import MarginType
+from src.agent.margin_calculator import MarginType
 from src.trading_strategies.strategy.option_strategy.option_strategy import OptionStrategy
 from src.trading_strategies.strategy.option_strategy.short_call import ShortCall
 from src.trading_strategies.strategy.option_strategy.short_put import ShortPut

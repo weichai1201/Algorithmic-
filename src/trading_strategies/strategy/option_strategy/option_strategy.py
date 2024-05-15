@@ -5,14 +5,12 @@ from typing import List, Callable
 from src.agent.transactions.position import Position
 from src.agent.transactions.positions import Positions
 from src.data_access.data_package import DataPackage
-from src.data_access.volatility import Volatility
 from src.market.order import Order, EmptyOrder
-from src.trading_strategies.financial_asset.financial_asset import EmptyAsset, FinancialAsset
+from src.trading_strategies.financial_asset.financial_asset import EmptyAsset
 from src.trading_strategies.financial_asset.option import Option, CallOption, EmptyOption, PutOption
 from src.trading_strategies.financial_asset.price import EmptyPrice, Price
-from src.trading_strategies.financial_asset.stock import Stock
 from src.trading_strategies.financial_asset.symbol import Symbol
-from src.trading_strategies.strategy.option_strategy.calculators.margin_calculator import MarginType
+from src.agent.margin_calculator import MarginType
 from src.trading_strategies.strategy.option_strategy.calculators.option_strike import get_strike_gap
 from src.trading_strategies.strategy.strategy import Strategy
 from src.trading_strategies.strategy.strategy_id import StrategyId

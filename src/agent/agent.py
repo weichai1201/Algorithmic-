@@ -8,7 +8,7 @@ from src.agent.margins import Margins
 from src.market.simulated_market import SimulatedMarket
 from src.trading_strategies.financial_asset.financial_asset import FinancialAsset, EmptyAsset
 from src.trading_strategies.financial_asset.symbol import Symbol
-from src.trading_strategies.strategy.option_strategy.calculators.margin_calculator import EquityMarginCalculator
+from src.agent.margin_calculator import get_margin_calculator
 from src.trading_strategies.strategy.strategy import Strategy
 from src.trading_strategies.strategy.strategy_id import StrategyId
 from src.agent.transactions.transactions import Transactions
@@ -61,7 +61,6 @@ class Agent:
 
     def update(self, symbol: Symbol, new_data: DataPackage) -> bool:
         # return update is successful or not
-        any_successful = False
         for strategy_id, strategy in self._strategies.items():
             if symbol != strategy.symbol():
                 continue
@@ -72,12 +71,19 @@ class Agent:
                 continue
             # order is successful
             # self.cal_payoff(strategy_id,  ,len(orders))
+            stock_price = new_data.stock.get_price().price()
+            date = new_data.date
+            # update assets
             for order in orders:
-                transaction = Transaction(order.positions, order.asset, order.date, order.msg)
-                self._all_transactions[strategy_id].add_transaction(transaction)
                 self._update_asset(strategy_id, order.asset, order.asset_name)
-            any_successful = any_successful or all([order.is_successful() for order in orders])
-        return any_successful
+            # update margin
+            self._update_initial_margin(strategy_id, stock_price, date)
+            margin = self._margins[strategy_id].peak_last()[1]
+            for order in orders:
+                transaction = Transaction(positions=order.positions, asset=order.asset, time=order.date,
+                                          initial_margin=margin, msg=order.msg)
+                self._all_transactions[strategy_id].add_transaction(transaction)
+        return True
 
     def need_update(self, date: datetime) -> bool:
         return any([strategy.need_update(date) for strategy in self._strategies.values()])
@@ -119,17 +125,31 @@ class Agent:
             t.append_msg(f"Realised payoff: {payoff}.\n")
 
     # ===== margins
-    def notified_margin_update(self, symbol: Symbol, stock_price: float, date: datetime, new_transaction=False):
-        for strategy_id, strategy in self._strategies.items():
-            if strategy.is_same_symbol(symbol):
-                if strategy_id not in self._assets.keys():
-                    continue
-                assets = self._assets[strategy_id]
-                assets = [x[0] for x in assets]
-                margin = EquityMarginCalculator().calculate_margin(strategy.margin_type, stock_price, assets)
-                if strategy_id not in self._margins.keys():
-                    self._margins[strategy_id] = Margins()
-                self._margins[strategy_id].append_margin(date, margin, new_transaction)
+    def _update_initial_margin(self, strategy_id: StrategyId, stock_price: float, date: datetime):
+        margin = self._cal_margin(strategy_id, stock_price)
+        if strategy_id not in self._margins.keys():
+            self._margins[strategy_id] = Margins()
+        self._margins[strategy_id].append_margin(date, margin, True)
+
+    def _update_maintenance_margin(self, strategy_id: StrategyId, stock_price: float, date: datetime):
+        margin = self._cal_margin(strategy_id, stock_price)
+        self._margins[strategy_id].append_margin(date, margin, False)
+
+    def _cal_margin(self, strategy_id: StrategyId, stock_price: float):
+        strategy = self._strategies[strategy_id]
+        symbol = strategy.symbol()
+        assets = [x[0] for x in self._assets[strategy_id]]
+        margin = get_margin_calculator(symbol).calculate_margin(strategy.margin_type, stock_price, assets)
+        return margin
 
     def get_margins(self):
         return self._margins
+
+    def notify_maintenance_margin(self, date: datetime, stock_price: float, symbol: Symbol):
+        for strategy_id, strategy in self._strategies.items():
+            if not strategy.is_same_symbol(symbol):
+                continue
+            last_margin_date, margin = self._margins[strategy_id].peak_last()
+            if last_margin_date < date:
+                self._update_maintenance_margin(strategy_id, stock_price, date)
+

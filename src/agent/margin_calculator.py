@@ -3,6 +3,7 @@ from enum import Enum
 from typing import Callable, List
 
 from src.trading_strategies.financial_asset.option import Option, CallOption, PutOption, EmptyOption
+from src.trading_strategies.financial_asset.symbol import Symbol
 
 
 class MarginType(Enum):
@@ -22,7 +23,8 @@ class MarginCalculator:
 
     def calculate_margin(self, margin_type: MarginType, stock_price: float, options: [Option]):
         if margin_type == MarginType.SPREAD:
-            return self.spread_margin(options[0].get_strike().price(), options[1].get_strike().price())
+            margin = self.spread_margin(options[0].get_strike().price(), options[1].get_strike().price())
+            return round(margin, 2)
         if margin_type == MarginType.STRADDLE:
             call = EmptyOption()
             put = EmptyOption()
@@ -31,21 +33,18 @@ class MarginCalculator:
                     call = option
                 elif isinstance(option, PutOption):
                     put = option
-            return self.straddle_margin(stock_price, call.get_strike().price(), call.get_price().price(),
-            put.get_strike().price(), put.get_price().price())
+            margin = self.straddle_margin(stock_price, call.get_strike().price(), call.get_price().price(),
+                                          put.get_strike().price(), put.get_price().price())
+            return round(margin, 2)
         calculator = self._choose_calculator(margin_type)
-        return self._calculator_proxy(calculator, margin_type, stock_price, options)
+        margin = self._calculator_proxy(calculator, margin_type, stock_price, options)
+        return round(margin, 2)
 
     @staticmethod
     def _calculator_proxy(calculator: Callable, margin_type: MarginType, stock_price: float, options: List[Option]):
         if len(options) == 1:
             option = options[0]
             return calculator(stock_price, option.get_strike().price(), option.get_price().price())
-        if type(options[0]) != type(options[1]):
-            return calculator(stock_price,
-                              options[0].get_strike().price(), options[0].get_price().price(),
-                              options[1].get_strike().price(), options[1].get_price().price())
-
 
     @staticmethod
     def _infer_margin_type(options: List[Option]):
@@ -117,3 +116,7 @@ class EquityMarginCalculator(MarginCalculator):
 class IndexMarginCalculator(MarginCalculator):
     def __init__(self):
         super().__init__(margin_para1=0.15, margin_para2=0.1)
+
+
+def get_margin_calculator(symbol: Symbol):
+    return EquityMarginCalculator()
