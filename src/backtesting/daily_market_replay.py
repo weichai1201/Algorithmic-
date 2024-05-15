@@ -31,6 +31,8 @@ class DailyMarketReplay(Backtester):
             if np.isnan(stock_price):
                 continue
             self._update_strategy(agent, date, stock_price, symbol)
+            if agent.trading_symbol(symbol):
+                agent.notify_maintenance_margin(date, stock_price, symbol)
 
 
 

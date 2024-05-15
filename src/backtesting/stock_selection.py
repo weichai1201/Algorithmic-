@@ -17,7 +17,7 @@ class StockSelection:
         negative_beta = []
         dividends_paying_10years = ["GIS"]
         self.full = low_vol + high_vol + low_market_cap + high_market_cap + negative_beta + dividends_paying_10years
-        self.simple = ["CMA"]
+        self.simple = ["AAPL"]
 
 
 def dividend_analysis():

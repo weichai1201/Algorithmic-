@@ -15,7 +15,7 @@ class Margins:
 
     def peak_last(self) -> Tuple[datetime, float]:
         if len(self._margins) == 0:
-            return 0
+            return datetime(year=2000, month=1, day=1), 0
         return self._margins[len(self._margins) - 1]
 
     def get_margins(self):

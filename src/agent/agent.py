@@ -29,6 +29,16 @@ class Agent:
         self._assets: Dict[StrategyId, List[Tuple[FinancialAsset, str]]] = dict()
         self._margins: Dict[StrategyId, Margins] = dict()
 
+    def trading_symbol(self, symbol: Symbol):
+        for strategy_id, strategy in self._strategies.items():
+            if not strategy.is_same_symbol(symbol):
+                continue
+            if strategy_id not in self._assets:
+                continue
+            if len(self._assets[strategy_id]) > 0:
+                return True
+        return False
+
     def get_asset(self, strategy_id: StrategyId) -> List[Tuple[FinancialAsset, str]]:
         if strategy_id not in self._assets.keys():
             return [(EmptyAsset(), "Empty")]
@@ -140,7 +150,6 @@ class Agent:
                 transactions[i].append_msg(f"Realised payoff: {payoff}.\n")
                 return
 
-
     # ===== margins
     def _update_initial_margin(self, strategy_id: StrategyId, stock_price: float, date: datetime):
         margin = self._cal_margin(strategy_id, stock_price)
@@ -152,6 +161,16 @@ class Agent:
         margin = self._cal_margin(strategy_id, stock_price)
         self._margins[strategy_id].append_margin(date, margin, False)
 
+    def notify_maintenance_margin(self, date: datetime, stock_price: float, symbol: Symbol):
+        for strategy_id, strategy in self._strategies.items():
+            if not strategy.is_same_symbol(symbol):
+                continue
+            if strategy_id not in self._margins.keys():
+                self._margins[strategy_id] = Margins()
+            last_margin_date, margin = self._margins[strategy_id].peak_last()
+            if last_margin_date < date:
+                self._update_maintenance_margin(strategy_id, stock_price, date)
+
     def _cal_margin(self, strategy_id: StrategyId, stock_price: float):
         strategy = self._strategies[strategy_id]
         symbol = strategy.symbol()
@@ -161,12 +180,3 @@ class Agent:
 
     def get_margins(self):
         return self._margins
-
-    def notify_maintenance_margin(self, date: datetime, stock_price: float, symbol: Symbol):
-        for strategy_id, strategy in self._strategies.items():
-            if not strategy.is_same_symbol(symbol):
-                continue
-            last_margin_date, margin = self._margins[strategy_id].peak_last()
-            if last_margin_date < date:
-                self._update_maintenance_margin(strategy_id, stock_price, date)
-

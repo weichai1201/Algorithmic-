@@ -116,7 +116,8 @@ def _run_option(strategy_func: Callable, symbols: [str], foldername, start_date,
     # output results
     for strategy_id, df in profits_data.items():
         filename = f"{foldername}/{strategy_id.get_id()}_{sub_folder}"
-
+        if len(df) == 0:
+            continue
         # profits
         df.to_csv(filename + ".csv")
 
