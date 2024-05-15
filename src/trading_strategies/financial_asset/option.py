@@ -107,7 +107,7 @@ class PutOption(Option):
     def __str__(self):
         return (f"PutOption: {self._symbol}, "
                 f"Strike Price: {self._strike_price},"
-                f" Expiration Date: {self._expiration_date},"
+                f" Expiration Date: {self._expiration_date.strftime("%Y-%d-%m")},"
                 f" Premium: {self._price}")
 
 

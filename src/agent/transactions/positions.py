@@ -10,7 +10,7 @@ class Positions:
         self.quantity = quantity
 
     def __str__(self):
-        return self.position.__str__() + " " + str(self.quantity)
+        return f"{self.position.__str__()}, {str(self.quantity)} asset(s)"
 
 
 class ShortPositions(Positions):
