@@ -10,7 +10,7 @@ def simulate_portfolio(stock_list: [Stock], time_period, num_steps):
     time_steps = np.linspace(0., time_period, int(num_steps))
     A = np.linalg.cholesky(covariance_matrix(stock_list))
     portfolio_values = np.zeros([num_assets, int(num_steps)])
-    portfolio_values[:, 0] = np.array([stock.current_price for stock in stock_list])
+    portfolio_values[:, 0] = np.array([stock.get_price() for stock in stock_list])
 
     for stock in stock_list:
         for i in range(1, int(num_steps)):

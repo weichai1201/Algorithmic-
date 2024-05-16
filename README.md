@@ -1,5 +1,5 @@
 # Financial Markets & Algorithmic Trading (Part II)
-<img alt="Invitation page" src="https://github.com/weichai1201/Algorithmic-/assets/135306395/a2f7313f-0962-40e1-854e-edf3638e4095" width=80% height=80%>
+<img alt="Invitation page" src="https://github.com/weichai1201/Algorithmic-/assets/135306395/be924335-5c8b-4a77-b401-a786d8b190e0" width=80% height=80%>
 
 ## Project Overview
 ## Our Client
@@ -93,8 +93,8 @@ Administrative tasks are archived in Google Drive.
 - [Statement of Work](https://drive.google.com/drive/folders/1Da-R7BeQcE7UW6mm0t8g83BNgJ0khVrg)
 
 # Showcase
-- [Link to Showcase Video](will update in the future)
-- [Link to Poster](will update in the future)
+- [Link to Showcase Video](https://drive.google.com/drive/folders/1wmVJscwAAQrasQefEwNkxCPcizGH3mBO)
+- [Link to Poster](https://drive.google.com/drive/folders/1wmVJscwAAQrasQefEwNkxCPcizGH3mBO)
 
 
 

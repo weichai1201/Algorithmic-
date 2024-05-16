@@ -1,7 +1,8 @@
-from datetime import datetime, timedelta
+from datetime import timedelta, datetime
 
 import pandas as pd
 from pandas_market_calendars import get_calendar
+from pandas.tseries.offsets import CustomBusinessDay
 
 asx_calendar = get_calendar('ASX')
 nyse_calendar = get_calendar('XNYS')
@@ -9,7 +10,10 @@ nyse_calendar = get_calendar('XNYS')
 
 def next_week_expiry(date: datetime, weekday: str):
     days_until_weekday = (weekday_mapping[weekday.upper()] - date.weekday()) % 7
-    next_expire_date = date + timedelta(days=days_until_weekday)
+    if days_until_weekday == 0:
+        next_expire_date = date + timedelta(days=7)
+    else:
+        next_expire_date = date + timedelta(days=days_until_weekday)
 
     return next_expire_date
 
@@ -22,7 +26,7 @@ def next_month_expiry(date: datetime, weekday: str, ref_week_num=3):
     return next_expire_date
 
 
-def next_expiry_date(date: datetime, weekday: str, is_weekly: bool, is_us=True) -> datetime:
+def next_expiry_date(date: datetime, is_weekly: bool, is_us=True, weekday="FRI") -> datetime:
     """
     :param date: current date.
     :param weekday: day of the week as three-letter string.
@@ -36,17 +40,28 @@ def next_expiry_date(date: datetime, weekday: str, is_weekly: bool, is_us=True) 
     calendar = nyse_calendar if is_us else asx_calendar
 
     if is_weekly:
-        next_us_date = next_week_expiry(date, weekday)
+        next_date = next_week_expiry(date, weekday)
     else:
-        next_us_date = next_month_expiry(date, weekday)
+        next_date = next_month_expiry(date, weekday)
 
-    if calendar.valid_days(start_date=next_us_date, end_date=next_us_date).size > 0:
-        next_trading_day = next_us_date
+    return closest_expiration_date(next_date, calendar)
+
+
+def closest_expiration_date(date: datetime, calendar=nyse_calendar):
+    if calendar.valid_days(start_date=date, end_date=date).size > 0:
+        return date
     else:
-        next_trading_day = calendar.valid_days(start_date=next_us_date, end_date=next_us_date + pd.Timedelta(days=10))[
-            0]
+        return calendar.valid_days(start_date=date, end_date=date + timedelta(days=10))[0].replace(
+            tzinfo=None).to_pydatetime()
 
-    return next_trading_day.replace(tzinfo=None)
+
+def trading_days(start: datetime, end: datetime):
+    return nyse_calendar.valid_days(start_date=start, end_date=end).size
+
+
+def next_nth_trading_day(current: datetime, n: int):
+    return nyse_calendar.valid_days(start_date=current, end_date=current + timedelta(days=365 * 3))[n - 1].replace(
+        tzinfo=None).to_pydatetime()
 
 
 weekday_mapping = {

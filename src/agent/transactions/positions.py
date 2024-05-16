@@ -1,4 +1,4 @@
-from src.trading_strategies.transactions.position import Position
+from src.agent.transactions.position import Position
 
 """
 @author: Yifan Xiao
@@ -8,6 +8,9 @@ class Positions:
     def __init__(self, position: Position, quantity: int):
         self.position = position
         self.quantity = quantity
+
+    def __str__(self):
+        return f"{self.position.__str__()}, {str(self.quantity)} asset(s)"
 
 
 class ShortPositions(Positions):
