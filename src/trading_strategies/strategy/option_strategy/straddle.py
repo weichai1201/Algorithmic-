@@ -66,5 +66,5 @@ class Straddle(OptionStrategy):
             expirations[1] = max(expirations)
         put = PutOption(self.symbol(), Price(strikes[0], date), expirations[0], EmptyPrice())
         call = CallOption(self.symbol(), Price(strikes[1], date), expirations[1], EmptyPrice())
-        return [Order(put, date, Positions(self._position, self._scale), self._strategy_call.asset_name, orders[0].msg),
-                Order(call, date, Positions(self._position, self._scale), self._strategy_put.asset_name, orders[1].msg)]
+        return [Order(put, date, Positions(self._position, self._scale), self._strategy_put.asset_name, orders[0].msg),
+                Order(call, date, Positions(self._position, self._scale), self._strategy_call.asset_name, orders[1].msg)]
