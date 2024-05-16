@@ -1,4 +1,4 @@
-Algorithm Internal API Document:
+Algorithm general Internal API Document( For team one and team two):
 Option:
 
 get_historical_stock_price(string symbol, datetime begin, datetime end, string price_type): list[float]
