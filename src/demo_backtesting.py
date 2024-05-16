@@ -24,18 +24,18 @@ import matplotlib.pyplot as plt
 
 
 def main():
-    foldername = "backtesting_result"
+    foldername = "backtesting_result_2006_2012"
 
-    symbols = StockSelection().simple
+    symbols = StockSelection().full
     # long_call_configs = OptionBacktestConfigBundle(LongCall)
     # long_put_configs = OptionBacktestConfigBundle(LongPut)
     short_call_configs = OptionBacktestConfigBundle(ShortCall)
     short_put_configs = OptionBacktestConfigBundle(ShortPut)
     straddle_configs = OptionBacktestConfigBundle(Straddle)
     diagonal_configs = OptionBacktestConfigBundle(Diagonal)
-    # configs = (short_call_configs.configs + short_put_configs.configs +
-    #            straddle_configs.configs + diagonal_configs.configs)
-    configs = straddle_configs.configs
+    configs = (short_call_configs.configs + short_put_configs.configs +
+               straddle_configs.configs + diagonal_configs.configs)
+    # configs = diagonal_configs.configs
 
     # beginning of run
     timers = [timeit.default_timer()]
@@ -110,9 +110,9 @@ def _run_option(strategy_func: Callable, symbols: [str], foldername, start_date,
     backtesting_summary = backtester.get_data()
     profits_data = backtesting_summary.get_data()
     margins = backtesting_summary.margins
-
     # output results
     for strategy_id, df in profits_data.items():
+        print(backtesting_summary.max_drawdown(strategy_id))
         filename = f"{foldername}/{strategy_id.get_id()}_{sub_folder}"
         if len(df) == 0:
             continue

@@ -1,7 +1,7 @@
 import datetime
 from typing import Set, Dict, List, Tuple
 
-from src.agent.performance import calculate_option_profit
+from src.agent.performance import calculate_option_profit, calculate_drawdowns
 from src.agent.transactions.transaction import Transaction
 from src.data_access.data_package import DataPackage
 from src.agent.margins import Margins
@@ -125,7 +125,7 @@ class Agent:
              payoffs[strategy_id],
              profits[strategy_id],
              cumulative_profits[strategy_id]) = calculate_option_profit(transactions)
-            # drawdowns[strategy_id] = calculate_drawdowns(cumulative_profits[strategy_id])
+            drawdowns[strategy_id] = calculate_drawdowns(cumulative_profits[strategy_id])
         return (dates,
                 payoffs,
                 profits,

@@ -24,14 +24,14 @@ def calculate_option_profit(transactions: Transactions):
     c_profit = 0
     prev_transaction = None
     for transaction in transactions.get_transactions():
-        # assume short
         cost = - transaction.get_asset().get_price_numeric()
+        if transaction.is_short():
+            cost *= -1
         payoff = 0
         if prev_transaction is not None:
             payoff = prev_transaction.get_payoff()
-        if transaction.is_short():
-            cost *= -1
-            payoff *= -1
+            if prev_transaction.is_short():
+                payoff *= -1
         # profits
         profits.append(payoff)
         profits.append(cost)

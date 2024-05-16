@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import numpy as np
 import pandas as pd
 
 from src.agent.margins import Margins
@@ -27,7 +28,7 @@ class BacktestingSummary:
                 "Payoffs": payoffs[strategy_id],
                 "Profit": profits[strategy_id],
                 "Cumulative": cumulative_profits[strategy_id],
-                # "Drawdown": drawdowns[strategy_id]
+                "Drawdown": drawdowns[strategy_id]
             })
 
         self._years = years
@@ -41,6 +42,9 @@ class BacktestingSummary:
 
     def get_data(self) -> dict[StrategyId, pd.DataFrame]:
         return self._data
+
+    def max_drawdown(self, strategy_id: StrategyId):
+        return np.max(self._data[strategy_id]["Drawdown"])
 
     def __str__(self):
         result = ""

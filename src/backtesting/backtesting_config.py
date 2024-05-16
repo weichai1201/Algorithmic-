@@ -16,7 +16,7 @@ class OptionBacktestConfig(BacktestConfig):
 
     def __init__(self, strategy: Callable,
                  start_date=datetime(year=2006, month=1, day=1),
-                 end_date=datetime(year=2010, month=1, day=1),
+                 end_date=datetime(year=2012, month=1, day=1),
                  is_itm=True,
                  is_weekly=True,
                  num_of_strikes=1,
@@ -59,7 +59,7 @@ class OptionBacktestConfigBundle:
         self.configs.append(OptionBacktestConfig(strategy, is_itm=False))
         # self.configs.append(OptionBacktestConfig(strategy, is_weekly=False))
         # self.configs.append(OptionBacktestConfig(strategy, is_itm=False, is_weekly=False))
-        # self.configs.append(OptionBacktestConfig(strategy, num_of_strikes=2))
+        self.configs.append(OptionBacktestConfig(strategy, num_of_strikes=2))
         if strategy == Straddle:
             self.configs.append(OptionBacktestConfig(strategy, is_itm=False, cross_over=False, same_expiration=False))
             self.configs.append(OptionBacktestConfig(strategy, is_weekly=False, cross_over=False, same_expiration=True))
