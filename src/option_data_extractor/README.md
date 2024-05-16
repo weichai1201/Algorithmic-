@@ -35,11 +35,17 @@ Returns the stock price extracted from the data.
 ## How to Use
 Compile the code using a C++ compiler. 
 
-## Output
-Ensure compliance with the terms and conditions of the Alpha Vantage API when using it.
-Adjust the scheduling settings as needed to meet specific update requirements.
+## Example Output
+
+Stock Symbol: AAPL
+Time: 2024-05-16 10:30:00
+Put Strike: 200
+Put Premium: 5.25
+Call Strike: 210
+Call Premium: 6.75
+Expiration Date: 2024-06-15
+Stock Price: 205.5
 
 ## Requirements
-C++ environment
-Internet connection
+C++ environment and Internet connection
 
